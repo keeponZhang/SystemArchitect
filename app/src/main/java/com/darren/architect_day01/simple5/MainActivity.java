@@ -2,6 +2,7 @@ package com.darren.architect_day01.simple5;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.darren.architect_day01.R;
 
@@ -60,5 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void showListData(DiscoverListResult discoverListResult) {
 
+    }
+
+	public void getAppXixiUpdate(View view) {
+	}
+
+    public void getAppMarketUpdate(View view) {
     }
 }

@@ -3,6 +3,7 @@
     package="com.darren.architect_day01">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -13,6 +14,9 @@
         android:name=".BaseApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".simple3.MainActivity">
+
+        </activity>
+        <activity android:name=".simple1.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

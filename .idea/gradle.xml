@@ -8,15 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/day02" />
-            <option value="$PROJECT_DIR$/day03" />
-            <option value="$PROJECT_DIR$/day08" />
-            <option value="$PROJECT_DIR$/day09" />
-            <option value="$PROJECT_DIR$/day10" />
-            <option value="$PROJECT_DIR$/day11" />
-            <option value="$PROJECT_DIR$/day12" />
-            <option value="$PROJECT_DIR$/day13" />
+            <option value="$PROJECT_DIR$/Architect_Day34_shouxie_retrofit" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -17,12 +17,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+   compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.darren.architect_day02"
-        minSdkVersion 15
-        targetSdkVersion 25
+         minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
