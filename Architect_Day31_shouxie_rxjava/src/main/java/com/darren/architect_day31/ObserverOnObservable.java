@@ -36,6 +36,7 @@ class ObserverOnObservable<T> extends Observable<T> {
         @Override
         public void onNext(@NonNull T item) {
             value = item;
+            //一般来说，没有特别处理的话，发送在哪个线程，监听就在哪个线程，observerOn就是在发送的线程又包裹了一层
             schedulers.scheduleDirect(this);
 
         }

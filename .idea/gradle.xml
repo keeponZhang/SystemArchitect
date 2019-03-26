@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Architect_Day31_shouxie_rxjava" />
             <option value="$PROJECT_DIR$/Architect_Day34_shouxie_retrofit" />
           </set>
         </option>

@@ -40,21 +40,23 @@ public class MainActivity extends AppCompatActivity {
                         return bitmap;
                     }
                 })
+                .subscribeOn(Schedulers.io())
                 .map(new Function<Bitmap, Bitmap>() { // ObservableMap
                     @Override
                     public Bitmap apply(@NonNull Bitmap bitmap) throws Exception {
-                        bitmap = createWatermark(bitmap, "RxJava2.0");
+                        Log.e("apply2", Thread.currentThread().getName());
+
                         return bitmap;
                     }
                 })
                 .map(new Function<Bitmap, Bitmap>() {
                     @Override
                     public Bitmap apply(Bitmap bitmap) throws Exception {
-                        Log.e("apply2", Thread.currentThread().getName());
+                        Log.e("apply3", Thread.currentThread().getName());
                         return bitmap;
                     }
-                })
-                .subscribeOn(Schedulers.io())
+                })//subscribeOn是包裹，上面的在里面，下面的在外面，这个相当于主线程里面包裹io线程，所以上层的发成在io线程，所以连续两个subscribeOn，只有上面那个起作用
+                .subscribeOn(Schedulers.mainThread())
                 .observerOn(Schedulers.mainThread())
                 .subscribe(new Consumer<Bitmap>() { // ObservableMap
                     @Override
