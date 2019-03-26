@@ -1,4 +1,4 @@
-package com.darren.architect_day33.simple2;
+package com.darren.architect_day33.simple1;
 
 import com.google.gson.Gson;
 
@@ -11,7 +11,7 @@ import retrofit2.Response;
 /**
  * Created by hcDarren on 2017/12/16.
  */
-
+//如果使用HttpCallback<T>的泛型，就可以在onResponse在返回码为ok是封装modle，另外写两个回调
 public abstract class HttpCallback<T> implements Callback<Result<T>> {
     @Override
     public void onResponse(Call<Result<T>> call, Response<Result<T>> response) {

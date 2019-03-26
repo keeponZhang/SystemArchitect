@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Architect_Day31_shouxie_rxjava/Architect_Day31_shouxie_rxjava.iml" filepath="$PROJECT_DIR$/Architect_Day31_shouxie_rxjava/Architect_Day31_shouxie_rxjava.iml" />
       <module fileurl="file://$PROJECT_DIR$/Architect_Day34_shouxie_retrofit/Architect_Day34_shouxie_retrofit.iml" filepath="$PROJECT_DIR$/Architect_Day34_shouxie_retrofit/Architect_Day34_shouxie_retrofit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Architect_Day_Retrofit_33/Architect_Day_Retrofit_33.iml" filepath="$PROJECT_DIR$/Architect_Day_Retrofit_33/Architect_Day_Retrofit_33.iml" />
       <module fileurl="file://$PROJECT_DIR$/SystemArchitect.iml" filepath="$PROJECT_DIR$/SystemArchitect.iml" />
     </modules>
   </component>

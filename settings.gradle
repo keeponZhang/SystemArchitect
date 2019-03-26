@@ -1,7 +1,7 @@
 //include ':app', ':day02', ':day03', ':day08', ':day09',
 //        ':day10', ':day11', ':day12', ':day13', ':Architect_Day14', ':Architect_Day15', ':Architect_Day16', ':Architect_Day19'
 //include ':photosWallDemo'
-//include ':Architect_Day_Retrofit_33'
+include ':Architect_Day_Retrofit_33'
 include ':Architect_Day31_shouxie_rxjava'
 include ':Architect_Day34_shouxie_retrofit'
 //include ':OkHttp_Source'

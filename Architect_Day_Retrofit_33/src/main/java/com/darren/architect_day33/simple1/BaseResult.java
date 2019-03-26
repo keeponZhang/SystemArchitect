@@ -1,12 +1,12 @@
-package com.darren.architect_day33.simple2;
+package com.darren.architect_day33.simple1;
 
 /**
  * Created by hcDarren on 2017/12/16.
  */
 
 public class BaseResult {
-    String code;
-    String msg;
+    public String code;
+    public String msg;
 
     public String getMsg() {
         return msg;

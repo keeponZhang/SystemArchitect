@@ -1,12 +1,10 @@
-package com.darren.architect_day33.simple2;
+package com.darren.architect_day33.simple1;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.darren.architect_day33.R;
-import com.darren.architect_day33.simple1.RetrofitClient;
-import com.darren.architect_day33.simple1.UserInfo;
 
 public class MainActivity extends AppCompatActivity {
 
