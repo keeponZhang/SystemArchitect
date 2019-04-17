@@ -1,5 +1,6 @@
 package com.darren.architect_day33.simple1;
 
+import com.darren.architect_day33.simple1.bean.Result;
 import com.google.gson.Gson;
 
 import java.lang.reflect.ParameterizedType;
@@ -30,6 +31,7 @@ public abstract class HttpCallback<T> implements Callback<Result<T>> {
     @Override
     public void onFailure(Call<Result<T>> call, Throwable t) {
         // 处理失败，联网，解析出错，自己弄一弄
+        onError("errorCode", "出错了");
     }
 
     public abstract void onSucceed(T result);

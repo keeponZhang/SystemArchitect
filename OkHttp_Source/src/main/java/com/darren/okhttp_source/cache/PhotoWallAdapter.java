@@ -1,21 +1,5 @@
-package com.example.photoswalldemo;
+package com.darren.okhttp_source.cache;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashSet;
-import java.util.Set;
-
-import libcore.io.DiskLruCache;
-import libcore.io.DiskLruCache.Snapshot;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -31,6 +15,22 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import com.darren.okhttp_source.R;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * GridView的适配器，负责异步从网络上下载图片展示在照片墙上。
@@ -51,9 +51,13 @@ public class PhotoWallAdapter extends ArrayAdapter<String> {
 
 	/**
 	 * 图片硬盘缓存核心类。
+	 * DiskLruCache能够正常工作的前提就是要依赖于journal文件中的内容，因此，能够读懂journal文件对于我们理解DiskLruCache的工作原理有着非常重要的作用
 	 */
 	private DiskLruCache mDiskLruCache;
-
+	//图片在images https://blog.csdn.net/guolin_blog/article/details/28863651
+//	由于现在只缓存了一张图片，所以journal中并没有几行日志，我们一行行进行分析。第一行是个固定的字符串“libcore.io.DiskLruCache”，标志着我们使用的是DiskLruCache技术。第二行是DiskLruCache的版本号，这个值是恒为1的。第三行是应用程序的版本号，我们在open()方法里传入的版本号是什么这里就会显示什么。第四行是valueCount，这个值也是在open()方法中传入的，通常情况下都为1。第五行是一个空行。前五行也被称为journal文件的头，这部分内容还是比较好理解的，但是接下来的部分就要稍微动点脑筋了。
+//	第六行是以一个DIRTY前缀开始的，后面紧跟着缓存图片的key。通常我们看到DIRTY这个字样都不代表着什么好事情，意味着这是一条脏数据。没错，每当我们调用一次DiskLruCache的edit()方法时，都会向journal文件中写入一条DIRTY记录，表示我们正准备写入一条缓存数据，但不知结果如何。然后调用commit()方法表示写入缓存成功，这时会向journal中写入一条CLEAN记录，意味着这条“脏”数据被“洗干净了”，调用abort()方法表示写入缓存失败，这时会向journal中写入一条REMOVE记录。也就是说，每一行DIRTY的key，后面都应该有一行对应的CLEAN或者REMOVE的记录，否则这条数据就是“脏”的，会被自动删除掉。
+//
 	/**
 	 * GridView的实例
 	 */
@@ -146,6 +150,8 @@ public class PhotoWallAdapter extends ArrayAdapter<String> {
 		try {
 			Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
 			if (bitmap == null) {
+
+				//BitmapWorkerTask会先去本地磁盘中找
 				BitmapWorkerTask task = new BitmapWorkerTask();
 				taskCollection.add(task);
 				task.execute(imageUrl);
@@ -261,12 +267,12 @@ public class PhotoWallAdapter extends ArrayAdapter<String> {
 		 */
 		private String imageUrl;
 
-		@Override
+		@Override //异步是相对于两个不同的线程来说的，doInBackground都是顺序执行的
 		protected Bitmap doInBackground(String... params) {
 			imageUrl = params[0];
 			FileDescriptor fileDescriptor = null;
 			FileInputStream fileInputStream = null;
-			Snapshot snapShot = null;
+			DiskLruCache.Snapshot snapShot = null;
 			try {
 				// 生成图片URL对应的key
 				final String key = hashKeyForDisk(imageUrl);
@@ -274,6 +280,7 @@ public class PhotoWallAdapter extends ArrayAdapter<String> {
 				// 查找key对应的缓存
 				snapShot = mDiskLruCache.get(key);
 				if (snapShot == null) {
+					//写入用DiskLruCache.Editor
 					// 如果没有找到对应的缓存，则准备从网络上请求数据，并写入缓存
 					DiskLruCache.Editor editor = mDiskLruCache.edit(key);
 					if (editor != null) {
@@ -287,6 +294,7 @@ public class PhotoWallAdapter extends ArrayAdapter<String> {
 					// 缓存被写入后，再次查找key对应的缓存
 					snapShot = mDiskLruCache.get(key);
 				}
+				//读取用DiskLruCache.Snapshot
 				if (snapShot != null) {
 					fileInputStream = (FileInputStream) snapShot.getInputStream(0);
 					fileDescriptor = fileInputStream.getFD();
@@ -328,7 +336,6 @@ public class PhotoWallAdapter extends ArrayAdapter<String> {
 		/**
 		 * 建立HTTP请求，并获取Bitmap对象。
 		 * 
-		 * @param imageUrl
 		 *            图片的URL地址
 		 * @return 解析后的Bitmap对象
 		 */

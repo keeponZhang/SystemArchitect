@@ -51,22 +51,22 @@ public final class CacheInterceptor implements Interceptor {
   }
 
   @Override public Response intercept(Chain chain) throws IOException {
-    // 从缓存里面拿,到底怎么拿？放一边
+    //1.通过 cache 找到之前缓存的响应，但是该缓存如他的名字一样，仅仅是一个候选人。
     Response cacheCandidate = cache != null
         ? cache.get(chain.request())
         : null;
-
+    //2.获取当前的系统时间。
     long now = System.currentTimeMillis();
-    // 构建了一个缓存策略
+    // 构建了一个缓存策略（    //3.通过 CacheStrategy 的工厂方法构造出 CacheStrategy 对象，并通过 get 方法返回。）
     CacheStrategy strategy = new CacheStrategy.Factory(now, chain.request(), cacheCandidate).get();
-    // networkRequest 还不知道是啥 networkRequest 做了处理
+    //4.在 CacheStrategy 的构造过程中，会初始化 networkRequest 和 cacheResponse 这两个变量，分别表示要发起的网络请求和确定的缓存。
     Request networkRequest = strategy.networkRequest;
     Response cacheResponse = strategy.cacheResponse;
 
     if (cache != null) {
       cache.trackResponse(strategy);
     }
-
+    //5.如果曾经有候选的缓存，但是经过处理后 cacheResponse 不存在，那么关闭候选的缓存资源。
     if (cacheCandidate != null && cacheResponse == null) {
       closeQuietly(cacheCandidate.body()); // The cache candidate wasn't applicable. Close it.
     }
@@ -88,7 +88,7 @@ public final class CacheInterceptor implements Interceptor {
 
     // If we don't need the network, we're done.
     if (networkRequest == null) {
-      // 如果缓存策略里面的 networkRequest 是空，那么就 返回 缓存好的 Response
+      // 如果缓存策略里面的 networkRequest 是空，那么就 返回 缓存好的 Response（说明缓存命中）
       return cacheResponse.newBuilder()
           .cacheResponse(stripBody(cacheResponse))
           .build();
@@ -96,7 +96,7 @@ public final class CacheInterceptor implements Interceptor {
 
     Response networkResponse = null;
     try {
-      // 否则的话给下面
+      //8.继续调用链的下一个步骤，按常理来说，走到这里就会真正地发起网络请求了。
       networkResponse = chain.proceed(networkRequest);
     } finally {
       // If we're crashing on I/O or otherwise, don't leak the cache body.
@@ -106,14 +106,17 @@ public final class CacheInterceptor implements Interceptor {
     }
 
     // If we have a cache response too, then we're doing a conditional get.
-    // 处理返回，处理 304 的情况
+    //10.网络请求完成之后，假如之前有缓存，那么首先进行一些额外的处理。
     if (cacheResponse != null) {
       if (networkResponse.code() == HTTP_NOT_MODIFIED) {
-        // 服务器数据没有变化，你还是可以拿之前的缓存
+        // //10.1 假如是 304，那么服务器数据没有变化，根据缓存构造出返回的结果给调用者。
         Response response = cacheResponse.newBuilder()
+                //结合两者的头部字段。
             .headers(combine(cacheResponse.headers(), networkResponse.headers()))
+                //更新发送和接收请求的时间。
             .sentRequestAtMillis(networkResponse.sentRequestAtMillis())
             .receivedResponseAtMillis(networkResponse.receivedResponseAtMillis())
+                //更新缓存和请求的返回结果。
             .cacheResponse(stripBody(cacheResponse))
             .networkResponse(stripBody(networkResponse))
             .build();
@@ -125,6 +128,7 @@ public final class CacheInterceptor implements Interceptor {
         cache.update(cacheResponse, response);
         return response;
       } else {
+        //10.2 关闭缓存。
         closeQuietly(cacheResponse.body());
       }
     }
@@ -135,13 +139,13 @@ public final class CacheInterceptor implements Interceptor {
         .build();
 
     if (cache != null) {
-      // 然后缓存获取的 Response
+       //12.如果符合缓存的要求，那么就缓存该结果。
       if (HttpHeaders.hasBody(response) && CacheStrategy.isCacheable(response, networkRequest)) {
         // Offer this request to the cache.
         CacheRequest cacheRequest = cache.put(response);
         return cacheWritingResponse(cacheRequest, response);
       }
-
+      //13.对于某些请求方法，需要移除缓存，例如 PUT/PATCH/POST/DELETE/MOVE
       if (HttpMethod.invalidatesCache(networkRequest.method())) {
         try {
           cache.remove(networkRequest);

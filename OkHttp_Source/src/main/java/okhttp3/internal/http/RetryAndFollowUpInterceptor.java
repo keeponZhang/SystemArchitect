@@ -106,6 +106,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
 
   @Override public Response intercept(Chain chain) throws IOException {
     Request request = chain.request();
+    //这是第一个拦截器
     RealInterceptorChain realChain = (RealInterceptorChain) chain;
     Call call = realChain.call();
     EventListener eventListener = realChain.eventListener();
@@ -125,7 +126,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       Response response;
       boolean releaseConnection = true;
       try {
-        // 丢给下一个拦截器去处理，会有异常的情况
+        // 丢给下一个拦截器去处理，会有异常的情况（proceed方法中又创建一个realChain，作为第二个interceptor的方法参数，之后的类似）
         response = realChain.proceed(request, streamAllocation, null, null);
         releaseConnection = false;
       } catch (RouteException e) {

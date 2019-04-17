@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.darren.architect_day33.R;
+import com.darren.architect_day33.simple1.bean.Result;
 
 
 import retrofit2.Call;

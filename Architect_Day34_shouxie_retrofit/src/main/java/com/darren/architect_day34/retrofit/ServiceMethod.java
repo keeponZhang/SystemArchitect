@@ -1,6 +1,5 @@
 package com.darren.architect_day34.retrofit;
 
-import com.darren.architect_day34.RequestBuilder;
 import com.darren.architect_day34.retrofit.http.GET;
 import com.darren.architect_day34.retrofit.http.POST;
 import com.darren.architect_day34.retrofit.http.Query;

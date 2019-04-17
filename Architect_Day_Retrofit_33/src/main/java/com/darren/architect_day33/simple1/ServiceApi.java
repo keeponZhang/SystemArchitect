@@ -2,6 +2,8 @@ package com.darren.architect_day33.simple1;
 
 
 
+import com.darren.architect_day33.simple1.bean.Result;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

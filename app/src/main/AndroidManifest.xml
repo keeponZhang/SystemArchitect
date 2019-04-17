@@ -17,6 +17,9 @@
 
         </activity>
         <activity android:name=".simple1.MainActivity">
+
+        </activity>
+        <activity android:name="com.darren.okhttp_source.cache.PhotoCacheActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

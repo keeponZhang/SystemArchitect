@@ -5,7 +5,6 @@ import android.util.Log;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -33,13 +32,10 @@ public class RetrofitClient {
         //        3.2 自己想办法，取巧也行走漏洞
         Retrofit retrofit = new Retrofit.Builder()
                 // 访问后台接口的主路径
-                .baseUrl("http://192.168.8.169:8080/OkHttpServer/")
+                .baseUrl("http://192.168.1.103:8080/OkHttpServer/")
                 // 添加解析转换工厂,Gson 解析，Xml解析，等等
                 .addConverterFactory(GsonConverterFactory.create())
-                // 添加 OkHttpClient,不添加默认就是 光杆 OkHttpClient
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(okHttpClient)
-
                 .build();
 
         // 创建一个 实例对象

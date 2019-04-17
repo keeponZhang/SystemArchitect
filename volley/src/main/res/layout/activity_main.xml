@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="stringRequest"
+			android:text="stringRequest"
+			android:textAllCaps="false"
+			/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="jsonRequest"
+			android:text="jsonRequest"
+			android:textAllCaps="false"
+			/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="imageRequest"
+			android:text="imageRequest"
+			android:textAllCaps="false"
+			/>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="100dp">
+
+			<ImageView
+				android:id="@+id/iv"
+				android:layout_width="100dp"
+				android:layout_height="100dp"/>
+
+			<com.android.volley.toolbox.NetworkImageView
+				android:id="@+id/network_image_view"
+				android:layout_width="100dp"
+				android:layout_height="100dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginLeft="40dp"
+				/>
+
+		</LinearLayout>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="imageLoader"
+			android:text="imageLoader"
+			android:textAllCaps="false"
+			/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="networkImageView"
+			android:text="networkImageView"
+			android:textAllCaps="false"
+			/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="xmlRequest"
+			android:text="xmlRequest"
+			android:textAllCaps="false"
+			/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="gsonRequest"
+			android:text="gsonRequest"
+			android:textAllCaps="false"
+			/>
+	</LinearLayout>
+</ScrollView>

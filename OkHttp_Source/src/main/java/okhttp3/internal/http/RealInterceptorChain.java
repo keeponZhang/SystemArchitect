@@ -117,11 +117,14 @@ public final class RealInterceptorChain implements Interceptor.Chain {
   @Override public Request request() {
     return request;
   }
-
+  //RealInterceptorChain 的 proceed 方法。
   @Override public Response proceed(Request request) throws IOException {
     return proceed(request, streamAllocation, httpCodec, connection);
   }
 
+  //有几个interceptor，就有n+1（n-1+2 realcall实例化一个，realcall调用proceed实例化一个）调用链实例，第一个调用链的process方法在realcall调用，之后是在interptor的intercept方法调用，最后一个inteceptor不用调用
+  //每调用一次chain.proceed方法，就会实例化一个调用链实例
+  //或者可以这样理解，realcall的调用链实例是发起调用的，其他的实例作为interceptor中intetcept方法的参数
   public Response proceed(Request request, StreamAllocation streamAllocation, HttpCodec httpCodec,
       RealConnection connection) throws IOException {
     if (index >= interceptors.size()) throw new AssertionError();
@@ -139,12 +142,14 @@ public final class RealInterceptorChain implements Interceptor.Chain {
       throw new IllegalStateException("network interceptor " + interceptors.get(index - 1)
           + " must call proceed() exactly once");
     }
-
+    //关键部分的代码是这几句。
     // Call the next interceptor in the chain.
     RealInterceptorChain next = new RealInterceptorChain(interceptors, streamAllocation, httpCodec,
         connection, index + 1, request, call, eventListener, connectTimeout, readTimeout,
         writeTimeout);
+    // 取列表中位于 index 位置的拦截器。
     Interceptor interceptor = interceptors.get(index);
+    // 调用它的 intercept 方法，并传入新创建的 RealInterceptorChain。（Real的RealInterceptorChain的proceed方法为第一个interceptor创建intecept的方法参数，第一个interceptor调用chain.proceed为第二个interceptor创建intecept的方法参数，以此类推，然后调用interceptor的intetcept方法，一级一级派发下去）
     Response response = interceptor.intercept(next);
 
     // Confirm that the next interceptor made its required call to chain.proceed().

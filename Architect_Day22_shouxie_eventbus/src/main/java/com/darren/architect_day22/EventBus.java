@@ -16,12 +16,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public class EventBus {
-    // subscriptionsByEventType 这个集合存放的是？
+    // subscriptionsByEventType 这个集合存放的是？(发送事件时有用，因为是根据参数类型来判断一个订阅者是否订阅了该事件类型)
     // key 是 Event 参数的类
     // value 存放的是 Subscription 的集合列表
     // Subscription 包含两个属性，一个是 subscriber 订阅者（反射执行对象），一个是 SubscriberMethod 注解方法的所有属性参数值
     private final Map<Class<?>, CopyOnWriteArrayList<Subscription>> subscriptionsByEventType;
-    // typesBySubscriber 这个集合存放的是？
+    // typesBySubscriber 这个集合存放的是？（解注册用）
     // key 是所有的订阅者
     // value 是所有订阅者里面方法的参数的class
     private final Map<Object, List<Class<?>>> typesBySubscriber;
@@ -68,7 +68,7 @@ public class EventBus {
     // 2. 按照规则存放到 subscriptionsByEventType 里面去
     private void subscriber(Object object, SubscriberMethod subscriberMethod) {
         Class<?> eventType = subscriberMethod.eventType;
-        // 随处能找到，我这个代码
+        // 随处能找到，我这个代码()
         CopyOnWriteArrayList<Subscription> subscriptions = subscriptionsByEventType.get(eventType);
         if(subscriptions == null){
             subscriptions = new CopyOnWriteArrayList<>();

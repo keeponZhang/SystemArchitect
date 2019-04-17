@@ -14,7 +14,13 @@ import okhttp3.logging.HttpLoggingInterceptor;
 public class RetrofitClient {
 
 
+    private static Retrofit sRetrofit;
+    private static ServiceApi sServiceApi;
+
     public static ServiceApi getServiceApi() {
+        if(sServiceApi!=null){
+            return sServiceApi;
+        }
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder().addInterceptor(new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
@@ -29,16 +35,18 @@ public class RetrofitClient {
         // 3. 还有就是 baseUrl 问题？ (Retrofit 找不到任何入口可以修改)
         //        3.1 不同的 baseUrl 构建不同的 Retrofit 对象 （直不应该首选）
         //        3.2 自己想办法，取巧也行走漏洞
-        Retrofit retrofit = new Retrofit.Builder()
+        // 访问后台接口的主路径
+        // 添加 OkHttpClient,不添加默认就是 光杆 OkHttpClient
+        sRetrofit = new Retrofit.Builder()
                 // 访问后台接口的主路径
-                .baseUrl("http://192.168.1.105:8080/OkHttpServer/")
+                .baseUrl("http://192.168.1.103:8080/OkHttpServer/")
                 // 添加 OkHttpClient,不添加默认就是 光杆 OkHttpClient
                 .client(okHttpClient)
                 .build();
 
         // 创建一个 实例对象
-        ServiceApi  mServiceApi = retrofit.create(ServiceApi.class);
-        return mServiceApi;
+        sServiceApi = sRetrofit.create(ServiceApi.class);
+        return sServiceApi;
     }
 
 }

@@ -1,27 +1,22 @@
 package com.darren.architect_day01.simple1;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.darren.architect_day01.BaseApplication;
-import com.darren.architect_day01.ConstantValue;
 import com.darren.architect_day01.R;
-import com.darren.architect_day01.Utils;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.EventListener;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -34,10 +29,15 @@ public class MainActivity extends AppCompatActivity {
     //分别对应缓存的目录，以及缓存的大小。
     Cache mCache = new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
     //在构造 OkHttpClient 时，通过 .cache 配置。
-    OkHttpClient mOkHttpClient = new OkHttpClient.Builder().cache(mCache).
+    OkHttpClient mOkHttpClient = new OkHttpClient.Builder().cache(mCache).eventListener(new EventListener() {
+        @Override
+        public void callStart(Call call) {
+            super.callStart(call);
+        }
+    }).
             addInterceptor(new FirstClientInterceptor())
             .addNetworkInterceptor(new LastInternetInterceptor()).build();
-//    OkHttpClient mOkHttpClient = new OkHttpClient();
+    OkHttpClient mOkHttpClient2 = new OkHttpClient();
     String testUrl = "";
     private TextView mTextView;
 
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         Request.Builder requestBuilder = new Request.Builder().url(testUrl).tag(this);
         //可以省略，默认是GET请求
         Request request = requestBuilder.build();
+
 
         mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override

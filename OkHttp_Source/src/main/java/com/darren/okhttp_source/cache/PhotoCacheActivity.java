@@ -1,16 +1,18 @@
-package com.example.photoswalldemo;
+package com.darren.okhttp_source.cache;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.ViewTreeObserver;
 import android.widget.GridView;
 
+import com.darren.okhttp_source.R;
+
 /**
  * 照片墙主活动，使用GridView展示照片墙。
  * 
  * @author guolin
  */
-public class MainActivity extends Activity {
+public class PhotoCacheActivity extends Activity {
 
 	/**
 	 * 用于展示照片墙的GridView
@@ -28,7 +30,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_photo_cache);
 		mImageThumbSize = getResources().getDimensionPixelSize(
 				R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(

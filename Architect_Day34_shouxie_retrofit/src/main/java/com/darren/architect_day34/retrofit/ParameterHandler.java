@@ -1,7 +1,5 @@
 package com.darren.architect_day34.retrofit;
 
-import com.darren.architect_day34.RequestBuilder;
-
 /**
  * Created by hcDarren on 2017/12/17.
  */

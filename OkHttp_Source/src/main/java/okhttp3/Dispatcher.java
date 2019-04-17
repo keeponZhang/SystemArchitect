@@ -46,9 +46,10 @@ public final class Dispatcher {
   /** Executes calls. Created lazily. */
   private @Nullable ExecutorService executorService;
 
+  //等待被执行的异步请求任务队列。
   /** Ready async calls in the order they'll be run. */
   private final Deque<AsyncCall> readyAsyncCalls = new ArrayDeque<>();
-
+  //正在被执行的异步请求任务队列。
   /** Running asynchronous calls. Includes canceled calls that haven't finished yet. */
   private final Deque<AsyncCall> runningAsyncCalls = new ArrayDeque<>();
 
@@ -127,10 +128,14 @@ public final class Dispatcher {
   }
 
   synchronized void enqueue(AsyncCall call) {
+    //如果当前正在请求的数量小于 64，并且对于同一 host 的请求小于 5，才发起请求。
     if (runningAsyncCalls.size() < maxRequests && runningCallsForHost(call) < maxRequestsPerHost) {
+      //将该任务加入到正在请求的队列当中。
       runningAsyncCalls.add(call);
+      //通过线程池执行任务。
       executorService().execute(call);
     } else {
+      //否则加入到等待队列当中。
       readyAsyncCalls.add(call);
     }
   }
@@ -152,7 +157,7 @@ public final class Dispatcher {
       call.cancel();
     }
   }
-
+//  promoteCalls函数除了在一个异步请求执行完毕后会调用，当我们改变最大请求数量和对于同一个host的最大请求数量时，也会触发该查找过程。
   private void promoteCalls() {
     if (runningAsyncCalls.size() >= maxRequests) return; // Already running max capacity.
     if (readyAsyncCalls.isEmpty()) return; // No ready calls to promote.
@@ -162,6 +167,7 @@ public final class Dispatcher {
 
       if (runningCallsForHost(call) < maxRequestsPerHost) {
         i.remove();
+        //找到了等待队列中符合执行的条件的任务，那么就执行它。
         runningAsyncCalls.add(call);
         executorService().execute(call);
       }
@@ -179,6 +185,7 @@ public final class Dispatcher {
     return result;
   }
 
+  //Dispatcher.executed 仅仅是将 Call 加入到队列当中，而并没有真正执行。
   /** Used by {@code Call#execute} to signal it is in-flight. */
   synchronized void executed(RealCall call) {
     runningSyncCalls.add(call);
@@ -186,11 +193,13 @@ public final class Dispatcher {
 
   /** Used by {@code AsyncCall#run} to signal completion. */
   void finished(AsyncCall call) {
+    //如果是异步请求，那么最后一个参数为 true。
     finished(runningAsyncCalls, call, true);
   }
 
   /** Used by {@code Call#execute} to signal completion. */
   void finished(RealCall call) {
+    //如果是同步请求，那么最后一个参数为 false。
     finished(runningSyncCalls, call, false);
   }
 
@@ -198,12 +207,14 @@ public final class Dispatcher {
     int runningCallsCount;
     Runnable idleCallback;
     synchronized (this) {
+      //同步请求完成后从同步队列runningSyncCalls 移除它。
       if (!calls.remove(call)) throw new AssertionError("Call wasn't in-flight!");
+      //false 不执行。
       if (promoteCalls) promoteCalls();
       runningCallsCount = runningCallsCount();
       idleCallback = this.idleCallback;
     }
-
+    //如果当前已经没有可以执行的任务，那么调用 idleCallback.run() 方法。
     if (runningCallsCount == 0 && idleCallback != null) {
       idleCallback.run();
     }

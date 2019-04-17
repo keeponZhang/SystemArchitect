@@ -1,5 +1,7 @@
 package com.darren.architect_day34.retrofit;
 
+import android.util.Log;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -37,7 +39,7 @@ public class Retrofit {
 
                 // 解析参数注解
                 ServiceMethod serviceMethod = loadServiceMethod(method);
-                // 2. 封装 OkHttpCall
+                // 2. 封装 retrofit 的OkHttpCall，此时还不是ServiceApi对应方法返回值的OkHttpCall(调了对应的方法后才是)
                 OkHttpCall okHttpCall = new OkHttpCall(serviceMethod,args);
 
                 return okHttpCall;
@@ -46,6 +48,7 @@ public class Retrofit {
     }
 
     private ServiceMethod loadServiceMethod(Method method) {
+        Log.e("TAG", "loadServiceMethod: "+method );
         // 享元设计模式
         ServiceMethod serviceMethod = serviceMethodMapCache.get(method);
         if(serviceMethod == null){

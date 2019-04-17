@@ -28,6 +28,8 @@ import okio.BufferedSource;
 import okio.GzipSource;
 import okio.Okio;
 
+import static okhttp3.internal.Util.closeQuietly;
+
 /**
  * A database of public suffixes provided by
  * <a href="https://publicsuffix.org/">publicsuffix.org</a>.

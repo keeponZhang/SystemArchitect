@@ -176,12 +176,14 @@ public final class Cache implements Closeable, Flushable {
   private int networkCount;
   private int hitCount;
   private int requestCount;
-
+  //分别对应缓存的目录，以及缓存的大小。
   public Cache(File directory, long maxSize) {
     this(directory, maxSize, FileSystem.SYSTEM);
   }
 
   Cache(File directory, long maxSize, FileSystem fileSystem) {
+//    DiskLruCache并没有限制数据的缓存位置，可以自由地进行设定，但是通常情况下多数应用程序都会将缓存的位置选择为 /sdcard/Android/data/<application package>/cache 这个路径
+    //在这里我们将存储在directory
     this.cache = DiskLruCache.create(fileSystem, directory, VERSION, ENTRY_COUNT, maxSize);
   }
 

@@ -116,7 +116,7 @@ public final class CallServerInterceptor implements Interceptor {
         || "close".equalsIgnoreCase(response.header("Connection"))) {
       streamAllocation.noNewStreams();
     }
-
+    //只有两种选择，抛出异常或者返回结果，不会进行下一步的调用。
     if ((code == 204 || code == 205) && response.body().contentLength() > 0) {
       throw new ProtocolException(
           "HTTP " + code + " had non-zero Content-Length: " + response.body().contentLength());

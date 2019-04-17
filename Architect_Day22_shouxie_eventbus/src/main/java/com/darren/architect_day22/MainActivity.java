@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         Log.e("TAG","msg1 = "+msg);
         mTv.setText(msg);
     }
+    @Subscribe(threadMode = ThreadMode.MAIN,priority = 50,sticky = true)
+    public void pushUser(User user){
+    }
 
     /**
      * threadMode 执行的线程方式

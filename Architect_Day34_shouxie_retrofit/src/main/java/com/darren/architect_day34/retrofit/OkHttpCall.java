@@ -2,8 +2,6 @@ package com.darren.architect_day34.retrofit;
 
 import android.util.Log;
 
-import com.darren.architect_day34.Response;
-
 import java.io.IOException;
 
 
@@ -23,6 +21,7 @@ public class OkHttpCall<T> implements Call<T>{
     public void enqueue(final Callback<T> callback) {
         // 发起一个请求，给一个回调就完结了
         Log.e("TAG","正式发起请求");
+        //okhttp3.Call是通过   serviceMethod类创建出来的
         okhttp3.Call call = serviceMethod.createNewCall(args);
         call.enqueue(new okhttp3.Callback() {
             @Override

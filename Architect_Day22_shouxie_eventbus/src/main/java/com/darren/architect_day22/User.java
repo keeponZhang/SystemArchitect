@@ -9,4 +9,11 @@ package com.darren.architect_day22;
  * @更新时间 $$Date$$
  */
 public class User {
+	private  int age;
+	private String name;
+
+	public User(int age, String name) {
+		this.age = age;
+		this.name = name;
+	}
 }
