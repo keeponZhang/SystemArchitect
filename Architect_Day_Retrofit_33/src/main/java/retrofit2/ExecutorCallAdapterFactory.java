@@ -23,23 +23,28 @@ import okhttp3.Request;
 
 final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
   final Executor callbackExecutor;
-
+  //这里传入的Executor，就是前面我们构造的MainThreadExecutor，即把任务放到主线程中执行.
   ExecutorCallAdapterFactory(Executor callbackExecutor) {
     this.callbackExecutor = callbackExecutor;
   }
-
+  //只重写了get方法，没有重写另外两个方法.
   @Override
   public CallAdapter<Call<?>> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+    //1.先判断返回值是不是Call<T>
     if (getRawType(returnType) != Call.class) {
       return null;
     }
+    //获得Call<?>中类型，对于例子来说，就是ResponseBody.
     final Type responseType = Utils.getCallResponseType(returnType);
+    //get方法返回的是CallAdapter对象
     return new CallAdapter<Call<?>>() {
+  //就是Call<T>中T的类型.
       @Override public Type responseType() {
         return responseType;
       }
-
+      //call是OkHttpCall，进行了包装，并没有改变它的类型.（静态代理）
       @Override public <R> Call<R> adapt(Call<R> call) {
+
         return new ExecutorCallbackCall<>(callbackExecutor, call);
       }
     };
@@ -56,11 +61,13 @@ final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
     @Override public void enqueue(final Callback<T> callback) {
       if (callback == null) throw new NullPointerException("callback == null");
-
+      //在实际执行任务的Call完成之后，调用MainThreadExecutor，使得使用者收到的回调是运行在主线程当中的.
       delegate.enqueue(new Callback<T>() {
         @Override public void onResponse(Call<T> call, final Response<T> response) {
+          //把回调切换回主线程
           callbackExecutor.execute(new Runnable() {
             @Override public void run() {
+              //如果取消了，那么仍然算作失败.
               if (delegate.isCanceled()) {
                 // Emulate OkHttp's behavior of throwing/delivering an IOException on cancellation.
                 callback.onFailure(ExecutorCallbackCall.this, new IOException("Canceled"));

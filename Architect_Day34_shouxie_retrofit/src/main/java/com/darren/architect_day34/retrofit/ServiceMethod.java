@@ -34,6 +34,7 @@ public class ServiceMethod {
     public okhttp3.Call createNewCall(Object[] args) {
         //创建okhttp3.Call需要request,可以通过okhttp3的RequestBuilder
         // 还需要一个对象，专门用来添加参数的
+        //okhttp真正需要的request要在Service创建，因为设置参数
         RequestBuilder requestBuilder = new RequestBuilder(retrofit.baseUrl, relativeUrl, httpMethod, parameterHandlers, args);
         return retrofit.callFactory.newCall(requestBuilder.build());
     }

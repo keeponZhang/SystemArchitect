@@ -98,7 +98,7 @@ class Platform {
     @Override CallAdapter.Factory defaultCallAdapterFactory(Executor callbackExecutor) {
       return new ExecutorCallAdapterFactory(callbackExecutor);
     }
-
+    //它其实就是把Runnable中的任务放到主线程中去执行
     static class MainThreadExecutor implements Executor {
       private final Handler handler = new Handler(Looper.getMainLooper());
 

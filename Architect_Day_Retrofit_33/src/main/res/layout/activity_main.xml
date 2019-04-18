@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+              android:orientation="vertical"
     >
 
     <Button
@@ -13,6 +14,15 @@
         android:textSize="18sp"
         android:text="getData"
         android:onClick="getData"
+        android:textAllCaps="false"
+        />
+    <Button
+        android:padding="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="simpleExample"
+        android:onClick="simpleExample"
         android:textAllCaps="false"
         />
 

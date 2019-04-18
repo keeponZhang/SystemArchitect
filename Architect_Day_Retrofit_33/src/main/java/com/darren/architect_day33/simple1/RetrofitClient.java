@@ -2,6 +2,8 @@ package com.darren.architect_day33.simple1;
 
 import android.util.Log;
 
+import com.darren.architect_day33.simple1.api.ServiceApi;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;

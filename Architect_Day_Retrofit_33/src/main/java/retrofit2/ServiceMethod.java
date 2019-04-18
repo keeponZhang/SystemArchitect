@@ -114,6 +114,7 @@ final class ServiceMethod<T> {
 
   /** Builds a method return value from an HTTP response body. */
   T toResponse(ResponseBody body) throws IOException {
+//    这里的默认responseConverter就是我们之前通过BuildInConvert生成的Converter，回想一下，它什么也没有做，只是把ResponseBody原封不动地返回：
     return responseConverter.convert(body);
   }
 
@@ -128,7 +129,7 @@ final class ServiceMethod<T> {
     final Annotation[] methodAnnotations;
     final Annotation[][] parameterAnnotationsArray;
     final Type[] parameterTypes;
-
+    //java.util.List<com.darren.architect_day33.simple1.bean.Repo>
     Type responseType;
     boolean gotField;
     boolean gotPart;
@@ -149,23 +150,26 @@ final class ServiceMethod<T> {
     CallAdapter<?> callAdapter;
 
     public Builder(Retrofit retrofit, Method method) {
-      this.retrofit = retrofit;
-      this.method = method;
-      this.methodAnnotations = method.getAnnotations();
-      this.parameterTypes = method.getGenericParameterTypes();
-      this.parameterAnnotationsArray = method.getParameterAnnotations();
+      this.retrofit = retrofit;//就是前面构建的retrofit实例.
+      this.method = method;//方法，对应于listRepo
+      this.methodAnnotations = method.getAnnotations(); //方法的注解，对应于@GET("users/{user}/repos")
+      this.parameterTypes = method.getGenericParameterTypes();//方法的形参的类型，对应于String
+      this.parameterAnnotationsArray = method.getParameterAnnotations();//方法的形参前的注解，对应于@Path("user")
     }
 
     public ServiceMethod build() {
+      //1.初始化CallAdapter<T, R>，调用了retrofit.callAdapter.(默认ExecutorCallAdapterFactory的get方法得到一个CallAdapter)
       callAdapter = createCallAdapter();
+      //2.得到callAdapter的返回类型.（List<Repo>）
       responseType = callAdapter.responseType();
       if (responseType == Response.class || responseType == okhttp3.Response.class) {
         throw methodError("'"
             + Utils.getRawType(responseType).getName()
             + "' is not a valid response body type. Did you mean ResponseBody?");
       }
+      //3.初始化Converter<ResponseBody, T>，调用了retrofit.responseBodyConverter（默认是调用BuiltInConverters的responseBodyConverter）
       responseConverter = createResponseConverter();
-
+      //4.处理方法的注解,
       for (Annotation annotation : methodAnnotations) {
         parseMethodAnnotation(annotation);
       }
@@ -184,21 +188,24 @@ final class ServiceMethod<T> {
               + "request body (e.g., @POST).");
         }
       }
-
+      //5.处理形参的注解.
       int parameterCount = parameterAnnotationsArray.length;
       parameterHandlers = new ParameterHandler<?>[parameterCount];
       for (int p = 0; p < parameterCount; p++) {
+        //首先得到形参的类型.
         Type parameterType = parameterTypes[p];
         if (Utils.hasUnresolvableType(parameterType)) {
           throw parameterError(p, "Parameter type must not include a type variable or wildcard: %s",
               parameterType);
         }
-
+        //再得到形参的注解.
         Annotation[] parameterAnnotations = parameterAnnotationsArray[p];
         if (parameterAnnotations == null) {
           throw parameterError(p, "No Retrofit annotation found.");
         }
-
+        //(1)根据这两个值来初始化和该形参关联的ParameterHandler.
+        //(2)其内部会调用parseParameterAnnotation
+        //(3)而该方法最终会调用Retrofit.requestBodyConverter/stringConverter
         parameterHandlers[p] = parseParameter(p, parameterType, parameterAnnotations);
       }
 
@@ -219,6 +226,7 @@ final class ServiceMethod<T> {
     }
 
     private CallAdapter<?> createCallAdapter() {
+      //方法的返回值，也就是Call<ResponseBody>
       Type returnType = method.getGenericReturnType();
       if (Utils.hasUnresolvableType(returnType)) {
         throw methodError(
@@ -227,8 +235,10 @@ final class ServiceMethod<T> {
       if (returnType == void.class) {
         throw methodError("Service methods cannot return void.");
       }
+      //方法的注解，就是@GET(xxxx)
       Annotation[] annotations = method.getAnnotations();
       try {
+        //把返回类型和注解传给Retrofit.
         return retrofit.callAdapter(returnType, annotations);
       } catch (RuntimeException e) { // Wide exception range because factories are user code.
         throw methodError(e, "Unable to create call adapter for %s", returnType);
@@ -236,9 +246,11 @@ final class ServiceMethod<T> {
     }
 
     private void parseMethodAnnotation(Annotation annotation) {
+      //针对注解不同，有不同的处理方式.
       if (annotation instanceof DELETE) {
         parseHttpMethodAndPath("DELETE", ((DELETE) annotation).value(), false);
       } else if (annotation instanceof GET) {
+        //我们的例子调用了这个方法.
         parseHttpMethodAndPath("GET", ((GET) annotation).value(), false);
       } else if (annotation instanceof HEAD) {
         parseHttpMethodAndPath("HEAD", ((HEAD) annotation).value(), false);
@@ -280,8 +292,8 @@ final class ServiceMethod<T> {
         throw methodError("Only one HTTP method is allowed. Found: %s and %s.",
             this.httpMethod, httpMethod);
       }
-      this.httpMethod = httpMethod;
-      this.hasBody = hasBody;
+      this.httpMethod = httpMethod;////"GET"
+      this.hasBody = hasBody;//false
 
       if (value.isEmpty()) {
         return;
@@ -299,8 +311,8 @@ final class ServiceMethod<T> {
         }
       }
 
-      this.relativeUrl = value;
-      this.relativeUrlParamNames = parsePathParameters(value);
+      this.relativeUrl = value;// users/{user}/repos
+      this.relativeUrlParamNames = parsePathParameters(value);//// 大小为1，内容为user.
     }
 
     private Headers parseHeaders(String[] headers) {
@@ -329,14 +341,16 @@ final class ServiceMethod<T> {
     private ParameterHandler<?> parseParameter(
         int p, Type parameterType, Annotation[] annotations) {
       ParameterHandler<?> result = null;
+      //遍历该形参上的所有注解.
       for (Annotation annotation : annotations) {
+        //这里处理，所以应该是每个有注解的形参上的每个注解都会对应一个ParameterHandler.
         ParameterHandler<?> annotationAction = parseParameterAnnotation(
             p, parameterType, annotations, annotation);
 
         if (annotationAction == null) {
           continue;
         }
-
+        //每个形参上只允许有一个注解.
         if (result != null) {
           throw parameterError(p, "Multiple Retrofit annotations found, only one allowed.");
         }
@@ -701,6 +715,9 @@ final class ServiceMethod<T> {
     private Converter<ResponseBody, T> createResponseConverter() {
       Annotation[] annotations = method.getAnnotations();
       try {
+        //BuiltInConverters
+        //这里和第一步不同，不是传入接口方法的返回类型（Call(ResponseBody)），
+        // 而是传入第二步中通过CallAdapter＃responseType返回的类型，对于例子来说，就是ResponseBody.
         return retrofit.responseBodyConverter(responseType, annotations);
       } catch (RuntimeException e) { // Wide exception range because factories are user code.
         throw methodError(e, "Unable to create converter for %s", responseType);

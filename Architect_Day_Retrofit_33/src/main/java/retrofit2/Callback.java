@@ -28,6 +28,7 @@ package retrofit2;
  *
  * @param <T> Successful response body type.
  */
+//T表示的是最终返回结果的类型，即serviceapi中对应方法call后面的泛型参数，也就是List<Repo>
 public interface Callback<T> {
   /**
    * Invoked for a received HTTP response.
@@ -35,11 +36,13 @@ public interface Callback<T> {
    * Note: An HTTP response may still indicate an application-level failure such as a 404 or 500.
    * Call {@link Response#isSuccessful()} to determine if the response indicates success.
    */
+  //返回成功.
   void onResponse(Call<T> call, Response<T> response);
 
   /**
    * Invoked when a network exception occurred talking to the server or when an unexpected
    * exception occurred creating the request or processing the response.
    */
+  //返回失败.
   void onFailure(Call<T> call, Throwable t);
 }

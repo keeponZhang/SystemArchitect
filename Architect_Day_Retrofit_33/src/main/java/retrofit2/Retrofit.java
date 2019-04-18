@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -142,8 +143,19 @@ public final class Retrofit {
             if (platform.isDefaultMethod(method)) {
               return platform.invokeDefaultMethod(method, service, proxy, args);
             }
+            //1.得到ServiceMethod对象.
             ServiceMethod serviceMethod = loadServiceMethod(method);
+            //2.通过serviceMethod和args来构建OkHttpCall对象，args就是“octocat”.
+
+            //类的泛型是具体类型，才能拿到，所以okHttpCall2可以解析到List<Repo>，okHttpCall不行
+            //匿名内部类会创建子类，实例化该子类对象
+//            OkHttpCall okHttpCall2 = new AbstractOkHttpCall<List<Repo>>(serviceMethod, args){
+//
+//            };
+//            return serviceMethod.callAdapter.adapt(okHttpCall2);
+            //OkHttpCall<T>泛型参数是ServiceMethod的泛型参数决定的
             OkHttpCall okHttpCall = new OkHttpCall<>(serviceMethod, args);
+//            3.其实默认就是调用ExecutorCallAdapterFactory里面adapter的adpat方法，从而调用ExecutorCallbackCall.adapt方法.
             return serviceMethod.callAdapter.adapt(okHttpCall);
           }
         });
@@ -161,9 +173,12 @@ public final class Retrofit {
   ServiceMethod loadServiceMethod(Method method) {
     ServiceMethod result;
     synchronized (serviceMethodCache) {
+      //如果之前加载过，那么直接返回,
       result = serviceMethodCache.get(method);
       if (result == null) {
+        //创建新的.（ServiceMethod持有retrofit的引用，方便拿retrofit的成员变量）
         result = new ServiceMethod.Builder(this, method).build();
+        //加入缓存.
         serviceMethodCache.put(method, result);
       }
     }
@@ -211,8 +226,10 @@ public final class Retrofit {
       Annotation[] annotations) {
     checkNotNull(returnType, "returnType == null");
     checkNotNull(annotations, "annotations == null");
-
+    //遍历之前初始化时的adapterFactories.
     int start = adapterFactories.indexOf(skipPast) + 1;
+    //1.此时为null,所以start从0开始遍历所有配置的CallAdapterFactory
+    //2.然后调用它们的工厂方法，找到第一个满足returnType和annotation的CallAdapter返回.
     for (int i = start, count = adapterFactories.size(); i < count; i++) {
       CallAdapter<?> adapter = adapterFactories.get(i).get(returnType, annotations, this);
       if (adapter != null) {
@@ -384,12 +401,12 @@ public final class Retrofit {
    */
   public static final class Builder {
     private Platform platform;
-    private okhttp3.Call.Factory callFactory;
-    private HttpUrl baseUrl;
-    private List<Converter.Factory> converterFactories = new ArrayList<>();
-    private List<CallAdapter.Factory> adapterFactories = new ArrayList<>();
-    private Executor callbackExecutor;
-    private boolean validateEagerly;
+    private okhttp3.Call.Factory callFactory;//OkHttpClient.
+    private HttpUrl baseUrl;//baseUrl传入的值.
+    private List<Converter.Factory> converterFactories = new ArrayList<>();//列表中包括一个BuildInConverts.
+    private List<CallAdapter.Factory> adapterFactories = new ArrayList<>();//列表中包括一个ExecutorCallAdapterFactory.
+    private Executor callbackExecutor; //MainThreadExecutor.
+    private boolean validateEagerly; //没有传入，默认为false.
 
     Builder(Platform platform) {
       this.platform = platform;
@@ -430,6 +447,7 @@ public final class Retrofit {
      *
      * @see #baseUrl(HttpUrl)
      */
+//    就是把String转换成为HttpUrl
     public Builder baseUrl(String baseUrl) {
       checkNotNull(baseUrl, "baseUrl == null");
       HttpUrl httpUrl = HttpUrl.parse(baseUrl);
@@ -545,24 +563,28 @@ public final class Retrofit {
       if (baseUrl == null) {
         throw new IllegalStateException("Base URL required.");
       }
-
+      //2.默认采用OkHttpClient
       okhttp3.Call.Factory callFactory = this.callFactory;
       if (callFactory == null) {
         callFactory = new OkHttpClient();
       }
-
+      //3.根据平台选择相应的执行者。
       Executor callbackExecutor = this.callbackExecutor;
       if (callbackExecutor == null) {
+        //android MainThreadExecutor
         callbackExecutor = platform.defaultCallbackExecutor();
       }
 
       // Make a defensive copy of the adapters and add the default Call adapter.
+      //4.添加默认的CallAdapter.Factory，默认的Factory放在最后一个
       List<CallAdapter.Factory> adapterFactories = new ArrayList<>(this.adapterFactories);
+      //android平台为ExecutorCallAdapterFactory(传入callbackExecutor)
       adapterFactories.add(platform.defaultCallAdapterFactory(callbackExecutor));
 
       // Make a defensive copy of the converters.
+      //5.添加Converter.Factory，默认BuiltInConverters放在第一个.
       List<Converter.Factory> converterFactories = new ArrayList<>(this.converterFactories);
-
+      //6.返回，内部其实就是给各个变量赋值，并把第4，5参数生成的列表定义为不可更改的。
       return new Retrofit(callFactory, baseUrl, converterFactories, adapterFactories,
           callbackExecutor, validateEagerly);
     }

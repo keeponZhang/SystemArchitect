@@ -15,7 +15,12 @@
  */
 package retrofit2;
 
+import android.util.Log;
+
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
@@ -24,7 +29,7 @@ import okio.BufferedSource;
 import okio.ForwardingSource;
 import okio.Okio;
 
-final class OkHttpCall<T> implements Call<T> {
+ class OkHttpCall<T> implements Call<T> {
   private final ServiceMethod<T> serviceMethod;
   private final Object[] args;
 
@@ -42,7 +47,8 @@ final class OkHttpCall<T> implements Call<T> {
 
   @SuppressWarnings("CloneDoesntCallSuperClone") // We are a final type & this saves clearing state.
   @Override public OkHttpCall<T> clone() {
-    return new OkHttpCall<>(serviceMethod, args);
+    return  this;
+//    return new OkHttpCall<>(serviceMethod, args);
   }
 
   @Override public synchronized Request request() {
@@ -68,7 +74,9 @@ final class OkHttpCall<T> implements Call<T> {
     }
   }
 
+  //最终会走到这里，ExecutorCallbackCall只做代理
   @Override public void enqueue(final Callback<T> callback) {
+    getGenericInterface(this.getClass());
     if (callback == null) throw new NullPointerException("callback == null");
 
     okhttp3.Call call;
@@ -175,6 +183,7 @@ final class OkHttpCall<T> implements Call<T> {
   }
 
   private okhttp3.Call createRawCall() throws IOException {
+    //通过ServiceMethod来构造OkHttpClient的Request实例，并传入方法的实参.
     Request request = serviceMethod.toRequest(args);
     okhttp3.Call call = serviceMethod.callFactory.newCall(request);
     if (call == null) {
@@ -184,6 +193,7 @@ final class OkHttpCall<T> implements Call<T> {
   }
 
   Response<T> parseResponse(okhttp3.Response rawResponse) throws IOException {
+    //1.获得Body
     ResponseBody rawBody = rawResponse.body();
 
     // Remove the body's source (the only stateful object) so we can pass the response along.
@@ -208,6 +218,7 @@ final class OkHttpCall<T> implements Call<T> {
 
     ExceptionCatchingRequestBody catchingBody = new ExceptionCatchingRequestBody(rawBody);
     try {
+      //构建Body.
       T body = serviceMethod.toResponse(catchingBody);
       return Response.success(body, rawResponse);
     } catch (RuntimeException e) {
@@ -295,4 +306,33 @@ final class OkHttpCall<T> implements Call<T> {
       }
     }
   }
+
+
+  public void getGenericInterface(Class clazz) {
+    Type[] types = clazz.getGenericInterfaces();
+    for (Type type:types) {
+      //type:com.zhang.fanshe.interfaces.PointInterface<java.lang.String, java.lang.Double>
+      if (type instanceof ParameterizedType) {
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        //返回表示此类型实际类型参数的 Type 对象的数组
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        if(actualTypeArguments.length<=0){
+          return;
+        }
+        for (Type parameterArgType : actualTypeArguments) {
+          Class parameterArgClass = (Class) parameterArgType;
+          Log.e(TAG, "此接口的填充类型为：" + parameterArgClass.getName());
+        }
+
+        //返回 Type 对象，表示声明此类型的类或接口。
+        Type type1 = parameterizedType.getRawType();
+        Class class22 = (Class) type1;
+        Log.e(TAG,"声明此接口的类型为："+class22.getName());
+      }
+    }
+
+  }
+
+  private static final String TAG = "OkHttpCall";
+
 }

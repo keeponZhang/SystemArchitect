@@ -24,23 +24,30 @@ import retrofit2.http.Streaming;
 
 final class BuiltInConverters extends Converter.Factory {
   @Override
+  //responseBodyConverter方法所传入的type，其实是CallAdapter#responseType的类型，这也是它们相关联的地方。
   public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
       Retrofit retrofit) {
+    //如果Type是ResponseBody，那么当注解中包含了Streaming.class时，返回StreamingXXX，否则返回BufferingXXX
+    //这两个其实都是Converter<ResponseBody, ResponseBody>
+
     if (type == ResponseBody.class) {
       if (Utils.isAnnotationPresent(annotations, Streaming.class)) {
         return StreamingResponseBodyConverter.INSTANCE;
       }
       return BufferingResponseBodyConverter.INSTANCE;
     }
+    //如果Type为空，那么返回null。
     if (type == Void.class) {
       return VoidResponseBodyConverter.INSTANCE;
     }
+    //如果返回类型不是Call<ResponseBody>或者Call<Void>,这里会返回null
     return null;
   }
 
   @Override
   public Converter<?, RequestBody> requestBodyConverter(Type type,
       Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+    //如果是RequestBody，或者是它的父类或者接口，那么返回Convert<RequestBody, RequestBody>，否则返回null。
     if (RequestBody.class.isAssignableFrom(Utils.getRawType(type))) {
       return RequestBodyConverter.INSTANCE;
     }

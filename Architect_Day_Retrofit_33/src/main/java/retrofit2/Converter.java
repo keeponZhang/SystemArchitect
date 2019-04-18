@@ -37,9 +37,11 @@ import retrofit2.http.QueryMap;
  * into the {@link Retrofit} instance.
  */
 public interface Converter<F, T> {
+  //  //和它的类名类似，只有一个接口，就是进行一个类型的转换。
   T convert(F value) throws IOException;
 
   /** Creates {@link Converter} instances based on a type and target usage. */
+  // 内部工厂类，调用不同的工厂方法来生成Converter
   abstract class Factory {
     /**
      * Returns a {@link Converter} for converting an HTTP response body to {@code type}, or null if
@@ -47,6 +49,7 @@ public interface Converter<F, T> {
      * response types such as {@code SimpleResponse} from a {@code Call<SimpleResponse>}
      * declaration.
      */
+    //(1)将返回的ResponseBody转换成interface中Call<T>所指定的T.(因为Retrofit在处理返回的请求时，默认是把Response转换为ResponseBody)
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
         Retrofit retrofit) {
       return null;
@@ -58,6 +61,7 @@ public interface Converter<F, T> {
      * specified by {@link Body @Body}, {@link Part @Part}, and {@link PartMap @PartMap}
      * values.
      */
+    //(2)利用参数构建Request，它依赖于@Body/@Part/@PartMap.
     public Converter<?, RequestBody> requestBodyConverter(Type type,
         Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
       return null;
@@ -70,6 +74,7 @@ public interface Converter<F, T> {
      * {@link Header @Header}, {@link HeaderMap @HeaderMap}, {@link Path @Path},
      * {@link Query @Query}, and {@link QueryMap @QueryMap} values.
      */
+    //(3)利用参数构建String，它依赖于@Field/@FieldMap/@Header/@HeaderMap/@Path/@Query/@QueryMap.
     public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
         Retrofit retrofit) {
       return null;

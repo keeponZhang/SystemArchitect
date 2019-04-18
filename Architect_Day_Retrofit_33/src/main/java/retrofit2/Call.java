@@ -39,35 +39,42 @@ public interface Call<T> extends Cloneable {
    * @throws RuntimeException (and subclasses) if an unexpected error occurs creating the request
    * or decoding the response.
    */
+  //同步执行
   Response<T> execute() throws IOException;
 
   /**
    * Asynchronously send the request and notify {@code callback} of its response or if an error
    * occurred talking to the server, creating the request, or processing the response.
    */
+  //异步执行
   void enqueue(Callback<T> callback);
 
   /**
    * Returns true if this call has been either {@linkplain #execute() executed} or {@linkplain
    * #enqueue(Callback) enqueued}. It is an error to execute or enqueue a call more than once.
    */
+  //正在执行.
   boolean isExecuted();
 
   /**
    * Cancel this call. An attempt will be made to cancel in-flight calls, and if the call has not
    * yet been executed it never will be.
    */
+  //取消.
   void cancel();
 
   /** True if {@link #cancel()} was called. */
+  //已经取消.
   boolean isCanceled();
 
   /**
    * Create a new, identical call to this one which can be enqueued or executed even if this call
    * has already been.
    */
+  //参数并且目标服务器相同的请求，那么调用clone方法.
   Call<T> clone();
 
   /** The original HTTP request. */
+  //最初始的请求.
   Request request();
 }

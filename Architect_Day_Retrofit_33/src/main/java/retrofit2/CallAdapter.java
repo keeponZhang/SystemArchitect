@@ -33,6 +33,7 @@ public interface CallAdapter<T> {
    * Note: This is typically not the same type as the {@code returnType} provided to this call
    * adapter's factory.
    */
+  //(1)返回类型.responseType是用来辅助responseConvert的生成
   Type responseType();
 
   /**
@@ -52,17 +53,20 @@ public interface CallAdapter<T> {
    * }
    * </code></pre>
    */
+  //(2)将Call<R>转换为T.
   <R> T adapt(Call<R> call);
 
   /**
    * Creates {@link CallAdapter} instances based on the return type of {@linkplain
    * Retrofit#create(Class) the service interface} methods.
    */
+  //内部抽象工厂.
   abstract class Factory {
     /**
      * Returns a call adapter for interface methods that return {@code returnType}, or null if it
      * cannot be handled by this factory.
      */
+    //(1)工厂方法，工厂类需要实现该方法来返回对应的CallAdapter.
     public abstract CallAdapter<?> get(Type returnType, Annotation[] annotations,
         Retrofit retrofit);
 

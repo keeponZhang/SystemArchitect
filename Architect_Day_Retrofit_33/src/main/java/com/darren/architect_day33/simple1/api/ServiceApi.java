@@ -1,7 +1,8 @@
-package com.darren.architect_day33.simple1;
+package com.darren.architect_day33.simple1.api;
 
 
 
+import com.darren.architect_day33.simple1.UserInfo;
 import com.darren.architect_day33.simple1.bean.Result;
 
 import retrofit2.Call;
