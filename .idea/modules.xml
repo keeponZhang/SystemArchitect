@@ -5,7 +5,10 @@
       <module fileurl="file://$PROJECT_DIR$/Architect_Day22_shouxie_eventbus/Architect_Day22_shouxie_eventbus.iml" filepath="$PROJECT_DIR$/Architect_Day22_shouxie_eventbus/Architect_Day22_shouxie_eventbus.iml" />
       <module fileurl="file://$PROJECT_DIR$/Architect_Day31_shouxie_rxjava/Architect_Day31_shouxie_rxjava.iml" filepath="$PROJECT_DIR$/Architect_Day31_shouxie_rxjava/Architect_Day31_shouxie_rxjava.iml" />
       <module fileurl="file://$PROJECT_DIR$/Architect_Day_Retrofit_33/Architect_Day_Retrofit_33.iml" filepath="$PROJECT_DIR$/Architect_Day_Retrofit_33/Architect_Day_Retrofit_33.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OkHttp_Source/OkHttp_Source.iml" filepath="$PROJECT_DIR$/OkHttp_Source/OkHttp_Source.iml" />
       <module fileurl="file://$PROJECT_DIR$/SystemArchitect.iml" filepath="$PROJECT_DIR$/SystemArchitect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/glide/glide.iml" filepath="$PROJECT_DIR$/glide/glide.iml" />
     </modules>
   </component>
 </project>
