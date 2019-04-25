@@ -13,6 +13,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 public class ImageViewTargetFactory {
 
     @SuppressWarnings("unchecked")
+//    buildTarget()方法中会根据传入的class参数来构建不同的Target对象
     public <Z> Target<Z> buildTarget(ImageView view, Class<Z> clazz) {
         if (GlideDrawable.class.isAssignableFrom(clazz)) {
             return (Target<Z>) new GlideDrawableImageViewTarget(view);

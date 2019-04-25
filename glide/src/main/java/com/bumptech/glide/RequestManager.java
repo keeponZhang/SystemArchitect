@@ -281,6 +281,7 @@ public class RequestManager implements LifecycleListener {
      * @param string A file path, or a uri or url handled by {@link com.bumptech.glide.load.model.UriLoader}.
      */
     public DrawableTypeRequest<String> load(String string) {
+        //DrawableTypeRequest调用的是父类DrawableRequestBuilder的load方法
         return (DrawableTypeRequest<String>) fromString().load(string);
     }
 
@@ -622,6 +623,8 @@ public class RequestManager implements LifecycleListener {
     }
 
     private <T> DrawableTypeRequest<T> loadGeneric(Class<T> modelClass) {
+        //获得ModelLoader对象
+//        由于我们刚才传入的参数是String.class，因此最终得到的是StreamStringLoader对象
         ModelLoader<T, InputStream> streamModelLoader = Glide.buildStreamModelLoader(modelClass, context);
         ModelLoader<T, ParcelFileDescriptor> fileDescriptorModelLoader =
                 Glide.buildFileDescriptorModelLoader(modelClass, context);
@@ -630,7 +633,7 @@ public class RequestManager implements LifecycleListener {
                     + " which there is a registered ModelLoader, if you are using a custom model, you must first call"
                     + " Glide#register with a ModelLoaderFactory for your custom model class");
         }
-
+        //new了一个DrawableTypeRequest对象
         return optionsApplier.apply(
                 new DrawableTypeRequest<T>(modelClass, streamModelLoader, fileDescriptorModelLoader, context,
                         glide, requestTracker, lifecycle, optionsApplier));

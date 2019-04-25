@@ -294,6 +294,7 @@ public class Glide {
     }
 
     <R> Target<R> buildImageViewTarget(ImageView imageView, Class<R> transcodedClass) {
+//        调用了ImageViewTargetFactory的buildTarget()方法
         return imageViewTargetFactory.buildTarget(imageView, transcodedClass);
     }
 
@@ -649,7 +650,9 @@ public class Glide {
      * @return A RequestManager for the given FragmentActivity that can be used to start a load.
      */
     public static RequestManager with(FragmentActivity activity) {
+//        先调用RequestManagerRetriever的静态get()方法得到一个RequestManagerRetriever对象
         RequestManagerRetriever retriever = RequestManagerRetriever.get();
+//        获取一个RequestManager对象
         return retriever.get(activity);
     }
 

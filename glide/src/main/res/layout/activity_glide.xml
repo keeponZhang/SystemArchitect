@@ -8,7 +8,14 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical"
-		>
+		><Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="testLruCache"
+		android:padding="15dp"
+		android:text="testLruCache"
+		android:textAllCaps="false"
+		/>
 
 		<RelativeLayout
 			android:layout_width="match_parent"
@@ -110,14 +117,14 @@
 			<RelativeLayout
 				android:background="@color/colorPrimary"
 				android:layout_alignParentRight="true"
-				android:layout_width="400dp"
-				android:layout_height="400dp">
+				android:layout_width="200dp"
+				android:layout_height="200dp">
 			<ImageView
 				android:layout_centerInParent="true"
 				android:background="@color/colorAccent"
 				android:id="@+id/iv2"
-				android:layout_width="400dp"
-				android:layout_height="400dp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:layout_centerHorizontal="true"
 				android:layout_centerVertical="true"
 				/>

@@ -44,6 +44,8 @@ public class HttpUrlFetcher implements DataFetcher<InputStream> {
         return loadDataWithRedirects(glideUrl.toURL(), 0 /*redirects*/, null /*lastUrl*/, glideUrl.getHeaders());
     }
 
+    //终于在这里找到网络通讯的代码了
+    //loadData()方法只是返回了一个InputStream
     private InputStream loadDataWithRedirects(URL url, int redirects, URL lastUrl, Map<String, String> headers)
             throws IOException {
         if (redirects >= MAXIMUM_REDIRECTS) {

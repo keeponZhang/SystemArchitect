@@ -104,6 +104,8 @@ public abstract class Downsampler implements BitmapDecoder<InputStream> {
     @SuppressWarnings("resource")
     // see BitmapDecoder.decode
     @Override
+    //对服务器返回的InputStream的读取，以及对图片的加载全都在这里了
+    //返回的是一个Bitmap对象
     public Bitmap decode(InputStream is, BitmapPool pool, int outWidth, int outHeight, DecodeFormat decodeFormat) {
         final ByteArrayPool byteArrayPool = ByteArrayPool.get();
         final byte[] bytesForOptions = byteArrayPool.getBytes();

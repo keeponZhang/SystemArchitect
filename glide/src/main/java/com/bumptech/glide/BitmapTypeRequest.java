@@ -20,6 +20,7 @@ import java.io.InputStream;
  *
  * @param <ModelType> The type of model to load the {@link Bitmap} or transcoded class from.
  */
+
 public class BitmapTypeRequest<ModelType> extends BitmapRequestBuilder<ModelType, Bitmap> {
     private final ModelLoader<ModelType, InputStream> streamModelLoader;
     private final ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader;

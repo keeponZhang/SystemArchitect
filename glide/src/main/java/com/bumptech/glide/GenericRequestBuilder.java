@@ -100,6 +100,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
         this.glide = glide;
         this.requestTracker = requestTracker;
         this.lifecycle = lifecycle;
+        //DrawableTypeRequest的buildProvider创建出来的
         this.loadProvider = loadProvider != null
                 ? new ChildLoadProvider<ModelType, DataType, ResourceType, TranscodeType>(loadProvider) : null;
 
@@ -638,6 +639,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
      * @param target The target to load the resource into.
      * @return The given target.
      */
+    //又将这个参数传入到了GenericRequestBuilder另一个接收Target对象的into()方法当中了
     public <Y extends Target<TranscodeType>> Y into(Y target) {
         Util.assertMainThread();
         if (target == null) {
@@ -654,10 +656,11 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             requestTracker.removeRequest(previous);
             previous.recycle();
         }
-
+//        调用buildRequest()方法构建出了一个Request对象(Request是用来发出加载图片请求的，它是Glide中非常关键的一个组件。)
         Request request = buildRequest(target);
         target.setRequest(request);
         lifecycle.addListener(target);
+        //RequestTracker执行这个Request
         requestTracker.runRequest(request);
 
         return target;
@@ -694,6 +697,9 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             }
         }
 
+        //先是调用了glide.buildImageViewTarget()方法，这个方法会构建出一个Target对象，Target对象则是用来最终展示图片用的
+        //如果你在使用Glide加载图片的时候调用了asBitmap()方法，那么这里就会构建出BitmapImageViewTarget对象，否则的话构建的都是GlideDrawableImageViewTarget对象
+        //class com.bumptech.glide.load.resource.drawable.GlideDrawable
         return into(glide.buildImageViewTarget(view, transcodeClass));
     }
 
@@ -829,12 +835,14 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             return coordinator;
         } else {
             // Base case: no thumbnail.
+            //调用了obtainRequest()方法来获取一个Request对象
             return obtainRequest(target, sizeMultiplier, priority, parentCoordinator);
         }
     }
 
     private Request obtainRequest(Target<TranscodeType> target, float sizeMultiplier, Priority priority,
             RequestCoordinator requestCoordinator) {
+        //又去调用了GenericRequest的obtain()方法
         return GenericRequest.obtain(
                 loadProvider,
                 model,

@@ -33,9 +33,12 @@ public class ImageVideoBitmapDecoder implements ResourceDecoder<ImageVideoWrappe
     @Override
     public Resource<Bitmap> decode(ImageVideoWrapper source, int width, int height) throws IOException {
         Resource<Bitmap> result = null;
+        //先调用了source.getStream()来获取到服务器返回的InputStream
         InputStream is = source.getStream();
         if (is != null) {
             try {
+                //调用streamDecoder.decode()方法进行解码
+                //streamDecoder:StreamBitmapDecoder ,返回 Resource<Bitmap>对象
                 result = streamDecoder.decode(is, width, height);
             } catch (IOException e) {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -50,6 +53,7 @@ public class ImageVideoBitmapDecoder implements ResourceDecoder<ImageVideoWrappe
                 result = fileDescriptorDecoder.decode(fileDescriptor, width, height);
             }
         }
+//        会将值返回到GifBitmapWrapperResourceDecoder的decodeBitmapWrapper()方法当中
         return result;
     }
 

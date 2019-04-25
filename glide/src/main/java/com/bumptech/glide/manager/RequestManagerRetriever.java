@@ -59,6 +59,7 @@ public class RequestManagerRetriever implements Handler.Callback {
 
     // Visible for testing.
     RequestManagerRetriever() {
+        //handler有callback 会优先在handler的handleMessage(msg)前调用mCallback.handleMessage(msg)
         handler = new Handler(Looper.getMainLooper(), this /* Callback */);
     }
 
@@ -179,6 +180,7 @@ public class RequestManagerRetriever implements Handler.Callback {
 
 
             FRAGMENT_TAG);
+        //向当前的Activity当中添加一个隐藏的Fragment,用于监听activity的生命周期
         if (current == null) {
             current = pendingSupportRequestManagerFragments.get(fm);
             if (current == null) {

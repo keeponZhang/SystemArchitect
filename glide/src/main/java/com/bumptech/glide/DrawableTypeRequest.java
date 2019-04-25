@@ -27,6 +27,7 @@ import java.io.InputStream;
  * @param <ModelType> The type of model to use to load the {@link android.graphics.drawable.BitmapDrawable} or
  * {@link com.bumptech.glide.load.resource.gif.GifDrawable}.
  */
+//最主要的就是它提供了asBitmap()和asGif()这两个方法
 public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<ModelType> implements DownloadOptions {
     private final ModelLoader<ModelType, InputStream> streamModelLoader;
     private final ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader;
@@ -40,20 +41,27 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
         if (streamModelLoader == null && fileDescriptorModelLoader == null) {
             return null;
         }
-
+//	    调用了glide.buildTranscoder()方法来构建一个ResourceTranscoder，它是用于对图片进行转码的
+	    //由于ResourceTranscoder是一个接口，这里实际会构建出一个GifBitmapWrapperDrawableTranscoder对象。
         if (transcoder == null) {
             transcoder = glide.buildTranscoder(resourceClass, transcodedClass);
         }
+        //调用了glide.buildDataProvider()方法来构建一个DataLoadProvider，它是用于对图片进行编解码的，
+	    //由于DataLoadProvider是一个接口，这里实际会构建出一个ImageVideoGifDrawableLoadProvider对象
         DataLoadProvider<ImageVideoWrapper, Z> dataLoadProvider = glide.buildDataProvider(ImageVideoWrapper.class,
                 resourceClass);
+        //new了一个ImageVideoModelLoader的实例，并把之前loadGeneric()方法中构建的两个ModelLoader封装到了ImageVideoModelLoader当中。
         ImageVideoModelLoader<A> modelLoader = new ImageVideoModelLoader<A>(streamModelLoader,
                 fileDescriptorModelLoader);
+
+        //new出一个FixedLoadProvider，并把刚才构建的出来的GifBitmapWrapperDrawableTranscoder、ImageVideoModelLoader、ImageVideoGifDrawableLoadProvider都封装进去，这个也就是onSizeReady()方法中的loadProvider了。
         return new FixedLoadProvider<A, ImageVideoWrapper, Z, R>(modelLoader, transcoder, dataLoadProvider);
     }
-
+	//该构造函数很重要
     DrawableTypeRequest(Class<ModelType> modelClass, ModelLoader<ModelType, InputStream> streamModelLoader,
             ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader, Context context, Glide glide,
             RequestTracker requestTracker, Lifecycle lifecycle, RequestManager.OptionsApplier optionsApplier) {
+    	//调用了一个buildProvider()方法
         super(context, modelClass,
                 buildProvider(glide, streamModelLoader, fileDescriptorModelLoader, GifBitmapWrapper.class,
                         GlideDrawable.class, null),
@@ -69,6 +77,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
      * @return A new request builder for loading a {@link android.graphics.Bitmap}
      */
     public BitmapTypeRequest<ModelType> asBitmap() {
+//        创建了一个BitmapTypeRequest
         return optionsApplier.apply(new BitmapTypeRequest<ModelType>(this, streamModelLoader,
                 fileDescriptorModelLoader, optionsApplier));
     }
@@ -86,6 +95,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
      * @return A new request builder for loading a {@link com.bumptech.glide.load.resource.gif.GifDrawable}.
      */
     public GifTypeRequest<ModelType> asGif() {
+//        创建了GifTypeRequest
         return optionsApplier.apply(new GifTypeRequest<ModelType>(this, streamModelLoader, optionsApplier));
     }
 

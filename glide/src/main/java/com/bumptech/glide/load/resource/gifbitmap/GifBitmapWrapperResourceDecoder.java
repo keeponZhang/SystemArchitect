@@ -58,6 +58,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
 
         GifBitmapWrapper wrapper = null;
         try {
+            //调了另一个重载方法
             wrapper = decode(source, width, height, tempBytes);
         } finally {
             pool.releaseBytes(tempBytes);
@@ -66,8 +67,10 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
     }
 
     private GifBitmapWrapper decode(ImageVideoWrapper source, int width, int height, byte[] bytes) throws IOException {
+
         final GifBitmapWrapper result;
         if (source.getStream() != null) {
+            //调用了decodeStream()方法，准备从服务器返回的流当中读取数据。
             result = decodeStream(source, width, height, bytes);
         } else {
             result = decodeBitmapWrapper(source, width, height);
@@ -83,6 +86,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
         bis.reset();
 
         GifBitmapWrapper result = null;
+        //如果是GIF图就调用decodeGifWrapper()方法来进行解码
         if (type == ImageHeaderParser.ImageType.GIF) {
             result = decodeGifWrapper(bis, width, height);
         }
@@ -91,6 +95,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
             // We can only reset the buffered InputStream, so to start from the beginning of the stream, we need to
             // pass in a new source containing the buffered stream rather than the original stream.
             ImageVideoWrapper forBitmapDecoder = new ImageVideoWrapper(bis, source.getFileDescriptor());
+            //如果是普通的静图就用调用decodeBitmapWrapper()方法来进行解码
             result = decodeBitmapWrapper(forBitmapDecoder, width, height);
         }
         return result;
@@ -117,8 +122,12 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
 
     private GifBitmapWrapper decodeBitmapWrapper(ImageVideoWrapper toDecode, int width, int height) throws IOException {
         GifBitmapWrapper result = null;
-
+//        bitmapDecoder: ImageVideoBitmapDecoder
         Resource<Bitmap> bitmapResource = bitmapDecoder.decode(toDecode, width, height);
+        //又将Resource<Bitmap>封装到了一个GifBitmapWrapper对象当中。这个GifBitmapWrapper顾名思义，就是既能封装GIF，又能封装Bitmap，
+        // 从而保证了不管是什么类型的图片Glide都能从容应对。
+        //然后这个GifBitmapWrapper对象会一直向上返回，返回到GifBitmapWrapperResourceDecoder最外层的decode()方法的时候，
+        // 会对它再做一次封装成GifBitmapWrapperResource（66行）
         if (bitmapResource != null) {
             result = new GifBitmapWrapper(bitmapResource, null);
         }

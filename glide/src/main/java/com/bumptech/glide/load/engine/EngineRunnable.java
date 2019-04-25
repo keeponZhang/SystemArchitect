@@ -55,6 +55,7 @@ class EngineRunnable implements Runnable, Prioritized {
         Exception exception = null;
         Resource<?> resource = null;
         try {
+//            调用了一个decode()方法，并且这个方法返回了一个Resource对象
             resource = decode();
         } catch (Exception e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -95,9 +96,11 @@ class EngineRunnable implements Runnable, Prioritized {
     }
 
     private Resource<?> decode() throws Exception {
+        //从缓存当中去decode图片的话就会执行decodeFromCache()
         if (isDecodingFromCache()) {
             return decodeFromCache();
         } else {
+            //否则的话就执行decodeFromSource()
             return decodeFromSource();
         }
     }
@@ -119,6 +122,7 @@ class EngineRunnable implements Runnable, Prioritized {
     }
 
     private Resource<?> decodeFromSource() throws Exception {
+        //调用了DecodeJob的decodeFromSource()方法
         return decodeJob.decodeFromSource();
     }
 

@@ -33,9 +33,11 @@ public class RequestTracker {
      */
     public void runRequest(Request request) {
         requests.add(request);
+//        先判断Glide当前是不是处理暂停状态，如果不是暂停状态就调用Request的begin()方法来执行Request
         if (!isPaused) {
             request.begin();
         } else {
+//            否则的话就先将Request添加到待执行队列里面，等暂停状态解除了之后再执行
             pendingRequests.add(request);
         }
     }

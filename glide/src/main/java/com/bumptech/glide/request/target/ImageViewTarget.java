@@ -56,6 +56,7 @@ public abstract class ImageViewTarget<Z> extends ViewTarget<ImageView, Z> implem
      */
     @Override
     public void onLoadFailed(Exception e, Drawable errorDrawable) {
+        //将这张error占位图显示到ImageView上
         view.setImageDrawable(errorDrawable);
     }
 

@@ -36,6 +36,9 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
     public DataFetcher<ImageVideoWrapper> getResourceFetcher(A model, int width, int height) {
         DataFetcher<InputStream> streamFetcher = null;
         if (streamLoader != null) {
+            //streamLoader.getResourceFetcher()方法获取一个DataFetcher
+            //streamLoader:StreamStringLoader
+            //streamFetcher:HttpUrlFetcher
             streamFetcher = streamLoader.getResourceFetcher(model, width, height);
         }
         DataFetcher<ParcelFileDescriptor> fileDescriptorFetcher = null;
@@ -51,9 +54,11 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
     }
 
     static class ImageVideoFetcher implements DataFetcher<ImageVideoWrapper> {
+        //streamFetcher:HttpUrlFetcher
         private final DataFetcher<InputStream> streamFetcher;
         private final DataFetcher<ParcelFileDescriptor> fileDescriptorFetcher;
 
+        //streamFetcher:HttpUrlFetcher
         public ImageVideoFetcher(DataFetcher<InputStream> streamFetcher,
                 DataFetcher<ParcelFileDescriptor> fileDescriptorFetcher) {
             this.streamFetcher = streamFetcher;
@@ -67,6 +72,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
             InputStream is = null;
             if (streamFetcher != null) {
                 try {
+                    //又去调用了HttpUrlFetcher.loadData()方法
                     is = streamFetcher.loadData(priority);
                 } catch (Exception e) {
                     if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -90,6 +96,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
                     }
                 }
             }
+//            创建了一个ImageVideoWrapper对象
             return new ImageVideoWrapper(is, fileDescriptor);
         }
 

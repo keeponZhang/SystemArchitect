@@ -118,7 +118,7 @@ public class GlideActivity extends AppCompatActivity {
 	public void loadOverride(View view) {
 		Glide.with(this)
 				.load("http://ep.dzb.ciwong.com/rep/image/3173.jpg")
-			.override(600, 600)
+			.override(200, 200)
 				.into(mImageView2);
 		Log.e(TAG, "loadOverride: "+mImageView2.getMeasuredHeight()+ " :" +mImageView2.getMeasuredHeight() );
 	}
@@ -137,11 +137,14 @@ public class GlideActivity extends AppCompatActivity {
 	public void loadOverrideFitCenter(View view) {
 		Glide.with(this)
 				.load("http://ep.dzb.ciwong.com/rep/image/3173.jpg")
-				.override(600, 600)
+				.override(200, 200)
 				.fitCenter()
 				.into(mImageView2);
 		Log.e(TAG, "loadOverrideFitCenter: "+mImageView2.getMeasuredHeight()+ " :" +mImageView2.getMeasuredHeight() );
 
 	}
 
+	public void testLruCache(View view) {
+		LruCacheSamples.startRun();
+	}
 }

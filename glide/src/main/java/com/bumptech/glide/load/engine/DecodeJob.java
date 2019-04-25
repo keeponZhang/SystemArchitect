@@ -34,9 +34,12 @@ class DecodeJob<A, T, Z> {
     private final EngineKey resultKey;
     private final int width;
     private final int height;
+  //fetcher:ImageVideoFetcher
     private final DataFetcher<A> fetcher;
+//    loadProvider:FixedLoadProvider
     private final DataLoadProvider<A, T> loadProvider;
     private final Transformation<T> transformation;
+   //transcoder:GifBitmapWrapperDrawableTranscoder
     private final ResourceTranscoder<T, Z> transcoder;
     private final DiskCacheProvider diskCacheProvider;
     private final DiskCacheStrategy diskCacheStrategy;
@@ -51,7 +54,8 @@ class DecodeJob<A, T, Z> {
         this(resultKey, width, height, fetcher, loadProvider, transformation, transcoder, diskCacheProvider,
                 diskCacheStrategy, priority, DEFAULT_FILE_OPENER);
     }
-
+    //fetcher:ImageVideoFetcher  loadProvider:FixedLoadProvider
+    //transcoder:GifBitmapWrapperDrawableTranscoder
     // Visible for testing.
     DecodeJob(EngineKey resultKey, int width, int height, DataFetcher<A> fetcher,
             DataLoadProvider<A, T> loadProvider, Transformation<T> transformation, ResourceTranscoder<T, Z> transcoder,
@@ -125,7 +129,9 @@ class DecodeJob<A, T, Z> {
      * @throws Exception
      */
     public Resource<Z> decodeFromSource() throws Exception {
+//        调用decodeSource()方法来获得一个Resource对象
         Resource<T> decoded = decodeSource();
+        //调用transformEncodeAndTranscode()方法来处理这个Resource对象
         return transformEncodeAndTranscode(decoded);
     }
 
@@ -167,6 +173,8 @@ class DecodeJob<A, T, Z> {
         Resource<T> decoded = null;
         try {
             long startTime = LogTime.getLogTime();
+//            调用ImageVideoFetcher的loadData()方法
+            //得到了一个ImageVideoWrapper对象
             final A data = fetcher.loadData(priority);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 logWithTimeAndKey("Fetched data", startTime);
@@ -187,6 +195,9 @@ class DecodeJob<A, T, Z> {
             decoded = cacheAndDecodeSourceData(data);
         } else {
             long startTime = LogTime.getLogTime();
+            //loadProvider:FixedLoadProvider
+            // loadProvider.getSourceDecoder():GifBitmapWrapperResourceDecoder
+            //data:ImageVideoWrapper
             decoded = loadProvider.getSourceDecoder().decode(data, width, height);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 logWithTimeAndKey("Decoded from source", startTime);

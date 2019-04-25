@@ -31,6 +31,7 @@ import java.util.Queue;
  * @param <Z> The type of the resource that will be loaded.
  * @param <R> The type of the resource that will be transcoded from the loaded resource.
  */
+//load()方法中调用的所有API，其实都是在这里组装到Request对象当中的
 public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallback,
         ResourceCallback {
     private static final String TAG = "GenericRequest";
@@ -116,6 +117,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         @SuppressWarnings("unchecked")
         GenericRequest<A, T, Z, R> request = (GenericRequest<A, T, Z, R>) REQUEST_POOL.poll();
         if (request == null) {
+            //new了一个GenericRequest对象
             request = new GenericRequest<A, T, Z, R>();
         }
         request.init(loadProvider,
@@ -260,15 +262,18 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
     @Override
     public void begin() {
         startTime = LogTime.getLogTime();
+        //首先如果model等于null，model也就是我们在第二步load()方法中传入的图片URL地址
         if (model == null) {
             onException(null);
             return;
         }
 
         status = Status.WAITING_FOR_SIZE;
+        //使用了override() API为图片指定了一个固定的宽高,调用onSizeReady()方法
         if (Util.isValidDimensions(overrideWidth, overrideHeight)) {
             onSizeReady(overrideWidth, overrideHeight);
         } else {
+            //否则调用target.getSize()方法，最终也会调到onSizeReady
             target.getSize(this);
         }
 
@@ -388,7 +393,8 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
       }
       return fallbackDrawable;
     }
-
+//    这个方法中会先去获取一个error的占位图，如果获取不到的话会再去获取一个loading占位图，
+// 然后调用target.onLoadFailed()方法并将占位图传入
     private void setErrorPlaceholder(Exception e) {
         if (!canNotifyStatusChanged()) {
             return;
@@ -434,18 +440,24 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         width = Math.round(sizeMultiplier * width);
         height = Math.round(sizeMultiplier * height);
 
+        //loadProvider:FixedLoadProvider
+        //modelLoader:ImageVideoModelLoader
         ModelLoader<A, T> modelLoader = loadProvider.getModelLoader();
+        //dataFetcher:ImageVideoFetcher
         final DataFetcher<T> dataFetcher = modelLoader.getResourceFetcher(model, width, height);
 
         if (dataFetcher == null) {
             onException(new Exception("Failed to load model: \'" + model + "\'"));
             return;
         }
+        //transcoder:GifBitmapWrapperDrawableTranscoder
         ResourceTranscoder<Z, R> transcoder = loadProvider.getTranscoder();
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logV("finished setup for calling load in " + LogTime.getElapsedMillis(startTime));
         }
         loadedFromMemoryCache = true;
+
+        //
         loadStatus = engine.load(signature, width, height, dataFetcher, loadProvider, transformation, transcoder,
                 priority, isMemoryCacheable, diskCacheStrategy, this);
         loadedFromMemoryCache = resource != null;
