@@ -16,6 +16,7 @@ import java.io.InputStream;
  * An {@link com.bumptech.glide.load.model.ModelLoader} for translating {@link com.bumptech.glide.load.model.GlideUrl}
  * (http/https URLS) into {@link InputStream} data.
  */
+//外层的HttpUrlGlideUrlLoader类实现了ModelLoader<GlideUrl, InputStream>这个接口，并重写了getResourceFetcher()方法
 public class HttpUrlGlideUrlLoader implements ModelLoader<GlideUrl, InputStream> {
 
     private final ModelCache<GlideUrl, GlideUrl> modelCache;
@@ -44,7 +45,7 @@ public class HttpUrlGlideUrlLoader implements ModelLoader<GlideUrl, InputStream>
     public HttpUrlGlideUrlLoader(ModelCache<GlideUrl, GlideUrl> modelCache) {
         this.modelCache = modelCache;
     }
-
+//   getResourceFetcher 又创建了一个HttpUrlFetcher的实例，在这里才是真正处理具体网络通讯逻辑的地方
     @Override
     public DataFetcher<InputStream> getResourceFetcher(GlideUrl model, int width, int height) {
         // GlideUrls memoize parsed URLs so caching them saves a few object instantiations and time spent parsing urls.

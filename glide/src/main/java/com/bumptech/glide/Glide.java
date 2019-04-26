@@ -146,13 +146,17 @@ public class Glide {
             synchronized (Glide.class) {
                 if (glide == null) {
                     Context applicationContext = context.getApplicationContext();
+                    //调用ManifestParser的parse()方法去解析AndroidManifest.xml文件中的配置，实际上就是将AndroidManifest中所有值为GlideModule的meta-data配置读取出来，并将相应的自定义模块实例化
                     List<GlideModule> modules = new ManifestParser(applicationContext).parse();
 
                     GlideBuilder builder = new GlideBuilder(applicationContext);
+                    //通过一个循环调用了每一个GlideModule的applyOptions()方法
                     for (GlideModule module : modules) {
                         module.applyOptions(applicationContext, builder);
                     }
+//                    调用GlideBuilder的createGlide()方法来创建的
                     glide = builder.createGlide();
+                    //接下来又通过一个循环调用了每一个GlideModule的registerComponents()方法，在这里我们可以加入替换Glide的组件的逻辑
                     for (GlideModule module : modules) {
                         module.registerComponents(applicationContext, glide);
                     }
@@ -243,6 +247,9 @@ public class Glide {
         register(Uri.class, ParcelFileDescriptor.class, new FileDescriptorUriLoader.Factory());
         register(Uri.class, InputStream.class, new StreamUriLoader.Factory());
         register(URL.class, InputStream.class, new StreamUrlLoader.Factory());
+        //register()方法中传入的参数表示Glide支持使用哪种参数类型来加载图片，以及如何去处理这种类型的图片加载
+        //这句代码就表示，我们可以使用Glide.with(context).load(new GlideUrl("url...")).into(imageView)的方式来加载图片，
+        // 而HttpUrlGlideUrlLoader.Factory则是要负责处理具体的网络通讯逻辑
         register(GlideUrl.class, InputStream.class, new HttpUrlGlideUrlLoader.Factory());
         register(byte[].class, InputStream.class, new StreamByteArrayLoader.Factory());
 
@@ -564,6 +571,7 @@ public class Glide {
      *
      * @see #buildModelLoader(Class, Class, Context)
      */
+    //来获取一个ModelLoader对象
     public static <T> ModelLoader<T, InputStream> buildStreamModelLoader(Class<T> modelClass, Context context) {
         return buildModelLoader(modelClass, InputStream.class, context);
     }

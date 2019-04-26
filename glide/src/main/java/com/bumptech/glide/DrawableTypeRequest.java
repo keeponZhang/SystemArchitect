@@ -110,6 +110,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
      * {@inheritDoc}
      */
     public FutureTarget<File> downloadOnly(int width, int height) {
+        //这里会先调用getDownloadOnlyRequest()方法得到一个GenericTranscodeRequest对象，然后再调用它的downloadOnly()方法
         return getDownloadOnlyRequest().downloadOnly(width, height);
     }
 

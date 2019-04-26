@@ -63,6 +63,8 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
         } finally {
             pool.releaseBytes(tempBytes);
         }
+        //又将GifBitmapWrapper封装到了一个GifBitmapWrapperResource对象当中，最终返回的是一个Resource<GifBitmapWrapper>对象
+        //回到DecodeJob当中decodeFromSourceData
         return wrapper != null ? new GifBitmapWrapperResource(wrapper) : null;
     }
 

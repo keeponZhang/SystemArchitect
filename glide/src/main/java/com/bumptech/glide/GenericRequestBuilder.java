@@ -656,7 +656,9 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             requestTracker.removeRequest(previous);
             previous.recycle();
         }
-//        调用buildRequest()方法构建出了一个Request对象(Request是用来发出加载图片请求的，它是Glide中非常关键的一个组件。)
+//        调用buildRequest()方法构建出了一个Request对象(Request是用来发出加载图片请求的，
+        // 它是Glide中非常关键的一个组件。)
+        //之后就会把这里构建出来的Target对象传入到GenericRequest当中
         Request request = buildRequest(target);
         target.setRequest(request);
         lifecycle.addListener(target);
@@ -681,8 +683,10 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             throw new IllegalArgumentException("You must pass in a non null View");
         }
 
+        //如果前面已经做了变化centerCrop或者fitCenter，isTransformationSet为true，不走下面
         if (!isTransformationSet && view.getScaleType() != null) {
             switch (view.getScaleType()) {
+//                applyCenterCrop()和applyFitCenter()方法其实就是向Glide的加载流程中添加了一个图片变换操作
                 case CENTER_CROP:
                     applyCenterCrop();
                     break;
@@ -698,7 +702,8 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
         }
 
         //先是调用了glide.buildImageViewTarget()方法，这个方法会构建出一个Target对象，Target对象则是用来最终展示图片用的
-        //如果你在使用Glide加载图片的时候调用了asBitmap()方法，那么这里就会构建出BitmapImageViewTarget对象，否则的话构建的都是GlideDrawableImageViewTarget对象
+        //如果你在使用Glide加载图片的时候调用了asBitmap()方法，那么这里就会构建出BitmapImageViewTarget对象，
+        // 否则的话构建的都是GlideDrawableImageViewTarget对象
         //class com.bumptech.glide.load.resource.drawable.GlideDrawable
         return into(glide.buildImageViewTarget(view, transcodeClass));
     }
@@ -717,6 +722,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
      *         resource in a blocking manner.
      */
     public FutureTarget<TranscodeType> into(int width, int height) {
+        //可以看到，这里首先是new出了一个RequestFutureTarget对象，RequestFutureTarget也是Target的子类之一
         final RequestFutureTarget<ModelType, TranscodeType> target =
                 new RequestFutureTarget<ModelType, TranscodeType>(glide.getMainHandler(), width, height);
 
@@ -843,6 +849,8 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
     private Request obtainRequest(Target<TranscodeType> target, float sizeMultiplier, Priority priority,
             RequestCoordinator requestCoordinator) {
         //又去调用了GenericRequest的obtain()方法
+//        构建GenericRequest的时候requestListener这个变量也会被一起传进去
+        //transformation 也传进去，是做变换用的，如果调用了centerCrop，就是CenterCrop
         return GenericRequest.obtain(
                 loadProvider,
                 model,

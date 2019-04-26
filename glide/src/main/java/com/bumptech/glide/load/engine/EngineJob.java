@@ -144,14 +144,19 @@ class EngineJob implements EngineRunnable.EngineRunnableManager {
         } else if (cbs.isEmpty()) {
             throw new IllegalStateException("Received a resource without any callbacks to notify");
         }
+//        构建出了一个包含图片资源的EngineResource对象
         engineResource = engineResourceFactory.build(resource, isCacheable);
         hasResource = true;
 
         // Hold on to resource for duration of request so we don't recycle it in the middle of notifying if it
         // synchronously released by one of the callbacks.
+        //EngineResource是用一个acquired变量用来记录图片被引用的次数，调用acquire()方法会让变量加1，调用release()方法会让变量减1
         engineResource.acquire();
+//        将这个对象回调到Engine的onEngineJobComplete()方法当中
         listener.onEngineJobComplete(key, engineResource);
-
+//        调用了所有ResourceCallback的onResourceReady()方法
+        //就是在这里调用的EngineJob的addCallback()方法来注册的一个ResourceCallback
+        //GenericRequest本身就实现了ResourceCallback的接口，因此EngineJob的回调最终其实就是回调到了GenericRequest的onResourceReady()方法当中了
         for (ResourceCallback cb : cbs) {
             if (!isInIgnoredCallbacks(cb)) {
                 engineResource.acquire();
@@ -159,6 +164,7 @@ class EngineJob implements EngineRunnable.EngineRunnableManager {
             }
         }
         // Our request is complete, so we can release the resource.
+        //acquired等于0才会释放
         engineResource.release();
     }
 
@@ -199,6 +205,7 @@ class EngineJob implements EngineRunnable.EngineRunnableManager {
             if (MSG_COMPLETE == message.what || MSG_EXCEPTION == message.what) {
                 EngineJob job = (EngineJob) message.obj;
                 if (MSG_COMPLETE == message.what) {
+//                    调用了handleResultOnMainThread()方法
                     job.handleResultOnMainThread();
                 } else {
                     job.handleExceptionOnMainThread();

@@ -164,8 +164,10 @@ public class GlideBuilder {
         this.engine = engine;
         return this;
     }
-
+//这个方法中会创建BitmapPool、MemoryCache、DiskCache、DecodeFormat等对象的实例，并在最后一行创建一个Glide对象的实例
     Glide createGlide() {
+        //创建任何对象的时候都做了一个空检查，只有在对象为空的时候才会去创建它的实例。也就是说，如果我们可以在applyOptions()方法中提前就给这些对象初始化并赋值，那么在createGlide()方法中就不会再去重新创建它们的实例了，
+        // 从而也就实现了更改Glide配置的功能。
         if (sourceService == null) {
             final int cores = Math.max(1, Runtime.getRuntime().availableProcessors());
             sourceService = new FifoPriorityThreadPoolExecutor(cores);
@@ -185,9 +187,11 @@ public class GlideBuilder {
         }
 
         if (memoryCache == null) {
+            //创建好了LruResourceCache对象只能说是把准备工作做好了
             memoryCache = new LruResourceCache(calculator.getMemoryCacheSize());
         }
 
+//        用于配置Glide的硬盘缓存策略，默认配置是InternalCacheDiskCacheFactory。
         if (diskCacheFactory == null) {
             diskCacheFactory = new InternalCacheDiskCacheFactory(context);
         }

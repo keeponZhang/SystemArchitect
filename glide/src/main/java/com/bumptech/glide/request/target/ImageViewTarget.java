@@ -74,6 +74,7 @@ public abstract class ImageViewTarget<Z> extends ViewTarget<ImageView, Z> implem
     @Override
     public void onResourceReady(Z resource, GlideAnimation<? super Z> glideAnimation) {
         if (glideAnimation == null || !glideAnimation.animate(resource, this)) {
+//            看一下GlideDrawableImageViewTarget的setResource()
             setResource(resource);
         }
     }

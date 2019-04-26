@@ -146,12 +146,17 @@ public class Engine implements EngineJobListener,
             Priority priority, boolean isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb) {
         Util.assertMainThread();
         long startTime = LogTime.getLogTime();
-
+//        fetcher.getId()方法获得了一个id字符串，这个字符串也就是我们要加载的图片的唯一标识，比如说如果是一张网络上的图片的话，那么这个id就是这张图片的url地址
         final String id = fetcher.getId();
+        //Glide的缓存Key生成规则非常繁琐，决定缓存Key的参数竟然有10个之多。
+        //即使你用override()方法改变了一下图片的width或者height，也会生成一个完全不同的缓存Key
         EngineKey key = keyFactory.buildKey(id, signature, width, height, loadProvider.getCacheDecoder(),
                 loadProvider.getSourceDecoder(), transformation, loadProvider.getEncoder(),
                 transcoder, loadProvider.getSourceEncoder());
-
+//        调用了loadFromCache()方法来获取缓存图片，
+        // 如果获取到就直接调用cb.onResourceReady()方法进行回调
+        //skipMemoryCache() isMemoryCacheable=false
+        //缓存存入在EngineJob 的handleResultOnMainThread
         EngineResource<?> cached = loadFromCache(key, isMemoryCacheable);
         if (cached != null) {
             cb.onResourceReady(cached);
@@ -160,7 +165,7 @@ public class Engine implements EngineJobListener,
             }
             return null;
         }
-
+        //内存缓存的另一个方法，弱引用
         EngineResource<?> active = loadFromActiveResources(key, isMemoryCacheable);
         if (active != null) {
             cb.onResourceReady(active);
@@ -181,11 +186,13 @@ public class Engine implements EngineJobListener,
 //        构建了一个EngineJob，它的主要作用就是用来开启线程的,engineJob里面有线程池
         EngineJob engineJob = engineJobFactory.build(key, isMemoryCacheable);
         //DecodeJob对象，从名字上来看，它好像是用来对图片进行解码的
+        //  transformation做变换用的，如CenterCrop
         DecodeJob<T, Z, R> decodeJob = new DecodeJob<T, Z, R>(key, width, height, fetcher, loadProvider, transformation,
                 transcoder, diskCacheProvider, diskCacheStrategy, priority);
 //        创建了一个EngineRunnable对象
         EngineRunnable runnable = new EngineRunnable(engineJob, decodeJob, priority);
         jobs.put(key, engineJob);
+        //cb:GenericRequest
         engineJob.addCallback(cb);
         engineJob.start(runnable);
 
@@ -226,6 +233,8 @@ public class Engine implements EngineJobListener,
         EngineResource<?> cached = getEngineResourceFromCache(key);
         if (cached != null) {
             cached.acquire();
+            //将这个缓存图片存储到activeResources当中
+//            使用activeResources来缓存正在使用中的图片，可以保护这些图片不会被LruCache算法回收掉
             activeResources.put(key, new ResourceWeakReference(key, cached, getReferenceQueue()));
         }
         return cached;
@@ -233,6 +242,8 @@ public class Engine implements EngineJobListener,
 
     @SuppressWarnings("unchecked")
     private EngineResource<?> getEngineResourceFromCache(Key key) {
+        //cache:构建Glide对象时创建的LruResourceCache
+        //从LruResourceCache中获取到缓存图片之后会将它从缓存中移除
         Resource<?> cached = cache.remove(key);
 
         final EngineResource result;
@@ -265,6 +276,7 @@ public class Engine implements EngineJobListener,
             resource.setResourceListener(key, this);
 
             if (resource.isCacheable()) {
+//                回调过来的EngineResource被put到了activeResources当中，也就是在这里写入的缓存。
                 activeResources.put(key, new ResourceWeakReference(key, resource, getReferenceQueue()));
             }
         }
@@ -290,6 +302,8 @@ public class Engine implements EngineJobListener,
     @Override
     public void onResourceReleased(Key cacheKey, EngineResource resource) {
         Util.assertMainThread();
+        //这样也就实现了正在使用中的图片使用弱引用来进行缓存，不在使用中的图片使用LruCache来进行缓存的功能
+        //磁盘缓存：EngineRunnable的run()方法，run()方法中又会调用一个decode()方法
         activeResources.remove(cacheKey);
         if (resource.isCacheable()) {
             cache.put(cacheKey, resource);

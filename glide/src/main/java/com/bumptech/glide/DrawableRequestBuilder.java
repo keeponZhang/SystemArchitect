@@ -177,6 +177,8 @@ public class DrawableRequestBuilder<ModelType>
      */
     @SuppressWarnings("unchecked")
     public DrawableRequestBuilder<ModelType> centerCrop() {
+        //glide实例化会创建一个CenterCrop，glide.getDrawableCenterCrop()返回的就是该CenterCrop
+        //接着会赋值给GenericRequestBuilder的transformation
         return transform(glide.getDrawableCenterCrop());
     }
 

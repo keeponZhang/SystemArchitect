@@ -1,70 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
+<LinearLayout
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	>
 
-	<LinearLayout
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadTransform"
+		android:padding="15dp"
+		android:text="loadTransform"
+		android:textAllCaps="false"
+		/>
 
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="vertical"
-		>
-
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:onClick="loadTransform"
-			android:padding="15dp"
-			android:text="loadTransform"
-			android:textAllCaps="false"
-			/>
-
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-
-			<Button
-				android:id="@+id/bt1"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:onClick="loadSimpleTarget2"
-				android:padding="15dp"
-				android:text="loadSimpleTarget2"
-				android:textAllCaps="false"
-				/>
-
-			<ImageView
-				android:id="@+id/iv"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentRight="true"
-				android:layout_marginLeft="30dp"
-				android:layout_toRightOf="@id/bt1"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadMyGlideUrl"
+		android:padding="15dp"
+		android:text="loadMyGlideUrl"
+		android:textAllCaps="false"
+		/>
 
 
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/bt1"
-				android:onClick="loadViewTarget"
-				android:padding="15dp"
-				android:text="loadViewTarget"
-				android:textAllCaps="false"
-				/>
-		</RelativeLayout>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadTransform2"
+		android:padding="15dp"
+		android:text="loadTransform2"
+		android:textAllCaps="false"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadCenterCropTransform"
+		android:padding="15dp"
+		android:text="loadCenterCropTransform"
+		android:textAllCaps="false"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadCenterCropTransform2"
+		android:padding="15dp"
+		android:text="loadCenterCropTransform2"
+		android:textAllCaps="false"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadFitCenterTransform"
+		android:padding="15dp"
+		android:text="loadFitCenterTransform"
+		android:textAllCaps="false"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadCircleTransform"
+		android:padding="15dp"
+		android:text="loadCircleTransform"
+		android:textAllCaps="false"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="loadGlideTransforms"
+		android:padding="15dp"
+		android:text="loadGlideTransforms"
+		android:textAllCaps="false"/>
+	<ImageView
+		android:id="@+id/iv"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		/>
 
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-
-			<LinearLayout
-				android:layout_width="300dp"
-				android:layout_height="wrap_content"
-				android:orientation="vertical">
-			</LinearLayout>
-
-		</RelativeLayout>
-
-
-	</LinearLayout>
+</LinearLayout>
 </ScrollView>

@@ -65,6 +65,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
     private int placeholderResourceId;
     private int errorResourceId;
     private Context context;
+    //做变换用的，如CenterCrop
     private Transformation<Z> transformation;
     private LoadProvider<A, T, Z, R> loadProvider;
     private RequestCoordinator requestCoordinator;
@@ -487,15 +488,18 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
     /**
      * A callback method that should never be invoked directly.
      */
+    //Glide在图片加载完成之后又会回调GenericRequest的onResourceReady()方法
     @SuppressWarnings("unchecked")
     @Override
     public void onResourceReady(Resource<?> resource) {
+        //Resource<GlideBitmapDrawable>
         if (resource == null) {
             onException(new Exception("Expected to receive a Resource<R> with an object of " + transcodeClass
                     + " inside, but instead got null."));
             return;
         }
 
+        //received:GlideBitmapDrawable
         Object received = resource.get();
         if (received == null || !transcodeClass.isAssignableFrom(received.getClass())) {
             releaseResource(resource);
@@ -515,7 +519,6 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
             status = Status.COMPLETE;
             return;
         }
-
         onResourceReady(resource, (R) received);
     }
 
@@ -530,10 +533,14 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         boolean isFirstResource = isFirstReadyResource();
         status = Status.COMPLETE;
         this.resource = resource;
-
+//        先回调requestListener的onResourceReady()方法，只有当这个onResourceReady()方法返回false的时候，才会继续调用Target的onResourceReady()方法
         if (requestListener == null || !requestListener.onResourceReady(result, model, target, loadedFromMemoryCache,
                 isFirstResource)) {
             GlideAnimation<R> animation = animationFactory.build(loadedFromMemoryCache, isFirstResource);
+            //这个Target就是一个GlideDrawableImageViewTarget对象
+//            调用了target.onResourceReady()方法
+            //如果你在使用Glide加载图片的时候调用了asBitmap()方法，那么这里就会构建出BitmapImageViewTarget对象，
+            // 否则的话构建的都是GlideDrawableImageViewTarget对象
             target.onResourceReady(result, animation);
         }
 
@@ -556,6 +563,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
 
         status = Status.FAILED;
         //TODO: what if this is a thumbnail request?
+//        会在第9行回调requestListener的onException()方法，只有在onException()方法返回false的情况下才会继续调用setErrorPlaceholder()方法
         if (requestListener == null || !requestListener.onException(e, model, target, isFirstReadyResource())) {
             setErrorPlaceholder(e);
         }

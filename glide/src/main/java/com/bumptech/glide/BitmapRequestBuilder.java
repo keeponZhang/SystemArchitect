@@ -275,6 +275,7 @@ public class BitmapRequestBuilder<ModelType, TranscodeType>
      * @return This request builder.
      */
     public BitmapRequestBuilder<ModelType, TranscodeType> centerCrop() {
+        //glide实例化时会初始化一个CenterCrop
         return transform(glide.getBitmapCenterCrop());
     }
 

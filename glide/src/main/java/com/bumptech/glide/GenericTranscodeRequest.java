@@ -93,6 +93,7 @@ public class GenericTranscodeRequest<ModelType, DataType, ResourceType>
      * {@inheritDoc}
      */
     public FutureTarget<File> downloadOnly(int width, int height) {
+//        这里又是调用了一个getDownloadOnlyRequest()方法来构建了一个图片下载的请求，getDownloadOnlyRequest()方法会返回一个GenericRequestBuilder对象
         return getDownloadOnlyRequest().into(width, height);
     }
 

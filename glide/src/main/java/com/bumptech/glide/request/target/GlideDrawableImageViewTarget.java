@@ -47,6 +47,8 @@ public class GlideDrawableImageViewTarget extends ImageViewTarget<GlideDrawable>
      * @param resource {@inheritDoc}
      * @param animation {@inheritDoc}
      */
+//    这里在onResourceReady()方法中处理了图片展示，还有GIF播放的逻辑，
+    // 那么一张图片也就显示出来了，这也就是Glide回调的基本实现原理
     @Override
     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
         if (!resource.isAnimated()) {
@@ -63,9 +65,12 @@ public class GlideDrawableImageViewTarget extends ImageViewTarget<GlideDrawable>
                 resource = new SquaringDrawable(resource, view.getWidth());
             }
         }
+        //将GlideDrawable显示到ImageView上的逻辑
         super.onResourceReady(resource, animation);
         this.resource = resource;
         resource.setLoopCount(maxLoopCount);
+        //如果是GIF图片的话，就调用resource.start()方法开始播放图片
+        //图片的话，GlideBitmapDrawable start方法是空的，默认不处理
         resource.start();
     }
 

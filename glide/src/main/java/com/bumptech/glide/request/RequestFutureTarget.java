@@ -97,6 +97,7 @@ public class RequestFutureTarget<T, R> implements FutureTarget<R>, Runnable {
     @Override
     public R get() throws InterruptedException, ExecutionException {
         try {
+            //doGet()方法才是真正处理具体逻辑的地方
             return doGet(null);
         } catch (TimeoutException e) {
             throw new AssertionError(e);
@@ -159,24 +160,34 @@ public class RequestFutureTarget<T, R> implements FutureTarget<R>, Runnable {
     @Override
     public synchronized void onResourceReady(R resource, GlideAnimation<? super R> glideAnimation) {
         // We might get a null result.
+//        第一行把resultReceived赋值成true，说明图片文件已经下载好了，这样下次再调用get()方法时就不会再阻塞线程
         resultReceived = true;
+//        第二行把下载好的图片文件赋值到一个全局的resource变量上面，这样doGet()方法就也可以访问到它。
         this.resource = resource;
+//        第三行notifyAll一下，通知所有wait的线程取消阻塞，这个时候图片文件已经下载好了，因此doGet()方法也就可以返回结果了。
         waiter.notifyAll(this);
     }
 
     private synchronized R doGet(Long timeoutMillis) throws ExecutionException, InterruptedException, TimeoutException {
+        //判断当前是否是在子线程当中，如果不是的话会直接抛出一个异常
         if (assertBackgroundThread) {
             Util.assertBackgroundThread();
         }
 
+        //然后下面会判断下载是否已取消、或者已失败，如果是已取消或者已失败的话都会直接抛出一个异常
         if (isCancelled) {
             throw new CancellationException();
         } else if (exceptionReceived) {
             throw new ExecutionException(exception);
         } else if (resultReceived) {
+            //resultReceived这个变量来判断下载是否已完成，如果这个变量为true的话，就直接把结果进行返回
             return resource;
         }
-
+//        接下来就进入到一个wait()当中，把当前线程给阻塞住，从而阻止代码继续往下执行。
+//        这也是为什么downloadOnly(int width, int height)方法要求必须在子线程当中使用，
+//        因为它会对当前线程进行阻塞，如果在主线程当中使用的话，那么就会让主线程卡死，
+//        从而用户无法进行任何其他操作
+//        那么现在线程被阻塞住了，什么时候才能恢复呢？答案在onResourceReady()方法中。
         if (timeoutMillis == null) {
             waiter.waitForTimeout(this, 0);
         } else if (timeoutMillis > 0) {

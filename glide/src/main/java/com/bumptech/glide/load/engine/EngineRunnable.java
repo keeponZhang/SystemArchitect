@@ -56,6 +56,7 @@ class EngineRunnable implements Runnable, Prioritized {
         Resource<?> resource = null;
         try {
 //            调用了一个decode()方法，并且这个方法返回了一个Resource对象
+            //resource:Resource<GlideDrawable>对象
             resource = decode();
         } catch (Exception e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -83,6 +84,7 @@ class EngineRunnable implements Runnable, Prioritized {
     }
 
     private void onLoadComplete(Resource resource) {
+        //这个manager就是EngineJob对象，因此这里实际上调用的是EngineJob的onResourceReady()方法
         manager.onResourceReady(resource);
     }
 
@@ -98,9 +100,12 @@ class EngineRunnable implements Runnable, Prioritized {
     private Resource<?> decode() throws Exception {
         //从缓存当中去decode图片的话就会执行decodeFromCache()
         if (isDecodingFromCache()) {
+            //调用decodeFromCache()方法从硬盘缓存当中读取图片
             return decodeFromCache();
         } else {
             //否则的话就执行decodeFromSource()
+            //再回到run()方法当中
+          //在没有缓存的情况下，会调用decodeFromSource()方法来读取原始图片
             return decodeFromSource();
         }
     }
@@ -108,6 +113,8 @@ class EngineRunnable implements Runnable, Prioritized {
     private Resource<?> decodeFromCache() throws Exception {
         Resource<?> result = null;
         try {
+            //先去调用DecodeJob的decodeResultFromCache()方法来获取缓存
+            //如果是decodeResultFromCache()方法就直接将数据解码并返回
             result = decodeJob.decodeResultFromCache();
         } catch (Exception e) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -116,6 +123,9 @@ class EngineRunnable implements Runnable, Prioritized {
         }
 
         if (result == null) {
+            //如果获取不到，会再调用decodeSourceFromCache()方法获取缓存
+            //这两个方法的区别其实就是DiskCacheStrategy.RESULT和DiskCacheStrategy.SOURCE这两个参数的区别
+            ////        如果是decodeSourceFromCache()方法，还要调用一下transformEncodeAndTranscode()方法先将数据转换一下再解码并返回
             result = decodeJob.decodeSourceFromCache();
         }
         return result;
@@ -123,6 +133,7 @@ class EngineRunnable implements Runnable, Prioritized {
 
     private Resource<?> decodeFromSource() throws Exception {
         //调用了DecodeJob的decodeFromSource()方法
+        //再回到decode()方法
         return decodeJob.decodeFromSource();
     }
 

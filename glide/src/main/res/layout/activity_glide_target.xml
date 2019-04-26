@@ -39,23 +39,55 @@
 				android:layout_marginLeft="30dp"
 				android:layout_toRightOf="@id/bt1"/>
 
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentBottom="true"
-				android:onClick="loadByteArray"
-				android:padding="15dp"
-				android:text="loadByteArray"
-				android:textAllCaps="false"
-				/>
+
 
 			<Button
+				android:id="@+id/bt2"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/bt1"
 				android:onClick="loadViewTarget"
 				android:padding="15dp"
 				android:text="loadViewTarget"
+				android:textAllCaps="false"
+				/>
+			<Button
+				android:id="@+id/bt3"
+				android:layout_below="@id/bt2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="preload"
+				android:padding="15dp"
+				android:text="preload"
+				android:textAllCaps="false"
+				/>
+			<Button
+				android:id="@+id/bt4"
+				android:layout_below="@id/bt3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="downloadOnly"
+				android:padding="15dp"
+				android:text="downloadOnly"
+				android:textAllCaps="false"
+				/>
+			<Button
+				android:id="@+id/bt5"
+				android:layout_below="@id/bt4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="loadDownloadOnly"
+				android:padding="15dp"
+				android:text="loadDownloadOnly"
+				android:textAllCaps="false"
+				/>
+			<Button
+				android:layout_below="@id/bt5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="loadDownloadOnly2"
+				android:padding="15dp"
+				android:text="loadDownloadOnly2"
 				android:textAllCaps="false"
 				/>
 		</RelativeLayout>
@@ -68,6 +100,14 @@
 				android:layout_width="300dp"
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
+				<Button
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:onClick="loadListener"
+					android:padding="15dp"
+					android:text="loadListener"
+					android:textAllCaps="false"
+					/>
 			</LinearLayout>
 			<com.keepon.target.CustomView
 				android:gravity="right"

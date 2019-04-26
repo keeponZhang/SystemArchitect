@@ -66,7 +66,8 @@ class DecodeJob<A, T, Z> {
         this.height = height;
         this.fetcher = fetcher;
         this.loadProvider = loadProvider;
-        this.transformation = transformation;
+	    //transformation做变换用的，如CenterCrop
+	    this.transformation = transformation;
         this.transcoder = transcoder;
         this.diskCacheProvider = diskCacheProvider;
         this.diskCacheStrategy = diskCacheStrategy;
@@ -86,6 +87,7 @@ class DecodeJob<A, T, Z> {
         }
 
         long startTime = LogTime.getLogTime();
+//        调用了loadFromCache()方法从缓存当中读取数据
         Resource<T> transformed = loadFromCache(resultKey);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Decoded transformed from cache", startTime);
@@ -110,10 +112,12 @@ class DecodeJob<A, T, Z> {
         }
 
         long startTime = LogTime.getLogTime();
+        //如果我们是缓存的原始图片，其实并不需要这么多的参数，因为不用对图片做任何的变化
         Resource<T> decoded = loadFromCache(resultKey.getOriginalKey());
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Decoded source from cache", startTime);
         }
+//        如果是decodeSourceFromCache()方法，还要调用一下transformEncodeAndTranscode()方法先将数据转换一下再解码并返回
         return transformEncodeAndTranscode(decoded);
     }
 
@@ -130,8 +134,13 @@ class DecodeJob<A, T, Z> {
      */
     public Resource<Z> decodeFromSource() throws Exception {
 //        调用decodeSource()方法来获得一个Resource对象
+        //decodeSource()顾名思义是用来解析原图片的
         Resource<T> decoded = decodeSource();
         //调用transformEncodeAndTranscode()方法来处理这个Resource对象
+        //而transformEncodeAndTranscode()则是用来对图片进行转换和转码的
+        //就把Resource<T>对象转换成Resource<Z>对象了
+        //当然也就是Resource<GlideDrawable>对象
+        //继续向上返回会回到EngineRunnable的decodeFromSource()方法
         return transformEncodeAndTranscode(decoded);
     }
 
@@ -142,6 +151,7 @@ class DecodeJob<A, T, Z> {
 
     private Resource<Z> transformEncodeAndTranscode(Resource<T> decoded) {
         long startTime = LogTime.getLogTime();
+        //原图一般的话要进行缩放，在该方法处理
         Resource<T> transformed = transform(decoded);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Transformed resource from source", startTime);
@@ -150,6 +160,7 @@ class DecodeJob<A, T, Z> {
         writeTransformedToCache(transformed);
 
         startTime = LogTime.getLogTime();
+//        又是调用了transcode()方法
         Resource<Z> result = transcode(transformed);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Transcoded transformed from source", startTime);
@@ -162,6 +173,7 @@ class DecodeJob<A, T, Z> {
             return;
         }
         long startTime = LogTime.getLogTime();
+        //调用的同样是DiskLruCache实例的put()方法，不过这里用的缓存Key是resultKey。
         SourceWriter<Resource<T>> writer = new SourceWriter<Resource<T>>(loadProvider.getEncoder(), transformed);
         diskCacheProvider.getDiskCache().put(resultKey, writer);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -192,6 +204,7 @@ class DecodeJob<A, T, Z> {
     private Resource<T> decodeFromSourceData(A data) throws IOException {
         final Resource<T> decoded;
         if (diskCacheStrategy.cacheSource()) {
+            //先判断是否允许缓存原始图片，如果允许的话又会调用cacheAndDecodeSourceData()方法
             decoded = cacheAndDecodeSourceData(data);
         } else {
             long startTime = LogTime.getLogTime();
@@ -209,6 +222,9 @@ class DecodeJob<A, T, Z> {
     private Resource<T> cacheAndDecodeSourceData(A data) throws IOException {
         long startTime = LogTime.getLogTime();
         SourceWriter<A> writer = new SourceWriter<A>(loadProvider.getSourceEncoder(), data);
+        //同样调用了getDiskCache()方法来获取DiskLruCache实例
+//        接着调用它的put()方法就可以写入硬盘缓存了(原始图片)
+        //转换过后的图片缓存是在transformEncodeAndTranscode方法
         diskCacheProvider.getDiskCache().put(resultKey.getOriginalKey(), writer);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Wrote source to cache", startTime);
@@ -223,6 +239,7 @@ class DecodeJob<A, T, Z> {
     }
 
     private Resource<T> loadFromCache(Key key) throws IOException {
+        //调用getDiskCache()方法获取到的就是Glide自己编写的DiskLruCache工具类的实例，然后调用它的get()方法并把缓存Key传入，就能得到硬盘缓存的文件了
         File cacheFile = diskCacheProvider.getDiskCache().get(key);
         if (cacheFile == null) {
             return null;
@@ -230,6 +247,7 @@ class DecodeJob<A, T, Z> {
 
         Resource<T> result = null;
         try {
+            //如果文件不为空则将它解码成Resource对象后返回即可。
             result = loadProvider.getCacheDecoder().decode(cacheFile, width, height);
         } finally {
             if (result == null) {
@@ -243,7 +261,7 @@ class DecodeJob<A, T, Z> {
         if (decoded == null) {
             return null;
         }
-
+		//transformation 做变换用的，如CenterCrop
         Resource<T> transformed = transformation.transform(decoded, width, height);
         if (!decoded.equals(transformed)) {
             decoded.recycle();
@@ -255,6 +273,8 @@ class DecodeJob<A, T, Z> {
         if (transformed == null) {
             return null;
         }
+        //        又是调用了transcoder的transcode()方法
+//        transcoder:GifBitmapWrapperDrawableTranscoder
         return transcoder.transcode(transformed);
     }
 

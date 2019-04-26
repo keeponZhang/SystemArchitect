@@ -45,6 +45,7 @@ class EngineKey implements Key {
 
     public Key getOriginalKey() {
         if (originalKey == null) {
+            //而signature参数绝大多数情况下都是用不到的，因此基本上可以说就是由id（也就是图片url）来决定的Original缓存Key
             originalKey = new OriginalKey(id, signature);
         }
         return originalKey;

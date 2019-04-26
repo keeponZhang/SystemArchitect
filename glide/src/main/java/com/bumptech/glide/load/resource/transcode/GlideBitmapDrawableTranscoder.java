@@ -29,7 +29,10 @@ public class GlideBitmapDrawableTranscoder implements ResourceTranscoder<Bitmap,
 
     @Override
     public Resource<GlideBitmapDrawable> transcode(Resource<Bitmap> toTranscode) {
+//        这里new出了一个GlideBitmapDrawable对象，并把Bitmap封装到里面。然后对GlideBitmapDrawable再进行一次封装，
+        // 返回一个Resource<GlideBitmapDrawable>对象
         GlideBitmapDrawable drawable = new GlideBitmapDrawable(resources, toTranscode.get());
+        //再返回到GifBitmapWrapperDrawableTranscoder的transcode()方法中
         return new GlideBitmapDrawableResource(drawable, bitmapPool);
     }
 
