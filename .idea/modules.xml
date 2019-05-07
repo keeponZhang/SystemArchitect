@@ -8,9 +8,11 @@
       <module fileurl="file://$PROJECT_DIR$/OkHttp_Source/OkHttp_Source.iml" filepath="$PROJECT_DIR$/OkHttp_Source/OkHttp_Source.iml" />
       <module fileurl="file://$PROJECT_DIR$/SystemArchitect.iml" filepath="$PROJECT_DIR$/SystemArchitect.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/copymoudlue/copymoudlue.iml" filepath="$PROJECT_DIR$/copymoudlue/copymoudlue.iml" />
       <module fileurl="file://$PROJECT_DIR$/eventbusdemo/eventbusdemo.iml" filepath="$PROJECT_DIR$/eventbusdemo/eventbusdemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/eventbussource/eventbussource.iml" filepath="$PROJECT_DIR$/eventbussource/eventbussource.iml" />
       <module fileurl="file://$PROJECT_DIR$/glide/glide.iml" filepath="$PROJECT_DIR$/glide/glide.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xintexing/xintexing.iml" filepath="$PROJECT_DIR$/xintexing/xintexing.iml" />
     </modules>
   </component>
 </project>

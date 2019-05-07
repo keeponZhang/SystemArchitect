@@ -26,6 +26,13 @@ public class EventBusDemoActivity extends AppCompatActivity {
 		EventBus.getDefault().register(this);
 		textView = (TextView) findViewById(R.id.tv_text);
 		button = (Button) findViewById(R.id.secondActivityBtn);
+		findViewById(R.id.thirdActivityBtn).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(EventBusDemoActivity.this, EventBusThirdActivity.class);
+				startActivity(intent);
+			}
+		});
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

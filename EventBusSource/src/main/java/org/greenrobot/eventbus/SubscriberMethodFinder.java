@@ -15,6 +15,8 @@
  */
 package org.greenrobot.eventbus;
 
+import android.util.Log;
+
 import org.greenrobot.eventbus.meta.SubscriberInfo;
 import org.greenrobot.eventbus.meta.SubscriberInfoIndex;
 
@@ -100,8 +102,10 @@ class SubscriberMethodFinder {
     }
 
     private List<SubscriberMethod> getMethodsAndRelease(FindState findState) {
+	    //从findState获取subscriberMethods，放进新的ArrayList
         List<SubscriberMethod> subscriberMethods = new ArrayList<>(findState.subscriberMethods);
-        findState.recycle();
+	    //把findState回收
+	    findState.recycle();
         synchronized (FIND_STATE_POOL) {
             for (int i = 0; i < POOL_SIZE; i++) {
                 if (FIND_STATE_POOL[i] == null) {
@@ -234,14 +238,15 @@ class SubscriberMethodFinder {
             skipSuperClasses = false;
             subscriberInfo = null;
         }
-
+        //checkAdd和checkAddWithMethodSignature允许一个类有多个参数相同的订阅方法
         boolean checkAdd(Method method, Class<?> eventType) {
             // 2 level check: 1st level with event type only (fast), 2nd level with complete signature when required.
             // Usually a subscriber doesn't have methods listening to the same event type.
             Object existing = anyMethodByEventType.put(eventType, method);
 //            首先通过anyMethodByEventType.put(eventType, method) 将eventType以及method放进anyMethodByEventType这个Map中(上面提到),同时该put方法会返回同一个key的上一个value值，
-            // 所以如果之前没有别的方法订阅了该事件，那么existing应该为null，可以直接返回true
+            // 所以如果之前没有别的方法订阅了该事件，那么existing应该为null，可以直接返回true(大多数是这个情况)
             if (existing == null) {
+                Log.e(TAG, "checkAdd existing ==null:"+eventType);
                 return true;
             } else {
 //                否则为某一个订阅方法的实例，要进行下一步的判断。接着往下走，会调用checkAddWithMethodSignature()方法。
@@ -251,24 +256,33 @@ class SubscriberMethodFinder {
                         throw new IllegalStateException();
                     }
                     // Put any non-Method object to "consume" the existing Method
+//                    处理一个对象有多个订阅函数处理eventType的情况，此时，anyMethodByEventType中eventType被映射到一个非Method对象(即this)。
                     anyMethodByEventType.put(eventType, this);
                 }
                 return checkAddWithMethodSignature(method, eventType);
             }
         }
 
+        private static final String TAG = "FindState";
         private boolean checkAddWithMethodSignature(Method method, Class<?> eventType) {
             methodKeyBuilder.setLength(0);
             methodKeyBuilder.append(method.getName());
             methodKeyBuilder.append('>').append(eventType.getName());
-
+            //methodKey由方法名与事件名组成
             String methodKey = methodKeyBuilder.toString();
+            //获取当前方法所在的类的类名
             Class<?> methodClass = method.getDeclaringClass();
+            //给subscriberClassByMethodKey赋值，并返回上一个相同key的 类名
             Class<?> methodClassOld = subscriberClassByMethodKey.put(methodKey, methodClass);
+            //判断子父类a.isAssignableFrom(b) a是b的超类
+            //这里处理同一个类，不同方法订阅同一种事件类型
             if (methodClassOld == null || methodClassOld.isAssignableFrom(methodClass)) {
+                Log.e(TAG, "checkAddWithMethodSignature if:"+(methodClassOld == null)+"  methodKey="+methodKey+"  methodClass="+methodClass);
                 // Only add if not already found in a sub class
                 return true;
             } else {
+                //走到这里，是要处理字父类方法重写(前面被父类的methodClass覆盖掉了，这里要覆盖回来)，同时返回false，父类这个subscriberMethod方法就不处理了
+                Log.e(TAG, "checkAddWithMethodSignature else methodClassOld:"+methodClassOld+"  methodKey="+methodKey+"  methodClassOld="+methodClassOld);
                 // Revert the put, old class is further down the class hierarchy
                 subscriberClassByMethodKey.put(methodKey, methodClassOld);
                 return false;

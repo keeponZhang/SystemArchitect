@@ -62,7 +62,11 @@ public class EventBusSecondActivity extends AppCompatActivity implements View.On
 
 	@Subscribe(sticky = true) //只会接受到最后发送的粘性事件，在此之前的事件都接收不到。
 	public void onEvent(MessageEvent messageEvent){
-		Log.e(TAG,"接受到了来自EventBus的事件："+messageEvent.getMessage());
+		Log.e(TAG,"EventBusSecondActivity onEvent 接受到了来自EventBus的事件："+messageEvent.getMessage());
+	}
+	@Subscribe(sticky = true) //只会接受到最后发送的粘性事件，在此之前的事件都接收不到。
+	public void onEvent2(MessageEvent messageEvent){
+		Log.e(TAG,"EventBusSecondActivity onEvent2接受到了来自EventBus的事件："+messageEvent.getMessage());
 	}
 
 	@Override

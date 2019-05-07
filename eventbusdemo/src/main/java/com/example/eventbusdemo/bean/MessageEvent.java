@@ -1,6 +1,6 @@
 package com.example.eventbusdemo.bean;
 
-public class MessageEvent {
+public class MessageEvent extends BaseMessageEvent{
 
     private String message;
 
