@@ -8,8 +8,15 @@
       <module fileurl="file://$PROJECT_DIR$/OkHttp_Source/OkHttp_Source.iml" filepath="$PROJECT_DIR$/OkHttp_Source/OkHttp_Source.iml" />
       <module fileurl="file://$PROJECT_DIR$/SystemArchitect.iml" filepath="$PROJECT_DIR$/SystemArchitect.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/copymoudlue/copymoudlue.iml" filepath="$PROJECT_DIR$/copymoudlue/copymoudlue.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eventbusdemo/eventbusdemo.iml" filepath="$PROJECT_DIR$/eventbusdemo/eventbusdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eventbussource/eventbussource.iml" filepath="$PROJECT_DIR$/eventbussource/eventbussource.iml" />
       <module fileurl="file://$PROJECT_DIR$/glide/glide.iml" filepath="$PROJECT_DIR$/glide/glide.iml" />
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/glide4/glide4.iml" filepath="$PROJECT_DIR$/glide4/glide4.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/xintexing/xintexing.iml" filepath="$PROJECT_DIR$/xintexing/xintexing.iml" />
+>>>>>>> 38ee42759adbfd480fe6f484b2a92b35e85200f2
     </modules>
   </component>
 </project>

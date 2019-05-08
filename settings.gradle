@@ -1,6 +1,10 @@
 //include ':app', ':day02', ':day03', ':day08', ':day09',
 //        ':day10', ':day11', ':day12', ':day13', ':Architect_Day14', ':Architect_Day15', ':Architect_Day16', ':Architect_Day19'
+<<<<<<< HEAD
 include ':Architect_Day_Retrofit_33', ':glide4'
+=======
+include ':Architect_Day_Retrofit_33', ':eventbussource', ':eventbusdemo', ':copymoudlue'
+>>>>>>> 38ee42759adbfd480fe6f484b2a92b35e85200f2
 include ':Architect_Day31_shouxie_rxjava'
 //include ':Architect_Day34_shouxie_retrofit'
 //include ':Architect_Day26_shouxie_okhttp'
@@ -10,4 +14,5 @@ include ':OkHttp_Source'
 include ':glide'
 include ':glide4'
 include ':Architect_Day22_shouxie_eventbus'
+include ':xintexing'
 
