@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/SystemArchitect.iml" filepath="$PROJECT_DIR$/SystemArchitect.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/glide/glide.iml" filepath="$PROJECT_DIR$/glide/glide.iml" />
+      <module fileurl="file://$PROJECT_DIR$/glide4/glide4.iml" filepath="$PROJECT_DIR$/glide4/glide4.iml" />
     </modules>
   </component>
 </project>

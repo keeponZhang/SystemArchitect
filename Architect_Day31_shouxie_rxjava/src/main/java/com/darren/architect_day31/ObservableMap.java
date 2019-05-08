@@ -1,6 +1,7 @@
 package com.darren.architect_day31;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * Created by hcDarren on 2017/12/2.
@@ -19,6 +20,8 @@ public class ObservableMap<T,R> extends Observable<R> {
     protected void subscribeActual(Observer<R> observer) {
         // 对 observer 包裹了一层，静态代理包裹 source 永远是上游的 Observable 对象
         // observer 代表的是下游给我们的封装好的 observer 对象
+        Log.e("TAG", "ObservableMap subscribeActual:"+Thread.currentThread().getName());
+        Log.d("TAG", "ObservableMap subscribeActual observer: "+observer);
         source.subscribe(new MapObserver(observer,function));
     }
 

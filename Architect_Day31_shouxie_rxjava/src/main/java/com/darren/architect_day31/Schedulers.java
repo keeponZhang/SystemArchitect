@@ -16,13 +16,18 @@ import java.util.concurrent.ThreadFactory;
 public abstract class Schedulers {
     static Schedulers MAIN_THREAD;
     static Schedulers IO;
+    static Schedulers CPU;
     static {
         IO = new IOSchedulers();
+        CPU = new CPUSchedulers();
         MAIN_THREAD = new MainSchedulers(new Handler(Looper.getMainLooper()));
     }
 
     public static Schedulers io() {
         return IO;
+    }
+    public static Schedulers cpu() {
+        return CPU;
     }
 
     public abstract void scheduleDirect(Runnable runnable);
@@ -37,7 +42,27 @@ public abstract class Schedulers {
             service = Executors.newScheduledThreadPool(1, new ThreadFactory() {
                 @Override
                 public Thread newThread(@NonNull Runnable r) {
-                    return new Thread(r);
+                    Thread thread = new Thread(r);
+                    thread.setName("IO线程");
+                    return thread;
+                }
+            });
+        }
+
+        @Override
+        public void scheduleDirect(Runnable runnable) {
+            service.execute(runnable);
+        }
+    }
+    private static class CPUSchedulers extends Schedulers {
+        ExecutorService service;
+        public CPUSchedulers(){
+            service = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+                @Override
+                public Thread newThread(@NonNull Runnable r) {
+                    Thread thread = new Thread(r);
+                    thread.setName("CPU线程");
+                    return thread;
                 }
             });
         }

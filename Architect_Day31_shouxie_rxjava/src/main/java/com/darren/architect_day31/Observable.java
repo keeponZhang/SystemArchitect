@@ -16,6 +16,7 @@ public abstract class Observable<T> implements ObservableSource<T>{
         return source;
     }
 
+    //subscribe会调用离它最近的Obsrvable的  subscribeActual(observer)方法
     @Override
     public void subscribe(Observer<T> observer) {
         subscribeActual(observer);

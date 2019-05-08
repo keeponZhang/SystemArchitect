@@ -1,6 +1,7 @@
 package com.darren.architect_day31;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * Created by hcDarren on 2017/12/9.
@@ -16,6 +17,8 @@ class ObserverOnObservable<T> extends Observable<T> {
 
     @Override
     protected void subscribeActual(Observer<T> observer) {
+        Log.e("TAG", "ObserverOnObservable subscribeActual:"+Thread.currentThread().getName());
+        Log.d("TAG", "ObserverOnObservable subscribeActual observer: "+observer);
         source.subscribe(new ObserverOnObserver(observer,schedulers));
     }
 
