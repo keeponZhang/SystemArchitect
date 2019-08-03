@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.darren.architect_day01.BaseApplication;
 import com.darren.architect_day01.R;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     Cache mCache = new Cache(BaseApplication.mApplicationContext.getCacheDir(), cacheSize);
     //在构造 OkHttpClient 时，通过 .cache 配置。
     OkHttpClient mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
+            .addInterceptor(new FirstClientInterceptor())
+            .addNetworkInterceptor(new LastInternetInterceptor())
             .build();
     String testUrl = "";
     private TextView mTextView;
@@ -46,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void getAppXixiUpdate(View view) {
         testUrl = "http://eapi.ciwong.com/repos/launcher/android/update";
-        Log.e("Post请求路径：", testUrl);  //.addHeader("Cache-Control","max-age=5")
         Request.Builder requestBuilder = new Request.Builder().url(testUrl).tag(this);
         //可以省略，默认是GET请求
         Request request = requestBuilder.build();
@@ -55,7 +57,12 @@ public class MainActivity extends AppCompatActivity {
         mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                // 失败
+                mTextView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "获取数据失败", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
 
             @Override
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 mTextView.post(new Runnable() {
                     @Override
                     public void run() {
+                        mTextView.setText("");
                         mTextView.setText(new Date().getTime()+" :  code == "+response.code()+"  "+resultJson);
                     }
                 });

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -19,23 +20,24 @@ import static android.content.ContentValues.TAG;
  * @更新时间 $$Date$$
  */
 public class FirstClientInterceptor implements Interceptor {
-	@Override
-	public Response intercept(Chain chain) throws IOException {
-		Request request = chain.request();
-		try {
-			if (!NetworkUtils.isOnline()) {//没网强制从缓存读取
-				request = request.newBuilder()
-//						.cacheControl(CacheControl.FORCE_CACHE)
-						.build();
-			} else {
-				request = request.newBuilder().removeHeader("If-None-Match").build();
-			}
-		}catch (Exception e){
-			Log.e(TAG, "intercept: Exception");
-		}
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request request = chain.request();
+        Log.e("TAG", "FirstClientInterceptor intercept request:");
+        try {
+            if (!NetworkUtils.isOnline()) {//没网强制从缓存读取
+                request = request.newBuilder()
+                        .cacheControl(CacheControl.FORCE_CACHE)
+                        .build();
+            } else {
+                request = request.newBuilder().removeHeader("If-None-Match").build();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "intercept: Exception");
+        }
 
-
-		Response response = chain.proceed(request);
-		return response;
-	}
+        Response response = chain.proceed(request);
+        Log.e("TAG", "FirstClientInterceptor intercept response:");
+        return response;
+    }
 }
