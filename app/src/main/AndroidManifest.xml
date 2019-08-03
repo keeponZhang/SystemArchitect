@@ -17,14 +17,14 @@
 
         </activity>
         <activity android:name=".simple1.MainActivity">
-
-        </activity>
-        <activity android:name="com.darren.okhttp_source.cache.PhotoCacheActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name="com.darren.okhttp_source.cache.PhotoCacheActivity">
+
         </activity>
     </application>
 

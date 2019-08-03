@@ -233,10 +233,12 @@ public final class CacheStrategy {
       //6.1 计算缓存的年龄。
       long ageMillis = cacheResponseAge();
       //可以缓存多久
-      //6.2 计算刷新的时机。
+      //6.2 计算缓存存活时间
       long freshMillis = computeFreshnessLifetime();
+      int maxAgeSeconds = requestCaching.maxAgeSeconds();
       //7.请求所允许的最大年龄。
-      if (requestCaching.maxAgeSeconds() != -1) {
+      if (maxAgeSeconds != -1) {
+        //maxAgeSeconds：缓存有效时间
         freshMillis = Math.min(freshMillis, SECONDS.toMillis(requestCaching.maxAgeSeconds()));
       }
       long minFreshMillis = 0;
@@ -331,14 +333,20 @@ public final class CacheStrategy {
      * 7234, 4.2.3 Calculating Age.
      */
     private long cacheResponseAge() {
+      //servedDate 包含了报文创建的日期和时间
+      //Age： 当代理服务器用自己缓存的实体去响应请求时，用该头部表明该实体从产生到现在经过多长时间了。
+      //sentRequestMillis：请求发送的时间
+      //receivedResponseMillis：响应收到的时间
       long apparentReceivedAge = servedDate != null
           ? Math.max(0, receivedResponseMillis - servedDate.getTime())
           : 0;
+      //Age 不等于-1，比较缓存在服务器或者缓存服务器存在的时间
       long receivedAge = ageSeconds != -1
           ? Math.max(apparentReceivedAge, SECONDS.toMillis(ageSeconds))
           : apparentReceivedAge;
       long responseDuration = receivedResponseMillis - sentRequestMillis;
       long residentDuration = nowMillis - receivedResponseMillis;
+      //返回缓存在缓存服务器存在的时间和在本地已经缓存了的时间
       return receivedAge + responseDuration + residentDuration;
     }
 

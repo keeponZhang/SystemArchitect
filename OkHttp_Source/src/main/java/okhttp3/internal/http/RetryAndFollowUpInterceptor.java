@@ -15,6 +15,8 @@
  */
 package okhttp3.internal.http;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.HttpRetryException;
@@ -118,6 +120,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
     Response priorResponse = null;
     while (true) {
       // 一个死循环 ，重试, 两种情况可以终止 return Response, throws IOException
+      // 如果请求已经被取消了，释放连接池的资源
       if (canceled) {
         streamAllocation.release();
         throw new IOException("Canceled");
@@ -132,6 +135,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       } catch (RouteException e) {
         // The attempt to connect via a route failed. The request will not have been sent.
         // 先处理 RouteException
+        // 判断是否能够恢复，也就是是否要重试
         if (!recover(e.getLastConnectException(), false, request)) {
           throw e.getLastConnectException();
         }
@@ -141,6 +145,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
         // 处理 IOException
         // An attempt to communicate with a server failed. The request may have been sent.
         boolean requestSendStarted = !(e instanceof ConnectionShutdownException);
+
         if (!recover(e, requestSendStarted, request)) throw e;
         releaseConnection = false;
         continue;
@@ -196,9 +201,13 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
 
       // 请求就变为了重试的请求 Request
       request = followUp;
+      Log.e("TAG", "==========RetryAndFollowUpInterceptor intercept followUp=======:");
       priorResponse = response;
     }
   }
+  //总结
+//  1、连接失败，并不会重试；
+//  2、如果连接成功，因为特定的IO异常（例如认证失败），也不会重试
 
   private Address createAddress(HttpUrl url) {
     SSLSocketFactory sslSocketFactory = null;
@@ -223,20 +232,24 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
    */
   private boolean recover(IOException e, boolean requestSendStarted, Request userRequest) {
     streamAllocation.streamFailed(e);
-
+    // 如果设置了不需要重试，直接返回false
     // The application layer has forbidden retries.
     if (!client.retryOnConnectionFailure()) return false;
-
+    // 如果网络请求已经开始，并且body内容只可以发送一次
     // We can't send the request body again.
     if (requestSendStarted && userRequest.body() instanceof UnrepeatableRequestBody) return false;
 
     // This exception is fatal. 是不是致命异常
+    // 判断异常类型，是否要继续尝试，
+    // 不会重试的类型：协议异常、Socketet异常并且网络情况还没开始，ssl认证异常
     if (!isRecoverable(e, requestSendStarted)) return false;
 
     // No more routes to attempt.
+    // 已经没有其他可用的路由地址了
     if (!streamAllocation.hasMoreRoutes()) return false;
 
     // For failure recovery, use the same route selector with a new connection.
+    // 其他情况返回true
     return true;
   }
 

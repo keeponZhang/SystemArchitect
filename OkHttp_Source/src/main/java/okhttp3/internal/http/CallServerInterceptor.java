@@ -15,6 +15,8 @@
  */
 package okhttp3.internal.http;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.ProtocolException;
 
@@ -44,7 +46,7 @@ public final class CallServerInterceptor implements Interceptor {
     StreamAllocation streamAllocation = realChain.streamAllocation();
     RealConnection connection = (RealConnection) realChain.connection();
     Request request = realChain.request();
-
+    Log.e("TAG", "------------------CallServerInterceptor intercept ------------------:");
     long sentRequestMillis = System.currentTimeMillis();
 
     realChain.eventListener().requestHeadersStart(realChain.call());

@@ -16,6 +16,8 @@
  */
 package okhttp3.internal.cache;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import okhttp3.Headers;
@@ -97,6 +99,7 @@ public final class CacheInterceptor implements Interceptor {
     Response networkResponse = null;
     try {
       //8.继续调用链的下一个步骤，按常理来说，走到这里就会真正地发起网络请求了。
+      Log.e("TAG", "CacheInterceptor intercept chain.proceed(networkRequest):");
       networkResponse = chain.proceed(networkRequest);
     } finally {
       // If we're crashing on I/O or otherwise, don't leak the cache body.

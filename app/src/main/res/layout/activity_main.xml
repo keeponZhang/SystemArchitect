@@ -10,8 +10,13 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="app market"
-        android:onClick="getAppMarketUpdate"/>
+        android:text="getPDF"
+        android:onClick="getPDF"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="getApk"
+        android:onClick="getApk"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
