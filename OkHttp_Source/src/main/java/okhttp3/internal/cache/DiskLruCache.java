@@ -16,6 +16,7 @@
 package okhttp3.internal.cache;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -535,6 +536,7 @@ public final class DiskLruCache implements Closeable, Flushable {
   }
 
   synchronized void completeEdit(Editor editor, boolean success) throws IOException {
+
     Entry entry = editor.entry;
     if (entry.currentEditor != editor) {
       throw new IllegalStateException();
@@ -588,7 +590,7 @@ public final class DiskLruCache implements Closeable, Flushable {
       journalWriter.writeByte('\n');
     }
     journalWriter.flush();
-
+    Log.e("TAG", "DiskLruCache completeEdit size:"+size);
     if (size > maxSize || journalRebuildRequired()) {
       executor.execute(cleanupRunnable);
     }

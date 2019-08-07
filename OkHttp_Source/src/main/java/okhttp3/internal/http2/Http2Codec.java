@@ -100,7 +100,8 @@ public final class Http2Codec implements HttpCodec {
     this.connection = connection;
   }
 
-  @Override public Sink createRequestBody(Request request, long contentLength) {
+  @Override
+  public Sink createRequestBody(Request request, long contentLength) {
     return stream.getSink();
   }
 

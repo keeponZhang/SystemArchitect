@@ -10,4 +10,6 @@ include ':OkHttp_Source'
 include ':glide'
 include ':Architect_Day22_shouxie_eventbus'
 include ':xintexing'
+include ':okio'
+include ':okioSource'
 

@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import okio.Buffer;
-import okio.Okio;
 
 /**
  * Read and write a target file. Unlike Okio's built-in {@linkplain Okio#source(java.io.File) file

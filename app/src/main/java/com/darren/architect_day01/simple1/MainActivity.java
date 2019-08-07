@@ -29,22 +29,25 @@ import okhttp3.Response;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
-     int   cacheSize = 100 * 1024 * 1024;
-    //分别对应缓存的目录，以及缓存的大小。
-    Cache mCache = new Cache(BaseApplication.mApplicationContext.getCacheDir(), cacheSize);
-    //在构造 OkHttpClient 时，通过 .cache 配置。
-    OkHttpClient mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
-            .addInterceptor(new FirstClientInterceptor())
-            .addNetworkInterceptor(new LastInternetInterceptor())
-            .build();
+
     String testUrl = "";
     private TextView mTextView;
-
+    OkHttpClient mOkHttpClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTextView = (TextView) findViewById(R.id.tv);
+
+    }
+
+    public void init(View view) {
+        int   cacheSize = 5 * 1024 * 1024;
+        //分别对应缓存的目录，以及缓存的大小。
+        Cache mCache = new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
+        //在构造 OkHttpClient 时，通过 .cache 配置。
+        mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
+                .build();
     }
 
     public void getAppXixiUpdate(View view) {
@@ -88,11 +91,15 @@ public class MainActivity extends AppCompatActivity {
         download(testUrl);
     }
     public void getApk(View view) {
-        testUrl = "http://repo.yypm.com/dwbuild/mobile/android/hqwx/5.3.0_maint/20190803-2486-r898e6e18652cc1de8ca5f1cfc7beb95fd32e5eaf/hqwx.apk";
+//        testUrl = "http://repo.yypm.com/dwbuild/mobile/android/hqwx/5.3.0_maint/20190803-2486-r898e6e18652cc1de8ca5f1cfc7beb95fd32e5eaf/hqwx.apk";
+        testUrl = "http://gyxza3.eymlz.com/yx1/yx_wwj6/youxiayingshi.apk";
         download(testUrl);
     }
 
     private void download(String url) {
+        if(mOkHttpClient ==null){
+            init(mTextView);
+        }
         Request.Builder requestBuilder = new Request.Builder().url(url).tag(this);
         //可以省略，默认是GET请求
         final Request request = requestBuilder.build();
@@ -117,14 +124,24 @@ public class MainActivity extends AppCompatActivity {
                     is = response.body().byteStream();
                     String fileName = Md5.strMd5(testUrl);
                     String path = getApplicationContext().getExternalCacheDir().getAbsolutePath();
-                    File fileDir = new File(path, "materialdownload");
+                    File fileDir = new File(path);
                     if (!fileDir.exists()) {
                         fileDir.mkdir();
                     }
+                    File materialdownload = new File(path, "materialdownload");
+                    if (!materialdownload.exists()) {
+                        materialdownload.mkdir();
+                    }
                     boolean isDownloadSuccess = false;
-                    File file = new File(fileDir, fileName);
+                    File file = new File(materialdownload, fileName);
                     try {
 
+                        mTextView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this,"准备写入",Toast.LENGTH_LONG).show();
+                            }
+                        });
                         byte[] bytes = new byte[4096];
                         //获取下载的文件的大小
                         long fileSize = response.body().contentLength();
@@ -138,12 +155,19 @@ public class MainActivity extends AppCompatActivity {
                             fos = new FileOutputStream(file);
                             int len = 0;
                             while ((len = is.read(bytes)) != -1) {
+                                Log.d("TAG", "MainActivity onResponse fos.write len:"+len);
                                 fos.write(bytes, 0, len);
                             }
                             fos.flush();
                             isDownloadSuccess = true;
 
                         }
+                        mTextView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this,"写入成功",Toast.LENGTH_LONG).show();
+                            }
+                        });
                         Log.e("TAG", "MainActivity onResponse:" + isDownloadSuccess);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -220,5 +244,20 @@ public class MainActivity extends AppCompatActivity {
                 .removeHeader("Cache-Control")
                 .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
                 .build();
+    }
+
+    private static void deleteFilesByDirectory(File directory) {
+        if (directory != null && directory.exists()
+                && directory.isDirectory()) {
+            for (File item : directory.listFiles()) {
+                item.delete();
+            }
+        }
+    }
+
+    public void clearCache(View view) {
+        deleteFilesByDirectory(getCacheDir());
+        deleteFilesByDirectory(getExternalCacheDir());
+        Toast.makeText(MainActivity.this, "删除缓存成功!", Toast.LENGTH_LONG).show();
     }
 }

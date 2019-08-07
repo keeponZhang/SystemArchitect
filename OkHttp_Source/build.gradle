@@ -26,6 +26,8 @@ dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.SUPPORT_LIBRARY_VERSION}"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.squareup.okio:okio:1.13.0'
+//    compile "com.squareup.okio:okio:${rootProject.ext.OK_IO_VERSION}"
+    implementation project(':okioSource')
     compile 'com.google.code.findbugs:jsr305:3.0.2'
+
 }

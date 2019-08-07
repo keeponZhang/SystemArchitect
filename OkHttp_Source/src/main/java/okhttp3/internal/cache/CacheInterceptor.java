@@ -186,6 +186,7 @@ public final class CacheInterceptor implements Interceptor {
       boolean cacheRequestClosed;
 
       @Override public long read(Buffer sink, long byteCount) throws IOException {
+        Log.d("TAG", "CacheInterceptor read cacheWritingSource Buffer sink:"+sink+"  byteCount="+byteCount);
         long bytesRead;
         try {
           bytesRead = source.read(sink, byteCount);
