@@ -76,7 +76,7 @@ import okio.Okio;
 
   //最终会走到这里，ExecutorCallbackCall只做代理
   @Override public void enqueue(final Callback<T> callback) {
-    getGenericInterface(this.getClass());
+//    getGenericInterface(this.getClass());
     if (callback == null) throw new NullPointerException("callback == null");
 
     okhttp3.Call call;
