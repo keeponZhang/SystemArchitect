@@ -43,6 +43,7 @@ final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         return responseType;
       }
       //call是OkHttpCall，进行了包装，并没有改变它的类型.（静态代理）
+      //所以输入跟返回类型一样
       @Override public <R> Call<R> adapt(Call<R> call) {
 
         return new ExecutorCallbackCall<>(callbackExecutor, call);
@@ -59,9 +60,11 @@ final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
       this.delegate = delegate;
     }
 
+    //T的类型经callback传进来
     @Override public void enqueue(final Callback<T> callback) {
       if (callback == null) throw new NullPointerException("callback == null");
       //在实际执行任务的Call完成之后，调用MainThreadExecutor，使得使用者收到的回调是运行在主线程当中的.
+      //retrofit的OkHttpCall<T>的泛型类型与Response<T>的泛型类型一样，所以这里的onResponse返回的final Response<T> response，类型已经解析出来
       delegate.enqueue(new Callback<T>() {
         @Override public void onResponse(Call<T> call, final Response<T> response) {
           //把回调切换回主线程

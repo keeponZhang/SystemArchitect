@@ -30,6 +30,8 @@ final class BuiltInConverters extends Converter.Factory {
     //如果Type是ResponseBody，那么当注解中包含了Streaming.class时，返回StreamingXXX，否则返回BufferingXXX
     //这两个其实都是Converter<ResponseBody, ResponseBody>
 
+
+    //Call<ResponseBody> listReposResponseBody 返回的是BufferingResponseBodyConverter
     if (type == ResponseBody.class) {
       if (Utils.isAnnotationPresent(annotations, Streaming.class)) {
         return StreamingResponseBodyConverter.INSTANCE;

@@ -10,10 +10,15 @@ import com.darren.architect_day33.simple1.api.GitHubService;
 import com.darren.architect_day33.simple1.bean.Repo;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.IOException;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -179,16 +184,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-    OkHttpClient okHttpClient = new OkHttpClient
-            .Builder()
-            .addInterceptor(new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+
+    public void simpleResponseBody(View view) {
+        Retrofit retrofit = new Retrofit
+                .Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl("https://api.github.com/")
+                .build();
+        GitHubService service = retrofit.create(GitHubService.class);
+        service.listReposResponseBody("octocat");
+        Call<ResponseBody> call = service.listReposResponseBody("octocat");
+        try {
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void log(String message) {
-                    Log.e("TAG",message);
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        Log.e(TAG, "onResponse: "+response.body().string() );
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }).setLevel(HttpLoggingInterceptor.Level.BODY))
-            .build();
-    public void simpleExample(View view) {
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {}
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void simpleCall(View view) {
         Retrofit retrofit = new Retrofit
                 .Builder()
                 .addConverterFactory(GsonConverterFactory.create())
@@ -208,23 +233,42 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        Call<ResponseBody> call = service.listRepos2("octocat");
-//        try {
-//            call.enqueue(new Callback<ResponseBody>() {
-//                @Override
-//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                    try {
-//                        Log.e(TAG, "onResponse: "+response.body().string() );
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                @Override
-//                public void onFailure(Call<ResponseBody> call, Throwable t) {}
-//            });
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    }
+    public void simpleObservable(View view) {
+        Retrofit retrofit = new Retrofit
+                .Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl("https://api.github.com/")
+                .build();
+        GitHubService service = retrofit.create(GitHubService.class);
+        Observable<List<Repo>> octocat = service.listReposObservable("octocat");
+
+        octocat.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                //Observable<List<Repo>>泛型类型由触发订阅时Observer的参数传进去
+                .subscribe(new Observer<List<Repo>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+
+                    }
+
+                    @Override
+                    public void onNext(List<Repo> value) {
+                        Log.e("TAG", "MainActivity onNext:" + value.size());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
 
     }
     public void getData(View view) {
