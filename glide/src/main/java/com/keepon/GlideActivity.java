@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.darren.architect_day03.R;
+import com.keepon.util.DisplayUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,6 +32,11 @@ public class GlideActivity extends AppCompatActivity {
 	}
 
 	public void loadUrl(View view) {
+		RelativeLayout.LayoutParams layoutParams =
+				(RelativeLayout.LayoutParams) mImageView.getLayoutParams();
+		layoutParams.width = DisplayUtils.dip2px(100);
+		layoutParams.height = DisplayUtils.dip2px(100);
+		mImageView.setLayoutParams(layoutParams);
 		Glide.with(GlideActivity.this)//传入关联的Context，如果是Activity/Fragment，那么它会根据组件当前的状态来控制请求。
         .load("http://ep.dzb.ciwong.com/rep/new/4055.jpg") //需要加载的图片，大多数情况下就是网络图片的链接。
 		.into(mImageView); //用来展现图片的ImageView.

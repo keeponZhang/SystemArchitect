@@ -12,4 +12,5 @@ include ':Architect_Day22_shouxie_eventbus'
 include ':xintexing'
 include ':okio'
 include ':okioSource'
+include ':exception'
 
