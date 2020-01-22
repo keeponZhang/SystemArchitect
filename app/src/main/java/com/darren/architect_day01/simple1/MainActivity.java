@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         //分别对应缓存的目录，以及缓存的大小。
         Cache mCache = new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
         //在构造 OkHttpClient 时，通过 .cache 配置。
-        mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
+        mOkHttpClient = new OkHttpClient.Builder().cache(mCache).addNetworkInterceptor(new FirstClientInterceptor())
+                .addInterceptor(new LastInternetInterceptor())
                 .build();
     }
 

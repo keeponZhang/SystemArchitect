@@ -18,6 +18,7 @@ import static android.content.ContentValues.TAG;
  * @更新者 $$Author$$
  * @更新时间 $$Date$$
  */
+//RealCall 可以看出InternetInterceptor是放在CallServerInterceptor之前，就是倒数第二个位置，一般处理返回来的response
 public class LastInternetInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
