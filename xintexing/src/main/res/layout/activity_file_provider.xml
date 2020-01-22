@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:orientation="vertical"
 	tools:context=".FileProviderActivity">
 	<Button
 		android:textAllCaps="false"
-		android:id="@+id/btn4"
 		android:onClick="installApk"
 		android:text="installApk"
 		android:layout_width="wrap_content"
@@ -19,15 +19,22 @@
 		/>
 	<Button
 		android:textAllCaps="false"
-		android:id="@+id/btn3"
-		android:onClick="checkSelfPermission"
-		android:text="checkSelfPermission"
+		android:onClick="checkWritePermission"
+		android:text="checkWritePermission"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="20dp"
-		app:layout_constraintTop_toBottomOf="@id/btn4"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
+
+		/>
+	<Button
+		android:textAllCaps="false"
+		android:id="@+id/btn3"
+		android:onClick="checkCameraPermission"
+		android:text="checkCameraPermission"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+
 		/>
 	<Button
 		android:textAllCaps="false"
@@ -62,4 +69,4 @@
 		android:layout_width="150dp"
 		android:layout_height="150dp"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
