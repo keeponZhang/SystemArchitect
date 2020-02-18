@@ -9,12 +9,19 @@ import android.widget.Toast;
 
 import com.darren.architect_day01.BaseApplication;
 import com.darren.architect_day01.R;
+import com.darren.architect_day01.data.entity.CSProEvaluateRecordBean;
+import com.darren.architect_day01.data.entity.User;
+import com.darren.architect_day01.data.repsonse.BaseRes;
+import com.darren.architect_day01.data.repsonse.CSProEvaluateRecordRes;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -38,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTextView = (TextView) findViewById(R.id.tv);
-
+        mOkHttpClient = new OkHttpClient.Builder()
+                .build();
     }
 
     public void init(View view) {
@@ -49,6 +57,58 @@ public class MainActivity extends AppCompatActivity {
         mOkHttpClient = new OkHttpClient.Builder().cache(mCache).addNetworkInterceptor(new FirstClientInterceptor())
                 .addInterceptor(new LastInternetInterceptor())
                 .build();
+    }
+
+    public void gsonDemo(View view) {
+        test0();
+        // test1();
+
+
+        // test2();
+
+
+    }
+
+    private void test0() {
+        Gson gson = new Gson();
+        String jsonString = "{\"name\":\"怪盗kidou\"}";
+        User user = gson.fromJson(jsonString, User.class);
+    }
+
+    private void test2() {
+        testUrl = "http://japi.hqwx.com/al/userAssessment/get";
+        Request.Builder requestBuilder = new Request.Builder().url(testUrl).tag(this);
+        //可以省略，默认是GET请求
+        Request request = requestBuilder.build();
+
+
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                mTextView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "获取数据失败", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String resultJson = response.body().string();
+                Gson gson = new Gson();
+                BaseRes csProEvaluateRecordRes =
+                        gson.fromJson(resultJson, BaseRes.class);
+                Log.e("TAG", "MainActivity onResponse mStatus.code:" + csProEvaluateRecordRes.mStatus.code);
+            }
+        });
+    }
+
+    private void test1() {
+        Gson gson = new Gson();
+        String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
+        List<String> stringList = gson.fromJson(jsonArray, new TypeToken<List<String>>() {}.getType());
+        Log.e("TAG", "MainActivity test1:" + stringList);
     }
 
     public void getAppXixiUpdate(View view) {

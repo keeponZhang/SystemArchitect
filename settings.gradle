@@ -13,4 +13,5 @@ include ':xintexing'
 include ':okio'
 include ':okioSource'
 include ':exception'
+include ':gsonsource'
 

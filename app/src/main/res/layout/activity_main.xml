@@ -37,6 +37,12 @@
         android:layout_height="wrap_content"
         android:text="clear cache"
         android:onClick="clearCache"/>
+    <Button
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gsonDemo"
+        android:onClick="gsonDemo"/>
     <TextView
         android:layout_marginTop="20dp"
         android:id="@+id/tv"
