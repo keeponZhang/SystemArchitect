@@ -116,6 +116,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       mapped = jsonAdapterFactory.getTypeAdapter(
           constructorConstructor, context, fieldType, annotation);
     }
+    //自定义model里面会匹配类如StringAdapter作为BoundField的变量
     final boolean jsonAdapterPresent = mapped != null;
     if (mapped == null) mapped = context.getAdapter(fieldType);
 
@@ -154,6 +155,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     while (raw != Object.class) {
       Field[] fields = raw.getDeclaredFields();
       for (Field field : fields) {
+        Log.e("TAG", "ReflectiveTypeAdapterFactory getBoundFields 属性field:"+field);
         boolean serialize = excludeField(field, true);
         boolean deserialize = excludeField(field, false);
         if (!serialize && !deserialize) {
@@ -161,6 +163,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
         }
         accessor.makeAccessible(field);
         Type fieldType = $Gson$Types.resolve(type.getType(), raw, field.getGenericType());
+        //这里根据属性去拿到多少个fieldNames
         List<String> fieldNames = getFieldNames(field);
         BoundField previous = null;
         for (int i = 0, size = fieldNames.size(); i < size; ++i) {
@@ -219,6 +222,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
         in.beginObject();
         while (in.hasNext()) {
           String name = in.nextName();
+          Log.e("TAG", "Adapter read  name:"+name);
           BoundField field = boundFields.get(name);
           if (field == null || !field.deserialized) {
             in.skipValue();

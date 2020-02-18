@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         String jsonString = "{\"name\":\"怪盗kidou\"}";
         User user = gson.fromJson(jsonString, User.class);
+        Log.e("TAG", "MainActivity test0:" + user.name);
     }
 
     private void test2() {

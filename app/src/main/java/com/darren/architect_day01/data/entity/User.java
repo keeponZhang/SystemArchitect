@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
     //省略其它
-    @SerializedName("name")
+    @SerializedName(value = "name1",alternate = {"name"})
     public String name;
 }
