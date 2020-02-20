@@ -8,11 +8,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.darren.architect_day01.BaseApplication;
+import com.darren.architect_day01.ParameterizedTypeImpl;
 import com.darren.architect_day01.R;
-import com.darren.architect_day01.data.entity.CSProEvaluateRecordBean;
+import com.darren.architect_day01.data.entity.Article;
+import com.darren.architect_day01.data.entity.Result;
 import com.darren.architect_day01.data.entity.User;
 import com.darren.architect_day01.data.repsonse.BaseRes;
-import com.darren.architect_day01.data.repsonse.CSProEvaluateRecordRes;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,6 +21,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     String testUrl = "";
     private TextView mTextView;
     OkHttpClient mOkHttpClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,23 +54,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(View view) {
-        int   cacheSize = 5 * 1024 * 1024;
+        int cacheSize = 5 * 1024 * 1024;
         //分别对应缓存的目录，以及缓存的大小。
-        Cache mCache = new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
+        Cache mCache =
+                new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
         //在构造 OkHttpClient 时，通过 .cache 配置。
-        mOkHttpClient = new OkHttpClient.Builder().cache(mCache).addNetworkInterceptor(new FirstClientInterceptor())
+        mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
+                .addNetworkInterceptor(new FirstClientInterceptor())
                 .addInterceptor(new LastInternetInterceptor())
                 .build();
     }
 
     public void gsonDemo(View view) {
-        test0();
+        // test0();
         // test1();
-
-
         // test2();
+        // test3();
+        test4();
+
+    }
+
+    private void test4() {
+        // data 为 object 的情况
+        String data1 = "{\"code\":\"0\",\"message\":\"success\",\"data\":{}}";
+// data 为 array 的情况
+        String data2 = "{\"code\":\"0\",\"message\":\"success\",\"data\":[{\"name\":\"怪盗kidou\"}," +
+                "{\"name\":\"keepon\"}" +
+                "]}";
+        Result<List<User>> listResult = fromJsonArrayError(data2);
+        for (User datum : listResult.data) {
+            Log.e("TAG", "MainActivity test4 listResult:" +datum);
+        }
+
+        Result<List<User>> listResult1 = fromJsonArray(data2, User.class);
+        Log.e("TAG", "MainActivity test4 listResult1:" +listResult1.data.get(0).name);
+    }
+    //这个肯定是不行的
+    public  <T> Result<List<T>> fromJsonArrayError(String json) {
+        Type type = new TypeToken<Result<List<T>>>(){}.getType();
+        return new Gson().fromJson(json, type);
+    }
 
 
+    public  <T> Result<T> fromJsonObject(String json, Class<T> clazz) {
+        Type type = new ParameterizedTypeImpl(Result.class, new Class[]{clazz});
+        return new Gson().fromJson(json, type);
+    }
+
+    // 处理 data 为 array 的情况
+    public  <T> Result<List<T>> fromJsonArray(String json, Class<T> clazz) {
+        // 生成List<T> 中的 List<T>
+        Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
+        // 根据List<T>生成完整的Result<List<T>>
+        Type type = new ParameterizedTypeImpl(Result.class, new Type[]{listType});
+        return new Gson().fromJson(json, type);
     }
 
     private void test0() {
@@ -76,7 +117,32 @@ public class MainActivity extends AppCompatActivity {
         Log.e("TAG", "MainActivity test0:" + user.name);
     }
 
+    private void test1() {
+        Gson gson = new Gson();
+        String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
+        String[] strings = gson.fromJson(jsonArray, String[].class);
+        Log.e("TAG", "MainActivity test1:" + strings);
+        // 不能带泛型
+        // List<String> stringList = gson.fromJson(jsonArray, List<String>.class);
+        // Log.e("TAG", "MainActivity test1:" +strings);
+    }
+
     private void test2() {
+        Gson gson = new Gson();
+        String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
+        List<String> stringList = gson.fromJson(jsonArray, new TypeToken<List<String>>() {
+        }.getType());
+        Log.e("TAG", "MainActivity test1:" + stringList);
+    }
+
+    private void test3() {
+        Gson gson = new Gson();
+        String jsonString = "{\"url\":\"http://www.baidu.com\"}";
+        Article article = gson.fromJson(jsonString, Article.class);
+        Log.e("TAG", "MainActivity test3 test3:" + article.url);
+    }
+
+    private void test9() {
         testUrl = "http://japi.hqwx.com/al/userAssessment/get";
         Request.Builder requestBuilder = new Request.Builder().url(testUrl).tag(this);
         //可以省略，默认是GET请求
@@ -100,16 +166,10 @@ public class MainActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 BaseRes csProEvaluateRecordRes =
                         gson.fromJson(resultJson, BaseRes.class);
-                Log.e("TAG", "MainActivity onResponse mStatus.code:" + csProEvaluateRecordRes.mStatus.code);
+                Log.e("TAG", "MainActivity onResponse mStatus.code:" +
+                        csProEvaluateRecordRes.mStatus.code);
             }
         });
-    }
-
-    private void test1() {
-        Gson gson = new Gson();
-        String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
-        List<String> stringList = gson.fromJson(jsonArray, new TypeToken<List<String>>() {}.getType());
-        Log.e("TAG", "MainActivity test1:" + stringList);
     }
 
     public void getAppXixiUpdate(View view) {
@@ -138,7 +198,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mTextView.setText("");
-                        mTextView.setText(new Date().getTime()+" :  code == "+response.code()+"  "+resultJson);
+                        mTextView.setText(
+                                new Date().getTime() + " :  code == " + response.code() + "  " +
+                                        resultJson);
                     }
                 });
                 // 1.JSON解析转换
@@ -149,9 +211,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getPDF(View view) {
-        testUrl = "http://edu100hqvideo.bs2cdn.100.com/Reise%E6%99%BA%E8%83%BD%E5%8C%96%E4%B8%BB%E8%B7%AF%E5%BE%84%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%9901_d98bd461d9d724f551bce0aa7772dade5b96f0c5.pdf";
+        testUrl =
+                "http://edu100hqvideo.bs2cdn.100.com/Reise%E6%99%BA%E8%83%BD%E5%8C%96%E4%B8%BB%E8%B7%AF%E5%BE%84%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%9901_d98bd461d9d724f551bce0aa7772dade5b96f0c5.pdf";
         download(testUrl);
     }
+
     public void getApk(View view) {
 //        testUrl = "http://repo.yypm.com/dwbuild/mobile/android/hqwx/5.3.0_maint/20190803-2486-r898e6e18652cc1de8ca5f1cfc7beb95fd32e5eaf/hqwx.apk";
         testUrl = "http://gyxza3.eymlz.com/yx1/yx_wwj6/youxiayingshi.apk";
@@ -159,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void download(String url) {
-        if(mOkHttpClient ==null){
+        if (mOkHttpClient == null) {
             init(mTextView);
         }
         Request.Builder requestBuilder = new Request.Builder().url(url).tag(this);
@@ -176,9 +240,9 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call call, final Response response) throws IOException {
                 if (response.isSuccessful()) {
                     Headers headers = request.headers();
-                    if(headers!=null){
+                    if (headers != null) {
                         String s = headers.toString();
-                        Log.e("TAG", "MainActivity onResponse headers:"+s);
+                        Log.e("TAG", "MainActivity onResponse headers:" + s);
                     }
 
                     InputStream is = null;
@@ -201,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(MainActivity.this,"准备写入",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "准备写入", Toast.LENGTH_LONG).show();
                             }
                         });
                         byte[] bytes = new byte[4096];
@@ -217,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                             fos = new FileOutputStream(file);
                             int len = 0;
                             while ((len = is.read(bytes)) != -1) {
-                                Log.d("TAG", "MainActivity onResponse fos.write len:"+len);
+                                Log.d("TAG", "MainActivity onResponse fos.write len:" + len);
                                 fos.write(bytes, 0, len);
                             }
                             fos.flush();
@@ -227,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(MainActivity.this,"写入成功",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "写入成功", Toast.LENGTH_LONG).show();
                             }
                         });
                         Log.e("TAG", "MainActivity onResponse:" + isDownloadSuccess);
@@ -248,9 +312,9 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
-            }});
+            }
+        });
     }
-
 
     static Interceptor cacheInterceptor = new Interceptor() {
         @Override
@@ -264,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     request = request.newBuilder().removeHeader("If-None-Match").build();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.e(TAG, "intercept: Exception");
             }
 
@@ -273,17 +337,15 @@ public class MainActivity extends AppCompatActivity {
             Response responseLatest;
 
 
-
-
-                if (NetworkUtils.isOnline()) {
-                    int maxAge =  60*5;
-                    Log.e(TAG, "intercept: maxAge  "+NetworkUtils.isOnline());
-                    responseLatest = setCacheTime(response, maxAge);
-                } else {
-                    int maxStale = 60 * 60 * 6; // 没网失效6小时
-                    Log.e(TAG, "intercept: maxStale "+NetworkUtils.isOnline());
-                    responseLatest = setNoNetWorkCacheTime(response, maxStale);
-                }
+            if (NetworkUtils.isOnline()) {
+                int maxAge = 60 * 5;
+                Log.e(TAG, "intercept: maxAge  " + NetworkUtils.isOnline());
+                responseLatest = setCacheTime(response, maxAge);
+            } else {
+                int maxStale = 60 * 60 * 6; // 没网失效6小时
+                Log.e(TAG, "intercept: maxStale " + NetworkUtils.isOnline());
+                responseLatest = setNoNetWorkCacheTime(response, maxStale);
+            }
 
 
             return responseLatest;

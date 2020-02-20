@@ -27,9 +27,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    //    compile "com.squareup.okhttp3:okhttp:OKHTTP_LIBRARY_VERSION"
 //    compile 'com.google.code.gson:gson:2.8.1'
     compile 'org.xutils:xutils:3.5.0'
     implementation project(':OkHttp_Source')
     implementation project(':gsonsource')
+    implementation('com.github.halzhang:toolargetool:v0.1.6') {
+        exclude group: 'com.android.support'
+    }
 }

@@ -433,6 +433,7 @@ public final class Gson {
    */
   @SuppressWarnings("unchecked")
   public <T> TypeAdapter<T> getAdapter(TypeToken<T> type) {
+    Log.e("TAG", "Gson getAdapter 方法开始---------:" );
     //typeTokenCache是Map<TypeToken<?>, TypeAdapter<?>> 对应的TypeToken，
     //然后获取到TypeAdapter，Gson初始化时的factories总初始化了很多的TypeAdapter，例如：ObjectTypeAdapter
     TypeAdapter<?> cached = typeTokenCache.get(type == null ? NULL_KEY_SURROGATE : type);
@@ -452,21 +453,23 @@ public final class Gson {
     // the key and value type parameters always agree
     FutureTypeAdapter<T> ongoingCall = (FutureTypeAdapter<T>) threadCalls.get(type);
     if (ongoingCall != null) {
-      return ongoingCall;
+      Log.e("TAG", "Gson getAdapter 这里Gson通过ThreadLocal的缓存设计能够避免无限递归的问题:" );
+      return ongoingCall; //这里Gson通过ThreadLocal的缓存设计能够避免无限递归的问题
     }
 
     try {
       FutureTypeAdapter<T> call = new FutureTypeAdapter<T>();
       threadCalls.put(type, call);
-  //Gson初始化的factories
+      //Gson初始化的factories
       for (TypeAdapterFactory factory : factories) {
-        TypeAdapter<T> candidate = factory.create(this, type);
-        Log.e("TAG",
-                "Gson getAdapter type:"+type+"  candidate="+candidate+"      factory="+factory);
+        //https://www.jianshu.com/p/aef252db9869
+        TypeAdapter<T> candidate = factory.create(this, type);//这里可能发生无限递归的情况
         if (candidate != null) {
           call.setDelegate(candidate);
           //typeTokenCache对应的Map<TypeToken<?>, TypeAdapter<?>>
           typeTokenCache.put(type, candidate);
+          Log.e("TAG",
+                  "Gson getAdapter type:"+type+"  candidate="+candidate+"      factory="+factory);
           return candidate;
         }
       }
