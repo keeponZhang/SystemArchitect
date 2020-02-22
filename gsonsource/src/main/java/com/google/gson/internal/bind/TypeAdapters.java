@@ -234,6 +234,11 @@ public final class TypeAdapters {
     public void write(JsonWriter out, Number value) throws IOException {
       out.value(value);
     }
+
+    @Override
+    public String toString() {
+      return super.toString();
+    }
   };
   public static final TypeAdapterFactory INTEGER_FACTORY
       = newFactory(int.class, Integer.class, INTEGER);
@@ -857,6 +862,8 @@ public final class TypeAdapters {
       @SuppressWarnings("unchecked") // we use a runtime check to make sure the 'T's equal
       @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
         Class<? super T> rawType = typeToken.getRawType();
+        Log.e("TAG",
+                "TypeAdapters newFactory candidate create typeToken:"+typeToken+"      rawType="+rawType+" unboxed="+unboxed);
         return (rawType == unboxed || rawType == boxed) ? (TypeAdapter<T>) typeAdapter : null;
       }
       @Override public String toString() {

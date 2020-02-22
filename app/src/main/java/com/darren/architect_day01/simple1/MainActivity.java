@@ -78,16 +78,35 @@ public class MainActivity extends AppCompatActivity {
         // data 为 object 的情况
         String data1 = "{\"code\":\"0\",\"message\":\"success\",\"data\":{}}";
 // data 为 array 的情况
+        //解析不是按顺序的
         String data2 = "{\"code\":\"0\",\"message\":\"success\",\"data\":[{\"name\":\"怪盗kidou\"}," +
                 "{\"name\":\"keepon\"}" +
                 "]}";
-        Result<List<User>> listResult = fromJsonArrayError(data2);
-        for (User datum : listResult.data) {
-            Log.e("TAG", "MainActivity test4 listResult:" +datum);
-        }
+        //断点调试返回的是com.darren.architect_day01.data.entity.Result<java.util.List<T>>
+        // Result<List<Object>> listResult = fromJsonArrayError(data2);
+        // if(listResult!=null&&listResult.data!=null){
+        //     for (Object datum : listResult.data) {
+        //         if(datum instanceof User ){
+        //             User user = (User) datum;
+        //             Log.e("TAG", "MainActivity test4 user:"+user.name);
+        //         }
+        //         if(datum instanceof List){
+        //             Log.e("TAG", "MainActivity test4  is List:");
+        //         }
+        //         Log.e("TAG", "MainActivity test4 listResult-------------:" +datum+" listResult" +
+        //                 ".data="+listResult.data);
+        //     }
+        // }
+
 
         Result<List<User>> listResult1 = fromJsonArray(data2, User.class);
-        Log.e("TAG", "MainActivity test4 listResult1:" +listResult1.data.get(0).name);
+        for (User datum : listResult1.data) {
+            if(datum instanceof User ){
+                User user = (User) datum;
+                Log.e("TAG", "MainActivity listResult1 test4 user:"+user);
+            }
+        }
+
     }
     //这个肯定是不行的
     public  <T> Result<List<T>> fromJsonArrayError(String json) {

@@ -16,6 +16,8 @@
 
 package com.google.gson.reflect;
 
+import android.util.Log;
+
 import com.google.gson.internal.$Gson$Types;
 import com.google.gson.internal.$Gson$Preconditions;
 import java.lang.reflect.GenericArrayType;
@@ -45,8 +47,10 @@ import java.util.Map;
  * @author Jesse Wilson
  */
 public class TypeToken<T> {
+  //这个是最外层的
   final Class<? super T> rawType;
   //type才是带参数类型List<String>
+  //如果Result<java.util.List<T>>
   final Type type;
   final int hashCode;
 
@@ -74,6 +78,7 @@ public class TypeToken<T> {
     this.type = $Gson$Types.canonicalize($Gson$Preconditions.checkNotNull(type));
     this.rawType = (Class<? super T>) $Gson$Types.getRawType(this.type);
     this.hashCode = this.type.hashCode();
+    Log.w("TAG", "TypeToken TypeToken typeOfT rawType: "+rawType+"  type="+type);
   }
 
   /**

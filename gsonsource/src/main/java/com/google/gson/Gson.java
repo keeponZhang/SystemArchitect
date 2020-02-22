@@ -24,7 +24,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -433,7 +435,7 @@ public final class Gson {
    */
   @SuppressWarnings("unchecked")
   public <T> TypeAdapter<T> getAdapter(TypeToken<T> type) {
-    Log.e("TAG", "Gson getAdapter 方法开始---------:" );
+    Log.w("TAG", "Gson getAdapter candidate 方法开始--------- type:"+type );
     //typeTokenCache是Map<TypeToken<?>, TypeAdapter<?>> 对应的TypeToken，
     //然后获取到TypeAdapter，Gson初始化时的factories总初始化了很多的TypeAdapter，例如：ObjectTypeAdapter
     TypeAdapter<?> cached = typeTokenCache.get(type == null ? NULL_KEY_SURROGATE : type);
@@ -468,8 +470,12 @@ public final class Gson {
           call.setDelegate(candidate);
           //typeTokenCache对应的Map<TypeToken<?>, TypeAdapter<?>>
           typeTokenCache.put(type, candidate);
+          //factory是没有泛型的
           Log.e("TAG",
-                  "Gson getAdapter type:"+type+"  candidate="+candidate+"      factory="+factory);
+                  "Gson getAdapter return typeOfT type:"+type+"  TypeAdapter candidate="+candidate.getClass().getGenericSuperclass()+"  " +
+                          " " +
+                          "   " +
+                          "factory="+factory.getClass().getName()+"  factory ="+(factory.equals(TypeAdapters.INTEGER_FACTORY)));
           return candidate;
         }
       }
@@ -926,17 +932,33 @@ public final class Gson {
    * @throws JsonSyntaxException if json is not a valid representation for an object of type
    */
   @SuppressWarnings("unchecked")
+
+  //	Type只有五种类型：
+//	Class:所代表的是一个确定的类，比如Integer,String,Double等
+//	ParameterizedType:ParameterizedType代表完整的泛型表达式
+//	TypeVariable:TypeVariable代表泛型变量的符号即T,U等
+//	WildcardType:WildcardType代表通配符,<? extends Integer>,<? super String>,或者<?>等
+//	GenericArrayType:GenericArrayType代表数组类型
   public <T> T fromJson(JsonReader reader, Type typeOfT) throws JsonIOException, JsonSyntaxException {
+    if(typeOfT instanceof TypeVariable){
+      Log.e("TAG", "Gson fromJson typeOfT TypeVariable:"+typeOfT);
+    }else if(typeOfT instanceof ParameterizedType){
+      Log.e("TAG", "Gson fromJson  typeOfT TypeVariable:"+typeOfT);
+    }
     boolean isEmpty = true;
     boolean oldLenient = reader.isLenient();
     reader.setLenient(true);
+    Log.e("TAG", "++++++++++++++++Gson fromJson  candidate 开始++++++++++++++++:");
     try {
       reader.peek();
       isEmpty = false;
       TypeToken<T> typeToken = (TypeToken<T>) TypeToken.get(typeOfT);
       TypeAdapter<T> typeAdapter = getAdapter(typeToken);
-      Log.e("TAG", "---------------Gson fromJson typeAdapter--------------------- :"+typeAdapter);
       T object = typeAdapter.read(reader);
+      Log.e("TAG",
+              "---------------Gson fromJson  typeOfT "+ typeOfT+"  typeToken---------------------" +
+                      " :"+typeToken+
+              "  object ="+object);
       return object;
     } catch (EOFException e) {
       /*

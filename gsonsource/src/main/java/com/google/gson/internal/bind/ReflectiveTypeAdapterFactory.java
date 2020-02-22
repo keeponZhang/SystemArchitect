@@ -100,7 +100,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       return null; // it's a primitive!
     }
 
-    Log.e("TAG", "ReflectiveTypeAdapterFactory create 创建啦 用于自定义model:"+type);
+    Log.e("TAG", "ReflectiveTypeAdapterFactory create typeOfT candidate 创建啦 用于自定义model:"+type);
     ObjectConstructor<T> constructor = constructorConstructor.get(type);
     return new Adapter<T>(constructor, getBoundFields(gson, type, raw));
   }
@@ -118,8 +118,16 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     }
     //自定义model里面会匹配类如StringAdapter作为BoundField的变量
     final boolean jsonAdapterPresent = mapped != null;
-    if (mapped == null) mapped = context.getAdapter(fieldType);
 
+    Log.e("TAG",
+            "ReflectiveTypeAdapterFactory candidate createBoundField 开始获取adapter啦 fieldType:"+fieldType);
+    if (mapped == null) mapped = context.getAdapter(fieldType);
+    Log.e("TAG",
+            "ReflectiveTypeAdapterFactory candidate createBoundField 创建了adapter TypeToken " +
+                    "fieldType:"+fieldType+
+            "  " +
+            "创建了mapped " +
+            "="+mapped.getClass().getGenericSuperclass());
     final TypeAdapter<?> typeAdapter = mapped;
     return new BoundField(name, serialize, deserialize) {
       @SuppressWarnings({"unchecked", "rawtypes"}) // the type adapter and field type always agree
@@ -155,14 +163,22 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     while (raw != Object.class) {
       Field[] fields = raw.getDeclaredFields();
       for (Field field : fields) {
-        Log.e("TAG", "ReflectiveTypeAdapterFactory getBoundFields 属性field:"+field);
+
         boolean serialize = excludeField(field, true);
         boolean deserialize = excludeField(field, false);
         if (!serialize && !deserialize) {
           continue;
         }
         accessor.makeAccessible(field);
+        //candidate resolve前 属性field:data  type.getType()=com.darren.architect_day01.data.entity.Result<java.util.List<T>>     field.getGenericType()=T
+        //field.getGenericType()获取属性的类型
+        Log.w("TAG",
+                "ReflectiveTypeAdapterFactory candidate resolve前 属性field:"+field.getName()+"  " +
+                        "type.getType()="+type.getType()+"     field" +
+                ".getGenericType()="+field.getGenericType()+"  field.getType()="+field.getType());
         Type fieldType = $Gson$Types.resolve(type.getType(), raw, field.getGenericType());
+        Log.w("TAG", "ReflectiveTypeAdapterFactory getBoundFields candidate 属性field:"+field.getName()+" " +
+                "    获取到的fieldType="+fieldType);
         //这里根据属性去拿到多少个fieldNames
         List<String> fieldNames = getFieldNames(field);
         BoundField previous = null;

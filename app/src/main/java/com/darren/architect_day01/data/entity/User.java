@@ -6,4 +6,11 @@ public class User {
     //省略其它
     @SerializedName(value = "name1",alternate = {"name"})
     public String name;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

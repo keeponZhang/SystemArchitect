@@ -16,6 +16,8 @@
 
 package com.google.gson.internal;
 
+import android.util.Log;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -84,6 +86,8 @@ public final class ConstructorConstructor {
 
     ObjectConstructor<T> defaultConstructor = newDefaultConstructor(rawType);
     if (defaultConstructor != null) {
+      Log.e("TAG",
+              "《《《《《《《《《ConstructorConstructor typeOfT get defaultConstructor != null:"+defaultConstructor+" >>>>>>>>"+rawType);
       return defaultConstructor;
     }
 
@@ -98,6 +102,8 @@ public final class ConstructorConstructor {
 
   private <T> ObjectConstructor<T> newDefaultConstructor(Class<? super T> rawType) {
     try {
+      //实例化都是用rawType
+      Log.e("TAG", "ConstructorConstructor typeOfT newDefaultConstructor 实例化都是用rawType:"+rawType);
       final Constructor<? super T> constructor = rawType.getDeclaredConstructor();
       if (!constructor.isAccessible()) {
         accessor.makeAccessible(constructor);

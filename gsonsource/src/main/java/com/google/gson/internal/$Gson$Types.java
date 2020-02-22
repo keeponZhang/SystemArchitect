@@ -16,6 +16,8 @@
 
 package com.google.gson.internal;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -337,12 +339,16 @@ public final class $Gson$Types {
     return resolve(context, contextRawType, toResolve, new HashSet<TypeVariable>());
   }
 
+  //context:com.darren.architect_day01.data.entity.Result<java.util.List<T>>
+  //contextRawType:class com.darren.architect_day01.data.entity.Result
+  //toResolve:T
   private static Type resolve(Type context, Class<?> contextRawType, Type toResolve,
                               Collection<TypeVariable> visitedTypeVariables) {
     // this implementation is made a little more complicated in an attempt to avoid object-creation
     while (true) {
       if (toResolve instanceof TypeVariable) {
         TypeVariable<?> typeVariable = (TypeVariable<?>) toResolve;
+        Log.e("TAG", "$Gson$Types candidate resolve instanceof TypeVariable:");
         if (visitedTypeVariables.contains(typeVariable)) {
           // cannot reduce due to infinite recursion
           return toResolve;
@@ -351,6 +357,8 @@ public final class $Gson$Types {
         }
         toResolve = resolveTypeVariable(context, contextRawType, typeVariable);
         if (toResolve == typeVariable) {
+          Log.e("TAG",
+                  "********$Gson$Types candidate resolve toResolve == typeVariable:"+toResolve);
           return toResolve;
         }
 
@@ -415,8 +423,10 @@ public final class $Gson$Types {
       }
     }
   }
-
+  // context:com.darren.architect_day01.data.entity.Result<java.util.List<com.darren(TypeToken的type)
+  // .architect_day01.data.entity.User>>  contextRawType:class com.darren.architect_day01.data.entity.Result  unknown:T
   static Type resolveTypeVariable(Type context, Class<?> contextRawType, TypeVariable<?> unknown) {
+    //T是属于哪个类，这里是Result
     Class<?> declaredByRaw = declaringClassOf(unknown);
 
     // we can't reduce this further
