@@ -51,7 +51,15 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
       return null;
     }
 
+    Log.e("TAG",
+            "CollectionTypeAdapterFactory candidate create 要开始获取集合 类型啦(接着会调用reslove)type" +
+                    "(typeToken的type):"+type+
+            " " +
+            "rawType(typeToken的rawType)= "
+            +rawType);
     Type elementType = $Gson$Types.getCollectionElementType(type, rawType);
+    Log.e("TAG",
+            "CollectionTypeAdapterFactory candidate create 要开始获取集合集合类型的adapter啦 elementType:"+elementType);
     TypeAdapter<?> elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));
     ObjectConstructor<T> constructor = constructorConstructor.get(typeToken);
     Log.w("TAG", "CollectionTypeAdapterFactory candidate create!!!!!!!!!!!:");
