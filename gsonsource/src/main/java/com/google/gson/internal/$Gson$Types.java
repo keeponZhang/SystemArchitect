@@ -235,8 +235,19 @@ public final class $Gson$Types {
    * IntegerSet}, the result for when supertype is {@code Set.class} is {@code Set<Integer>} and the
    * result when the supertype is {@code Collection.class} is {@code Collection<Integer>}.
    */
+  //incorrectExample 返回
+  //context com.darren.architect_day01.data.entity.Result<java.util.List<com.darren.architect_day01.data.entity.User>>
+  //rawType:class com.darren.architect_day01.data.entity.Result
+  //toResolve:class com.darren.architect_day01.data.entity.Result
+
+  //correctExample 返回
+  //context com.darren.architect_day01.data.entity.Result<java.util.List<com.darren.architect_day01.data.entity.User>>
+  //rawType:class com.darren.architect_day01.data.entity.Result
+  //toResolve:class com.darren.architect_day01.data.entity.Result
   static Type getGenericSupertype(Type context, Class<?> rawType, Class<?> toResolve) {
+    //相等就直接返回
     if (toResolve == rawType) {
+      int tag = Log.e("TAG", "$Gson$Types  getGenericSupertype return context:" + context);
       return context;
     }
 
@@ -338,7 +349,7 @@ public final class $Gson$Types {
   public static Type resolve(Type context, Class<?> contextRawType, Type toResolve) {
     return resolve(context, contextRawType, toResolve, new HashSet<TypeVariable>());
   }
-
+  //incorrectSample：
   //context:com.darren.architect_day01.data.entity.Result<java.util.List<T>>
   //contextRawType:class com.darren.architect_day01.data.entity.Result
   //toResolve:T
@@ -348,7 +359,12 @@ public final class $Gson$Types {
     while (true) {
       if (toResolve instanceof TypeVariable) {
         TypeVariable<?> typeVariable = (TypeVariable<?>) toResolve;
-        Log.e("TAG", "$Gson$Types candidate resolve instanceof TypeVariable:");
+        //TypeToken的type不是一种不变的,例如Result<java.util.List<User>> ,第一次是Result<java.util
+        // .List<User>>，第二次是.List<User>
+        Log.e("TAG",
+                "$Gson$Types candidate resolve instanceof TypeVariable context(TypeToken的type)" +
+                        ":"+context+
+                        "  contextRawType(外层)"+contextRawType+"   toResolve（T或者E）="+toResolve);
         if (visitedTypeVariables.contains(typeVariable)) {
           // cannot reduce due to infinite recursion
           return toResolve;
@@ -423,8 +439,13 @@ public final class $Gson$Types {
       }
     }
   }
-  // context:com.darren.architect_day01.data.entity.Result<java.util.List<com.darren(TypeToken的type)
-  // .architect_day01.data.entity.User>>  contextRawType:class com.darren.architect_day01.data.entity.Result  unknown:T
+  //incorrect:
+  //context:Result<java.util.List<T>> (TypeToken的type)
+  //  contextRawType:class Result  unknown:T
+
+  //correct:
+  // context:Result<java.util.List<com.darren.architect_day01.data.entity.User>> (TypeToken的type)
+  //  contextRawType:class Result  unknown:T
   static Type resolveTypeVariable(Type context, Class<?> contextRawType, TypeVariable<?> unknown) {
     //T是属于哪个类，这里是Result
     Class<?> declaredByRaw = declaringClassOf(unknown);
@@ -433,7 +454,7 @@ public final class $Gson$Types {
     if (declaredByRaw == null) {
       return unknown;
     }
-
+//这两个例子都把context返回了
     Type declaredBy = getGenericSupertype(context, contextRawType, declaredByRaw);
     if (declaredBy instanceof ParameterizedType) {
       int index = indexOf(declaredByRaw.getTypeParameters(), unknown);

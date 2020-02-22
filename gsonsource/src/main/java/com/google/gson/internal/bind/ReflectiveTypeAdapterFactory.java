@@ -120,7 +120,8 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     final boolean jsonAdapterPresent = mapped != null;
 
     Log.e("TAG",
-            "ReflectiveTypeAdapterFactory candidate createBoundField 开始获取adapter啦 fieldType:"+fieldType);
+            "ReflectiveTypeAdapterFactory candidate createBoundField 开始获取adapter啦 " +
+                    "这里的fieldType其实就是Result里面的:"+fieldType);
     if (mapped == null) mapped = context.getAdapter(fieldType);
     Log.e("TAG",
             "ReflectiveTypeAdapterFactory candidate createBoundField 创建了adapter TypeToken " +
@@ -170,13 +171,20 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
           continue;
         }
         accessor.makeAccessible(field);
-        //candidate resolve前 属性field:data  type.getType()=com.darren.architect_day01.data.entity.Result<java.util.List<T>>     field.getGenericType()=T
+        //candidate resolve前 属性field:data  type.getType()=com.darren.architect_day01.data.entity
+        // .Result<java.util.List<T>>  com.darren.architect_day01.data.entity.Result     field
+        // .getGenericType()=T
         //field.getGenericType()获取属性的类型
         Log.w("TAG",
                 "ReflectiveTypeAdapterFactory candidate resolve前 属性field:"+field.getName()+"  " +
-                        "type.getType()="+type.getType()+"     field" +
-                ".getGenericType()="+field.getGenericType()+"  field.getType()="+field.getType());
+                        "type.getType()="+type.getType()+"   raw "+raw+"     field" +
+                ".getGenericType()="+field.getGenericType());
+        //incorrect 分别返回的是Result<java.util.List<T>>  Result 和T
+        //incorrect 分别返回的是Result<java.util.List<com.darren.architect_day01.data.entity.User>>  Result和T
         Type fieldType = $Gson$Types.resolve(type.getType(), raw, field.getGenericType());
+
+        ///incorrect 返回List<T>
+        // incorrect 返回的是List<com.darren.architect_day01.data.entity.User>
         Log.w("TAG", "ReflectiveTypeAdapterFactory getBoundFields candidate 属性field:"+field.getName()+" " +
                 "    获取到的fieldType="+fieldType);
         //这里根据属性去拿到多少个fieldNames

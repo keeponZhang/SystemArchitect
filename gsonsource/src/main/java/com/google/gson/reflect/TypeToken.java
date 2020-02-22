@@ -78,7 +78,7 @@ public class TypeToken<T> {
     this.type = $Gson$Types.canonicalize($Gson$Preconditions.checkNotNull(type));
     this.rawType = (Class<? super T>) $Gson$Types.getRawType(this.type);
     this.hashCode = this.type.hashCode();
-    Log.w("TAG", "TypeToken TypeToken typeOfT rawType: "+rawType+"  type="+type);
+    // Log.w("TAG", "TypeToken TypeToken typeOfT rawType: "+rawType+"  type="+type);
   }
 
   /**

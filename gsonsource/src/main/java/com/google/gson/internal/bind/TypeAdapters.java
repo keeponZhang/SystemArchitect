@@ -863,7 +863,9 @@ public final class TypeAdapters {
       @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
         Class<? super T> rawType = typeToken.getRawType();
         Log.e("TAG",
-                "TypeAdapters newFactory candidate create typeToken:"+typeToken+"      rawType="+rawType+" unboxed="+unboxed);
+                "TypeAdapters newFactory candidate create typeToken:"+typeToken+"      rawType" +
+                        "(最外层Bean)" +
+                        "="+rawType.getName()+"    unboxed(基本类型)="+unboxed);
         return (rawType == unboxed || rawType == boxed) ? (TypeAdapter<T>) typeAdapter : null;
       }
       @Override public String toString() {
