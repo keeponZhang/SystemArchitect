@@ -247,9 +247,10 @@ public final class $Gson$Types {
   static Type getGenericSupertype(Type context, Class<?> rawType, Class<?> toResolve) {
     //相等就直接返回
     if (toResolve == rawType) {
-      int tag = Log.e("TAG", "$Gson$Types  getGenericSupertype return context:" + context);
+      int tag = Log.e("TAG", "$Gson$Types  getGenericSupertype return 其中一种 context:" + context);
       return context;
     }
+    Log.e("TAG", "$Gson$Types getGenericSupertype return 另外情况:" );
 
     // we skip searching through interfaces if unknown is an interface
     if (toResolve.isInterface()) {
@@ -292,9 +293,12 @@ public final class $Gson$Types {
       // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead
       context = ((WildcardType)context).getUpperBounds()[0];
     }
+    Log.e("TAG", "$Gson$Types getSupertype 接着会调用reslove:" );
     checkArgument(supertype.isAssignableFrom(contextRawType));
-    return resolve(context, contextRawType,
-        $Gson$Types.getGenericSupertype(context, contextRawType, supertype));
+    Type resolve = resolve(context, contextRawType,
+            $Gson$Types.getGenericSupertype(context, contextRawType, supertype));
+    Log.e("TAG", "$Gson$Types getSupertype 调用后返回 resolve:"+resolve );
+    return resolve;
   }
 
   /**
@@ -312,8 +316,9 @@ public final class $Gson$Types {
    * @throws IllegalArgumentException if this type is not a collection.
    */
   public static Type getCollectionElementType(Type context, Class<?> contextRawType) {
+    Log.e("TAG", "$Gson$Types getCollectionElementType 接着会调用getSupertype:" );
     Type collectionType = getSupertype(context, contextRawType, Collection.class);
-
+    Log.e("TAG", "$Gson$Types getCollectionElementType 调用getSupertype 返回 collectionType:"+collectionType );
     if (collectionType instanceof WildcardType) {
       collectionType = ((WildcardType)collectionType).getUpperBounds()[0];
     }
@@ -361,7 +366,7 @@ public final class $Gson$Types {
         TypeVariable<?> typeVariable = (TypeVariable<?>) toResolve;
         //TypeToken的type不是一种不变的,例如Result<java.util.List<User>> ,第一次是Result<java.util
         // .List<User>>，第二次是.List<User>
-        Log.e("TAG",
+        Log.w("TAG",
                 "$Gson$Types candidate resolve instanceof TypeVariable context(TypeToken的type)" +
                         ":"+context+
                         "  contextRawType(外层)"+contextRawType+"   toResolve（T或者E）="+toResolve);

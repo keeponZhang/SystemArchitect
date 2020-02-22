@@ -1,9 +1,12 @@
 package com.darren.architect_day01.simple1;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,6 +15,7 @@ import com.darren.architect_day01.ParameterizedTypeImpl;
 import com.darren.architect_day01.R;
 import com.darren.architect_day01.data.entity.Article;
 import com.darren.architect_day01.data.entity.Result;
+import com.darren.architect_day01.data.entity.SimpleResult;
 import com.darren.architect_day01.data.entity.User;
 import com.darren.architect_day01.data.repsonse.BaseRes;
 import com.google.gson.Gson;
@@ -43,14 +47,23 @@ public class MainActivity extends AppCompatActivity {
     String testUrl = "";
     private TextView mTextView;
     OkHttpClient mOkHttpClient;
+    private ImageView mIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTextView = (TextView) findViewById(R.id.tv);
+        mIv = (ImageView) findViewById(R.id.iv);
         mOkHttpClient = new OkHttpClient.Builder()
                 .build();
+    }
+    public void testBitmap(View view) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.cspro_icon_robot);
+        mIv.setImageBitmap(bitmap);
+        // if(bitmap!=null){
+        //     bitmap.recycle();
+        // }
     }
 
     public void init(View view) {
@@ -89,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
         // incorrectSample(data2);
 
 
-        correctExample(data3);
+        // correctExample(data3);
+        correctExample2();
 
     }
 
@@ -120,6 +134,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    private void correctExample2() {
+        String data4 = "{\"data\":[{\"name\":\"keepon\"}" +
+                "]}";
+        SimpleResult<List<User>> listResult1 = fromJsonArray2(data4, User.class);
+        for (User datum : listResult1.data) {
+            if(datum instanceof User ){
+                User user = (User) datum;
+                Log.e("TAG", "MainActivity listResult1 test4 user:"+user);
+            }
+        }
+    }
 
     //这个肯定是不行的
     public  <T> Result<List<T>> fromJsonArrayError(String json) {
@@ -139,6 +164,13 @@ public class MainActivity extends AppCompatActivity {
         Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
         // 根据List<T>生成完整的Result<List<T>>
         Type type = new ParameterizedTypeImpl(Result.class, new Type[]{listType});
+        return new Gson().fromJson(json, type);
+    }
+    public  <T> SimpleResult<List<T>> fromJsonArray2(String json, Class<T> clazz) {
+        // 生成List<T> 中的 List<T>
+        Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
+        // 根据List<T>生成完整的Result<List<T>>
+        Type type = new ParameterizedTypeImpl(SimpleResult.class, new Type[]{listType});
         return new Gson().fromJson(json, type);
     }
 

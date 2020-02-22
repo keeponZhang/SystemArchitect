@@ -51,21 +51,24 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
       return null;
     }
 
-    Log.e("TAG",
-            "CollectionTypeAdapterFactory candidate create 要开始获取集合 类型啦(接着会调用reslove)type" +
+    Log.w("TAG赋值",
+            "CollectionTypeAdapterFactory candidate create 要开始获取集合 类型啦(接着会调用getCollectionElementType)type" +
                     "(typeToken的type):"+type+
             " " +
             "rawType(typeToken的rawType)= "
             +rawType);
     Type elementType = $Gson$Types.getCollectionElementType(type, rawType);
-    Log.e("TAG",
-            "CollectionTypeAdapterFactory candidate create 要开始获取集合集合类型的adapter啦 elementType:"+elementType);
+    Log.e("TAG赋值",
+            "CollectionTypeAdapterFactory candidate create 要开始获取集合集合类型的adapter啦 " +
+                    "此时集合类型elementType:"+elementType);
     TypeAdapter<?> elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));
     ObjectConstructor<T> constructor = constructorConstructor.get(typeToken);
-    Log.w("TAG", "CollectionTypeAdapterFactory candidate create!!!!!!!!!!!:");
+    Log.w("TAG赋值", "CollectionTypeAdapterFactory candidate 创建好了constructor " +
+            "和elementTypeAdapter，elementTypeAdapter="+elementTypeAdapter+ " 准备创建代理TypeAdapter");
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // create() doesn't define a type parameter
     TypeAdapter<T> result = new Adapter(gson, elementType, elementTypeAdapter, constructor);
+    Log.e("TAG赋值", "CollectionTypeAdapterFactory create 创建好了CollectionTypeAdapterFactory的 Adapter(CollectionTypeAdapterFactory的内部类adapter):" );
     return result;
   }
 
@@ -78,6 +81,7 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
         ObjectConstructor<? extends Collection<E>> constructor) {
       this.elementTypeAdapter =
           new TypeAdapterRuntimeTypeWrapper<E>(context, elementTypeAdapter, elementType);
+      Log.e("TAG赋值", "CollectionTypeAdapterFactory 创建代理 TypeAdapter，原宿主为elementTypeAdapter:"+elementTypeAdapter );
       this.constructor = constructor;
     }
 
@@ -86,13 +90,20 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
         in.nextNull();
         return null;
       }
-      Log.w("TAG", " CollectionTypeAdapterFactory Adapter read:");
+
 
       Collection<E> collection = constructor.construct();
+      Log.w("TAG赋值",
+              " CollectionTypeAdapterFactory Adapter 赋值 read 创建集合实例List   elementTypeAdapter:"+elementTypeAdapter);
       in.beginArray();
       while (in.hasNext()) {
+        Log.e("TAG赋值", "Adapter read 从流开始使用代理TypeAdapter（这个adapter针对集合Item的Model）迭代 读出model 赋值给集合" +
+                " " );
         E instance = elementTypeAdapter.read(in);
         collection.add(instance);
+        Log.w("TAG赋值",
+                "CollectionTypeAdapterFactory Adapter  通过elementTypeAdapter.read 创建集合实例中的Model成功，" +
+                        " Model为="+instance+"  并加入集合");
       }
       in.endArray();
       return collection;

@@ -100,11 +100,13 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       return null; // it's a primitive!
     }
 
-    Log.e("TAG", "ReflectiveTypeAdapterFactory create typeOfT candidate 创建啦 用于自定义model:"+type);
+    Log.e("TAG", "ReflectiveTypeAdapterFactory create typeOfT candidate 创建啦 用于自定义model的构造器:"+type);
     ObjectConstructor<T> constructor = constructorConstructor.get(type);
-    return new Adapter<T>(constructor, getBoundFields(gson, type, raw));
+    Adapter<T> tAdapter = new Adapter<>(constructor, getBoundFields(gson, type, raw));
+    Log.e("TAG", "ReflectiveTypeAdapterFactory create tAdapter 创建成功返回:"+tAdapter );
+    return tAdapter;
   }
-
+  boolean isInit = false;
   private BoundField createBoundField(
       final Gson context, final Field field, final String name,
       final TypeToken<?> fieldType, boolean serialize, boolean deserialize) {
@@ -118,13 +120,18 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     }
     //自定义model里面会匹配类如StringAdapter作为BoundField的变量
     final boolean jsonAdapterPresent = mapped != null;
-
+    String s = !isInit ? " ！！！！！！！！！！！！！！！！！！" : "????????????????????";
     Log.e("TAG",
-            "ReflectiveTypeAdapterFactory candidate createBoundField 开始获取adapter啦 " +
-                    "这里的fieldType其实就是Result里面的:"+fieldType);
+            s +"ReflectiveTypeAdapterFactory " +
+                    "candidate " +
+                    "createBoundField 开始根据fieldType(这里的fieldType其实就是最外层的)adapter获取啦 " +
+                    fieldType);
+    isInit = true;
     if (mapped == null) mapped = context.getAdapter(fieldType);
-    Log.e("TAG",
-            "ReflectiveTypeAdapterFactory candidate createBoundField 创建了adapter TypeToken " +
+    Log.w("TAG",
+            "ReflectiveTypeAdapterFactory candidate createBoundField 根据fieldType创建返回了adapter" +
+                    "(这里的adapter在BoundField里面的read方法调用) " +
+                    "TypeToken " +
                     "fieldType:"+fieldType+
             "  " +
             "创建了mapped " +
@@ -142,6 +149,8 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       @Override void read(JsonReader reader, Object value)
           throws IOException, IllegalAccessException {
         Object fieldValue = typeAdapter.read(reader);
+        Log.e("TAG",
+                "ReflectiveTypeAdapterFactory 赋值 read typeAdapter:"+typeAdapter +" field="+field.getName()+" fieldValue="+fieldValue);
         if (fieldValue != null || !isPrimitive) {
           field.set(value, fieldValue);
         }
@@ -155,6 +164,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
   }
 
   private Map<String, BoundField> getBoundFields(Gson context, TypeToken<?> type, Class<?> raw) {
+    Log.w("TAG", "ReflectiveTypeAdapterFactory 调用getBoundFields方法:" );
     Map<String, BoundField> result = new LinkedHashMap<String, BoundField>();
     if (raw.isInterface()) {
       return result;
@@ -163,8 +173,10 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     Type declaredType = type.getType();
     while (raw != Object.class) {
       Field[] fields = raw.getDeclaredFields();
+      for (Field  field : fields) {
+        Log.d("TAG", "ReflectiveTypeAdapterFactory getBoundFields field:"+field );
+      }
       for (Field field : fields) {
-
         boolean serialize = excludeField(field, true);
         boolean deserialize = excludeField(field, false);
         if (!serialize && !deserialize) {
@@ -174,25 +186,30 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
         //candidate resolve前 属性field:data  type.getType()=com.darren.architect_day01.data.entity
         // .Result<java.util.List<T>>  com.darren.architect_day01.data.entity.Result     field
         // .getGenericType()=T
-        //field.getGenericType()获取属性的类型
+        //field.getGenericType()获取属性的泛型类型
+        //field.getGType()获取属性的类型（如果属性不是泛型，两个没多大区别）
         Log.w("TAG",
-                "ReflectiveTypeAdapterFactory candidate resolve前 属性field:"+field.getName()+"  " +
-                        "type.getType()="+type.getType()+"   raw "+raw+"     field" +
-                ".getGenericType()="+field.getGenericType());
+                "ReflectiveTypeAdapterFactory getBoundFields candidate resolve前" +
+                        "(准备调用reslove方法，返回里面的一层)" +
+                        " " +
+                        "属性field:"+field.getName()+"  " +
+                        "（type是typeToken）type.getType()="+type.getType()+"   raw "+raw+"     " +
+                "field.getGenericType()="+field.getGenericType()+" field.getType:"+field.getType());
         //incorrect 分别返回的是Result<java.util.List<T>>  Result 和T
         //incorrect 分别返回的是Result<java.util.List<com.darren.architect_day01.data.entity.User>>  Result和T
         Type fieldType = $Gson$Types.resolve(type.getType(), raw, field.getGenericType());
-
         ///incorrect 返回List<T>
         // incorrect 返回的是List<com.darren.architect_day01.data.entity.User>
-        Log.w("TAG", "ReflectiveTypeAdapterFactory getBoundFields candidate 属性field:"+field.getName()+" " +
-                "    获取到的fieldType="+fieldType);
+        Log.w("TAG", "ReflectiveTypeAdapterFactory getBoundFields candidate 调用reslove方法后 " +
+                "获取到的fieldType="+fieldType+"  准备调用createBoundField");
         //这里根据属性去拿到多少个fieldNames
         List<String> fieldNames = getFieldNames(field);
         BoundField previous = null;
         for (int i = 0, size = fieldNames.size(); i < size; ++i) {
           String name = fieldNames.get(i);
           if (i != 0) serialize = false; // only serialize the default name
+          Log.e("TAG",
+                  "ReflectiveTypeAdapterFactory getBoundFields 准备调用createBoundField  name: "+name );
           BoundField boundField = createBoundField(context, field, name,
               TypeToken.get(fieldType), serialize, deserialize);
           BoundField replaced = result.put(name, boundField);
@@ -240,13 +257,17 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       }
 
       T instance = constructor.construct();
-      Log.w("TAG", "Adapter  ReflectiveTypeAdapterFactory read:");
+      Log.w("TAG赋值",
+              "Adapter  ReflectiveTypeAdapterFactory read 通过constructor创建了实例 ,实例instance为 :"+instance
+              );
 
       try {
         in.beginObject();
         while (in.hasNext()) {
           String name = in.nextName();
-          Log.e("TAG", "Adapter read  name:"+name);
+          Log.e("TAG赋值",
+                  "ReflectiveTypeAdapterFactory Adapter read  准备要把实例instance "+instance+" 赋值给name" +
+                          "=" +name);
           BoundField field = boundFields.get(name);
           if (field == null || !field.deserialized) {
             in.skipValue();

@@ -87,7 +87,7 @@ public final class ConstructorConstructor {
     ObjectConstructor<T> defaultConstructor = newDefaultConstructor(rawType);
     if (defaultConstructor != null) {
       Log.e("TAG",
-              "《《《《《《《《《ConstructorConstructor typeOfT get defaultConstructor != null:"+defaultConstructor+" >>>>>>>>"+rawType);
+              "《《《《《《《《《ConstructorConstructor typeOfT 构造器创建成功 get defaultConstructor != null:"+defaultConstructor+" >>>>>>>>"+rawType);
       return defaultConstructor;
     }
 
