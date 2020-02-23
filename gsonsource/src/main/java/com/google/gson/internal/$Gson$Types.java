@@ -40,6 +40,7 @@ import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
  */
 public final class $Gson$Types {
   static final Type[] EMPTY_TYPE_ARRAY = new Type[] {};
+  public static final String TAG_赋值 = "TAG赋值";
 
   private $Gson$Types() {
     throw new UnsupportedOperationException();
@@ -103,35 +104,70 @@ public final class $Gson$Types {
    * type is {@link Serializable}.
    */
   public static Type canonicalize(Type type) {
+    Log.e("TAG", "$Gson$Types canonicalize 参数type:" +type);
     if (type instanceof Class) {
       Class<?> c = (Class<?>) type;
-      return c.isArray() ? new GenericArrayTypeImpl(canonicalize(c.getComponentType())) : c;
+      boolean isArray = c.isArray();
+      if(isArray){
+        Log.e("TAG",
+                "$Gson$Types canonicalize方法 isArray 准备递归调用canonicalize 传入参数:"+c.getComponentType() );
+        GenericArrayTypeImpl genericArrayType =
+                new GenericArrayTypeImpl(canonicalize(c.getComponentType()));
+        Log.e(TAG_赋值, "$Gson$Types canonicalize方法 情况1 return 创建好的结果 genericArrayType:" +genericArrayType);
+        return genericArrayType;
+      }else{
+        Log.e(TAG_赋值, "$Gson$Types canonicalize方法 情况1 return 结果 c:" +c);
+        return c;
+      }
 
     } else if (type instanceof ParameterizedType) {
       ParameterizedType p = (ParameterizedType) type;
-      return new ParameterizedTypeImpl(p.getOwnerType(),
-          p.getRawType(), p.getActualTypeArguments());
+      Type 泛型 = null;
+      Type 原始类型 = ((ParameterizedType) type).getRawType();
+      if(((ParameterizedType) type).getActualTypeArguments().length>0){
+        泛型 = ((ParameterizedType) type).getActualTypeArguments()[0];
+      }
 
+      Log.w(TAG_赋值, "<<<<----$Gson$Types canonicalize方法 情况2 参数 准备创建ParameterizedTypeImpl" +
+              " " +
+              "type:" +type+"  原始类型="+原始类型+"  泛型="+泛型);
+      ParameterizedTypeImpl parameterizedType = new ParameterizedTypeImpl(p.getOwnerType(),
+              p.getRawType(), p.getActualTypeArguments());
+      Log.w(TAG_赋值, "---->>>$Gson$Types canonicalize方法 ParameterizedTypeImpl创建成功" +
+              "(###########这里对理解非常重要，基本是一层套一层，最里层创建完了会回溯到TypeToken构造函数第二行#############)" +
+              " " +
+              "return情况2 结果" +
+              "  " +
+              "parameterizedType:"+parameterizedType);
+      return parameterizedType;
     } else if (type instanceof GenericArrayType) {
       GenericArrayType g = (GenericArrayType) type;
-      return new GenericArrayTypeImpl(g.getGenericComponentType());
+      GenericArrayTypeImpl genericArrayType = new GenericArrayTypeImpl(g.getGenericComponentType());
+      Log.e(TAG_赋值, "$Gson$Types canonicalize方法 情况3 结果 genericArrayType:" +genericArrayType);
+      return genericArrayType;
 
     } else if (type instanceof WildcardType) {
       WildcardType w = (WildcardType) type;
-      return new WildcardTypeImpl(w.getUpperBounds(), w.getLowerBounds());
+      WildcardTypeImpl wildcardType = new WildcardTypeImpl(w.getUpperBounds(), w.getLowerBounds());
+      Log.e(TAG_赋值, "$Gson$Types canonicalize方法 情况4 结果 wildcardType:" +wildcardType);
+      return wildcardType;
 
     } else {
       // type is either serializable as-is or unsupported
+      Log.e(TAG_赋值, "$Gson$Types canonicalize方法 情况5 直接返回type(例如T):"+type );
       return type;
     }
   }
 
   public static Class<?> getRawType(Type type) {
+
     if (type instanceof Class<?>) {
       // type is a normal class.
+      Log.e(TAG_赋值 ,"$Gson$Types getRawType 情况1 参数 type:"+type );
       return (Class<?>) type;
 
     } else if (type instanceof ParameterizedType) {
+      Log.e(TAG_赋值, "$Gson$Types getRawType 情况2 参数 type:"+type );
       ParameterizedType parameterizedType = (ParameterizedType) type;
 
       // I'm not exactly sure why getRawType() returns Type instead of Class.
@@ -142,15 +178,18 @@ public final class $Gson$Types {
       return (Class<?>) rawType;
 
     } else if (type instanceof GenericArrayType) {
+      Log.e(TAG_赋值, "$Gson$Types getRawType  情况3参数 type:"+type );
       Type componentType = ((GenericArrayType)type).getGenericComponentType();
       return Array.newInstance(getRawType(componentType), 0).getClass();
 
     } else if (type instanceof TypeVariable) {
+      Log.e(TAG_赋值, "$Gson$Types getRawType (type 为T，返回Object) 情况4参数 type:"+type );
       // we could use the variable's bounds, but that won't work if there are multiple.
       // having a raw type that's more general than necessary is okay
       return Object.class;
 
     } else if (type instanceof WildcardType) {
+      Log.e(TAG_赋值, "$Gson$Types getRawType (一般是type做参数) 情况5参数 type:"+type );
       return getRawType(((WildcardType) type).getUpperBounds()[0]);
 
     } else {
@@ -246,20 +285,29 @@ public final class $Gson$Types {
   //toResolve:class com.darren.architect_day01.data.entity.Result
   static Type getGenericSupertype(Type context, Class<?> rawType, Class<?> toResolve) {
     //相等就直接返回
+    Log.w("TAG", "$Gson$Types getGenericSupertype 参数 context:" +context+" rawType"+rawType+" " +
+            "toResolve="+toResolve);
     if (toResolve == rawType) {
-      int tag = Log.e("TAG", "$Gson$Types  getGenericSupertype return 其中一种 context:" + context);
+      int tag = Log.e("TAG", "$Gson$Types  getGenericSupertype return 第一种(toResolve == rawType) " +
+              "context:" + context);
       return context;
     }
-    Log.e("TAG", "$Gson$Types getGenericSupertype return 另外情况:" );
-
     // we skip searching through interfaces if unknown is an interface
     if (toResolve.isInterface()) {
       Class<?>[] interfaces = rawType.getInterfaces();
       for (int i = 0, length = interfaces.length; i < length; i++) {
         if (interfaces[i] == toResolve) {
-          return rawType.getGenericInterfaces()[i];
+          Type genericInterface = rawType.getGenericInterfaces()[i];
+          Log.e("TAG",
+                  "$Gson$Types getGenericSupertype return 第二种情况  genericInterface :" +genericInterface);
+          return genericInterface;
         } else if (toResolve.isAssignableFrom(interfaces[i])) {
-          return getGenericSupertype(rawType.getGenericInterfaces()[i], interfaces[i], toResolve);
+          Log.e("TAG", "$Gson$Types getGenericSupertype 第三种情况  递归调用 getGenericSupertype:" );
+          Type genericSupertype =
+                  getGenericSupertype(rawType.getGenericInterfaces()[i], interfaces[i], toResolve);
+          Log.e("TAG",
+                  "$Gson$Types getGenericSupertype return 第三种情况  genericSupertype :" +genericSupertype);
+          return genericSupertype;
         }
       }
     }
@@ -269,14 +317,23 @@ public final class $Gson$Types {
       while (rawType != Object.class) {
         Class<?> rawSupertype = rawType.getSuperclass();
         if (rawSupertype == toResolve) {
-          return rawType.getGenericSuperclass();
+          Type genericSuperclass = rawType.getGenericSuperclass();
+          Log.e("TAG",
+                  "$Gson$Types getGenericSupertype return 第四种情况  genericSuperclass :" +genericSuperclass);
+          return genericSuperclass;
         } else if (toResolve.isAssignableFrom(rawSupertype)) {
-          return getGenericSupertype(rawType.getGenericSuperclass(), rawSupertype, toResolve);
+          Log.e("TAG", "$Gson$Types getGenericSupertype 第五种情况  递归调用 getGenericSupertype:" );
+          Type genericSupertype =
+                  getGenericSupertype(rawType.getGenericSuperclass(), rawSupertype, toResolve);
+          Log.e("TAG",
+                  "$Gson$Types getGenericSupertype return 第五种情况  genericSupertype :" +genericSupertype);
+          return genericSupertype;
         }
         rawType = rawSupertype;
       }
     }
-
+    Log.e("TAG",
+            "$Gson$Types getGenericSupertype return 第六种情况  toResolve :" +toResolve);
     // we can't resolve this further
     return toResolve;
   }
@@ -293,10 +350,20 @@ public final class $Gson$Types {
       // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead
       context = ((WildcardType)context).getUpperBounds()[0];
     }
-    Log.e("TAG", "$Gson$Types getSupertype 接着会调用reslove:" );
+    Log.e("TAG", "$Gson$Types getSupertype 接着会调用 <<$Gson$Types.getGenericSupertype>> context" +
+            "(typeToken的Type):"+
+    context+"  contextRawType(typeToken的rawType)="+contextRawType +" supertype="+supertype );
+    Type toResolve = $Gson$Types.getGenericSupertype(context, contextRawType, supertype);
+    Log.e("TAG",
+            "$Gson$Types getSupertype  <<getGenericSupertype>> 调用完毕返回 toResolve" +
+                    "(resolve的toResolve参数) " +
+                    "="+toResolve+
+            "  接着会调用<<reslove>> context(typeToken的Type):"+context+" contextRawType" +
+                    "(typeToken的rawType)="+contextRawType );
+
     checkArgument(supertype.isAssignableFrom(contextRawType));
     Type resolve = resolve(context, contextRawType,
-            $Gson$Types.getGenericSupertype(context, contextRawType, supertype));
+            toResolve);
     Log.e("TAG", "$Gson$Types getSupertype 调用后返回 resolve:"+resolve );
     return resolve;
   }
@@ -316,9 +383,12 @@ public final class $Gson$Types {
    * @throws IllegalArgumentException if this type is not a collection.
    */
   public static Type getCollectionElementType(Type context, Class<?> contextRawType) {
-    Log.e("TAG", "$Gson$Types getCollectionElementType 接着会调用getSupertype:" );
+    Log.e("TAG",
+            "$Gson$Types getCollectionElementType 接着会调用<<getSupertype>> 返回集合类型 contextRawType" +
+                    "(typeToken.getRawType()):" +contextRawType);
     Type collectionType = getSupertype(context, contextRawType, Collection.class);
-    Log.e("TAG", "$Gson$Types getCollectionElementType 调用getSupertype 返回 collectionType:"+collectionType );
+    Log.e("TAG",
+            "$Gson$Types getCollectionElementType 调用getSupertype 返回的集合类型 collectionType:"+collectionType );
     if (collectionType instanceof WildcardType) {
       collectionType = ((WildcardType)collectionType).getUpperBounds()[0];
     }
@@ -358,88 +428,143 @@ public final class $Gson$Types {
   //context:com.darren.architect_day01.data.entity.Result<java.util.List<T>>
   //contextRawType:class com.darren.architect_day01.data.entity.Result
   //toResolve:T
+
+  // //	Type只有五种类型：
+  // //	Class:所代表的是一个确定的类，比如Integer,String,Double等
+  // //	ParameterizedType:ParameterizedType代表完整的泛型表达式
+  // //	TypeVariable:TypeVariable代表泛型变量的符号即T,U等
+  // //	WildcardType:WildcardType代表通配符,<? extends Integer>,<? super String>,或者<?>等
+  // //	GenericArrayType:GenericArrayType代表数组类型
   private static Type resolve(Type context, Class<?> contextRawType, Type toResolve,
                               Collection<TypeVariable> visitedTypeVariables) {
     // this implementation is made a little more complicated in an attempt to avoid object-creation
+    Log.w("TAG", "$Gson$Types resolve 参数 context:" +context+" contextRawType="+contextRawType+" " +
+            "toResolve(Bean的泛型类型)="+toResolve);
     while (true) {
       if (toResolve instanceof TypeVariable) {
         TypeVariable<?> typeVariable = (TypeVariable<?>) toResolve;
         //TypeToken的type不是一种不变的,例如Result<java.util.List<User>> ,第一次是Result<java.util
         // .List<User>>，第二次是.List<User>
-        Log.w("TAG",
-                "$Gson$Types candidate resolve instanceof TypeVariable context(TypeToken的type)" +
+        Log.e("TAG",
+                "$Gson$Types  <<resolve>>情况1 instanceof TypeVariable(泛型变量的符号即T,U等) context(TypeToken的type)" +
                         ":"+context+
                         "  contextRawType(外层)"+contextRawType+"   toResolve（T或者E）="+toResolve);
         if (visitedTypeVariables.contains(typeVariable)) {
           // cannot reduce due to infinite recursion
+          Log.e("TAG", "$Gson$Types resolve  return情况1(条件visitedTypeVariables.contains" +
+                  "(typeVariable))" +
+                  ":" );
           return toResolve;
         } else {
           visitedTypeVariables.add(typeVariable);
         }
+        Log.e("TAG", "$Gson$Types resolve 情况1(TypeVariable泛型变量的符号即T,U等)  准备调用<<resolveTypeVariable>>开始:" );
         toResolve = resolveTypeVariable(context, contextRawType, typeVariable);
+        Log.e("TAG", "$Gson$Types resolve 情况1 调用<<resolveTypeVariable>>返回的 toResolve:" +toResolve);
         if (toResolve == typeVariable) {
           Log.e("TAG",
-                  "********$Gson$Types candidate resolve toResolve == typeVariable:"+toResolve);
+                  "********$Gson$Types candidate resolve return情况1 toResolve == typeVariable:"+toResolve);
           return toResolve;
+        }else{
+          Log.e("TAG", "$Gson$Types 情况1 继续调用resolve toResolve:" +toResolve);
         }
 
       } else if (toResolve instanceof Class && ((Class<?>) toResolve).isArray()) {
         Class<?> original = (Class<?>) toResolve;
         Type componentType = original.getComponentType();
+        Log.e("TAG", "$Gson$Types resolve 情况2（toResolve instanceof Class && ((Class<?>) " +
+                "toResolve).isArray()）调用resolve:"+toResolve );
         Type newComponentType = resolve(context, contextRawType, componentType, visitedTypeVariables);
-        return componentType == newComponentType
-            ? original
-            : arrayOf(newComponentType);
+        Log.e("TAG", "$Gson$Types resolve 情况2调用resolve 返回 newComponentType:"+newComponentType );
 
+        Type type = componentType == newComponentType
+                ? original
+                : arrayOf(newComponentType);
+        Log.e("TAG", "$Gson$Types resolve return 情况2 type:" +type);
+        return type;
       } else if (toResolve instanceof GenericArrayType) {
         GenericArrayType original = (GenericArrayType) toResolve;
         Type componentType = original.getGenericComponentType();
+        Log.e("TAG",
+                "$Gson$Types resolve (GenericArrayType 代表数组类型)情况3调用resolve:" +toResolve);
         Type newComponentType = resolve(context, contextRawType, componentType, visitedTypeVariables);
-        return componentType == newComponentType
-            ? original
-            : arrayOf(newComponentType);
-
+        Log.e("TAG", "$Gson$Types resolve 情况3调用resolve 返回 newComponentType:"+newComponentType );
+        GenericArrayType genericArrayType = componentType == newComponentType
+                ? original
+                : arrayOf(newComponentType);
+        Log.e("TAG", "$Gson$Types resolve return情况3  genericArrayType:" +genericArrayType);
+        return genericArrayType;
       } else if (toResolve instanceof ParameterizedType) {
         ParameterizedType original = (ParameterizedType) toResolve;
         Type ownerType = original.getOwnerType();
+        Log.e("TAG", "$Gson$Types resolve （ParameterizedType 完整的泛型表达式）情况4调用resolve:"+toResolve+" " +
+                "但是此时传入的reslove参数是=" +ownerType);
         Type newOwnerType = resolve(context, contextRawType, ownerType, visitedTypeVariables);
+        Log.e("TAG", "$Gson$Types resolve 情况4调用resolve 返回 newOwnerType:"+newOwnerType );
         boolean changed = newOwnerType != ownerType;
 
         Type[] args = original.getActualTypeArguments();
+        Log.w("TAG", "$Gson$Types resolve 情况4 args( original.getActualTypeArguments):" +args);
         for (int t = 0, length = args.length; t < length; t++) {
+          Log.e("TAG",
+                  "$Gson$Types resolve 情况4 for中调用resolve t:"+t+" args[t]（其实是resolve参数）="+args[t] );
           Type resolvedTypeArgument = resolve(context, contextRawType, args[t], visitedTypeVariables);
+          Log.e("TAG", "$Gson$Types resolve 情况4 for中调用resolve 返回 t:"+t+"  resolvedTypeArgument="+resolvedTypeArgument );
           if (resolvedTypeArgument != args[t]) {
             if (!changed) {
               args = args.clone();
               changed = true;
             }
             args[t] = resolvedTypeArgument;
+            Log.e("TAG", "$Gson$Types resolve 情况4 返回后 因为(resolvedTypeArgument != args[t]) 更新 " +
+                    "args[t]:" );
           }
         }
 
-        return changed
-            ? newParameterizedTypeWithOwner(newOwnerType, original.getRawType(), args)
-            : original;
+        ParameterizedType parameterizedType = changed
+                ? newParameterizedTypeWithOwner(newOwnerType, original.getRawType(), args)
+                : original;
+        if(changed){
+          Log.e("TAG",
+                  "$Gson$Types resolve return情况4 changed 为true parameterizedType:" +parameterizedType);
+        }else{
+          Log.e("TAG",
+                  "$Gson$Types resolve return情况4 changed 为false（parameterizedType其实是最初传进来的） " +
+                          "parameterizedType:" +parameterizedType);
+        }
 
+        return parameterizedType;
       } else if (toResolve instanceof WildcardType) {
         WildcardType original = (WildcardType) toResolve;
         Type[] originalLowerBound = original.getLowerBounds();
         Type[] originalUpperBound = original.getUpperBounds();
 
         if (originalLowerBound.length == 1) {
+          Log.e("TAG", "$Gson$Types resolve （WildcardType代表通配符,<? extends Integer>）情况5 中调用resolve :" );
           Type lowerBound = resolve(context, contextRawType, originalLowerBound[0], visitedTypeVariables);
+          Log.e("TAG", "$Gson$Types resolve 情况5 中调用resolve 返回 lowerBound:"+lowerBound );
+
           if (lowerBound != originalLowerBound[0]) {
-            return supertypeOf(lowerBound);
+            WildcardType wildcardType = supertypeOf(lowerBound);
+            Log.e("TAG", "$Gson$Types resolve return 情况5 wildcardType:" +wildcardType);
+            return wildcardType;
           }
         } else if (originalUpperBound.length == 1) {
+          Log.e("TAG", "$Gson$Types resolve 情况5 中调用 originalUpperBound.length == 1 resolve :" );
           Type upperBound = resolve(context, contextRawType, originalUpperBound[0], visitedTypeVariables);
+          Log.e("TAG", "$Gson$Types resolve 情况5 中调用 originalUpperBound.length == 1 调用resolve 返回 upperBound" +upperBound);
+
           if (upperBound != originalUpperBound[0]) {
-            return subtypeOf(upperBound);
+            WildcardType wildcardType = subtypeOf(upperBound);
+            Log.e("TAG", "$Gson$Types resolve return 情况6 wildcardType:" +wildcardType);
+            return wildcardType;
           }
         }
+        Log.e("TAG", "$Gson$Types resolve return 情况7 original:"+original );
         return original;
 
       } else {
+        Log.e("TAG", "$Gson$Types resolve 直接return情况8 toResolve:"+toResolve );
         return toResolve;
       }
     }
@@ -454,17 +579,25 @@ public final class $Gson$Types {
   static Type resolveTypeVariable(Type context, Class<?> contextRawType, TypeVariable<?> unknown) {
     //T是属于哪个类，这里是Result
     Class<?> declaredByRaw = declaringClassOf(unknown);
-
+  Log.e("TAG",
+          "$Gson$Types resolveTypeVariable 参数 context:"+context+" contextRawType="+contextRawType+"  unknown="+unknown );
     // we can't reduce this further
     if (declaredByRaw == null) {
+      Log.e("TAG", "$Gson$Types resolveTypeVariable 返回情况0:" );
       return unknown;
     }
 //这两个例子都把context返回了
+    Log.w("TAG",
+            "$Gson$Types resolveTypeVariable 准备调用<<getGenericSupertype>> 此时 toResolve参数为:"+declaredByRaw );
     Type declaredBy = getGenericSupertype(context, contextRawType, declaredByRaw);
+    Log.w("TAG", "$Gson$Types resolveTypeVariable调用<<getGenericSupertype>>后返回 declaredBy:"+declaredBy );
     if (declaredBy instanceof ParameterizedType) {
       int index = indexOf(declaredByRaw.getTypeParameters(), unknown);
-      return ((ParameterizedType) declaredBy).getActualTypeArguments()[index];
+      Type actualTypeArgument = ((ParameterizedType) declaredBy).getActualTypeArguments()[index];
+      Log.e("TAG", "$Gson$Types resolveTypeVariable 返回情况1 actualTypeArgument:"+actualTypeArgument );
+      return actualTypeArgument;
     }
+    Log.e("TAG", "$Gson$Types resolveTypeVariable 返回情况2 unknown:"+unknown );
 
     return unknown;
   }
@@ -500,6 +633,8 @@ public final class $Gson$Types {
 
     public ParameterizedTypeImpl(Type ownerType, Type rawType, Type... typeArguments) {
       // require an owner type if the raw type needs it
+      Log.w("TAG", "ParameterizedTypeImpl 传入的参数 ownerType:"+ownerType+" rawType" +
+              "="+rawType+"  typeArguments(实际泛型类)="+(typeArguments!=null?typeArguments[0]:"空") );
       if (rawType instanceof Class<?>) {
         Class<?> rawTypeAsClass = (Class<?>) rawType;
         boolean isStaticOrTopLevelClass = Modifier.isStatic(rawTypeAsClass.getModifiers())
@@ -507,14 +642,35 @@ public final class $Gson$Types {
         checkArgument(ownerType != null || isStaticOrTopLevelClass);
       }
 
-      this.ownerType = ownerType == null ? null : canonicalize(ownerType);
+
+      if(ownerType == null){
+        this.ownerType = null;
+      }else{
+        Log.e("TAG",
+                "ParameterizedTypeImpl  调用canonicalize传入 ownerType  :"+ownerType );
+        this.ownerType = canonicalize(ownerType);
+      }
+      Log.w("TAG", "ParameterizedTypeImpl 创建成功并返回this.ownerType:"+this.ownerType );
+      Log.e("TAG",
+              "ParameterizwedTypeImpl  调用canonicalize传入 rawType :"+rawType );
       this.rawType = canonicalize(rawType);
+      Log.w("TAG", "ParameterizedTypeImpl 创建成功并返回this.rawType:"+this.rawType );
       this.typeArguments = typeArguments.clone();
       for (int t = 0, length = this.typeArguments.length; t < length; t++) {
         checkNotNull(this.typeArguments[t]);
         checkNotPrimitive(this.typeArguments[t]);
+        Log.w("TAG",
+                "ParameterizedTypeImpl  [注意这里是for,这里有可能递归] 调用 canonicalize  t:"+t+"  传入"+
+                        "  typeArguments[t]"
+                       + typeArguments[t] );
         this.typeArguments[t] = canonicalize(this.typeArguments[t]);
+        Log.e("TAG", "ParameterizedTypeImpl ParameterizedTypeImpl" +
+                "(canonicalize调用返回的有可能也是一个ParameterizedTypeImpl) " +
+                "递归结束一次(最里面的最先结束，这里是T或者User)---------------------this.typeArguments[t]:" +this.typeArguments[t]);
       }
+      Log.e("TAG", "ParameterizedTypeImpl [ParameterizedTypeImpl  实例化完成] " +
+              "设置完成后rawType:"+rawType+"  " +
+              "typeArguments[t]  "+(typeArguments.length>0?typeArguments[0]:"空空如也") );
     }
 
     public Type[] getActualTypeArguments() {

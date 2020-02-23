@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.darren.architect_day01.BaseApplication;
-import com.darren.architect_day01.ParameterizedTypeImpl;
+import com.darren.architect_day01.MyParameterizedTypeImpl;
 import com.darren.architect_day01.R;
 import com.darren.architect_day01.data.entity.Article;
 import com.darren.architect_day01.data.entity.Result;
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
@@ -42,12 +41,16 @@ import okhttp3.Response;
 
 import static android.content.ContentValues.TAG;
 
-public class MainActivity extends AppCompatActivity {
+public class AppMainActivity extends AppCompatActivity {
 
     String testUrl = "";
     private TextView mTextView;
     OkHttpClient mOkHttpClient;
     private ImageView mIv;
+    private String mData3;
+    private String mData2;
+    private String mData4;
+    private String mData1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,18 @@ public class MainActivity extends AppCompatActivity {
         mIv = (ImageView) findViewById(R.id.iv);
         mOkHttpClient = new OkHttpClient.Builder()
                 .build();
+
+        // data 为 object 的情况
+        mData1 = "{\"code\":\"0\",\"message\":\"success\",\"data\":{\"name\":\"armyliu\"}}";
+// data 为 array 的情况
+        //解析不是按顺序的
+        mData2 = "{\"code\":\"0\",\"message\":\"success\",\"data\":[{\"name\":\"怪盗kidou\"}," +
+                "{\"name\":\"keepon\"}" +
+                "]}";
+        mData3 = "{\"code\":\"0\",\"message\":\"success\",\"data\":[{\"name\":\"怪盗kidou\"}" +
+                "]}";
+        mData4 = "{\"data\":[{\"name\":\"keepon\"}" +
+                "]}";
     }
     public void testBitmap(View view) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.cspro_icon_robot);
@@ -77,71 +92,86 @@ public class MainActivity extends AppCompatActivity {
                 .addInterceptor(new LastInternetInterceptor())
                 .build();
     }
-
     public void gsonDemo(View view) {
-        // test0();
-        // test1();
-        // test2();
-        // test3();
-        test4();
-
+        testListUser();
     }
-
-    private void test4() {
-        // data 为 object 的情况
-        String data1 = "{\"code\":\"0\",\"message\":\"success\",\"data\":{}}";
-// data 为 array 的情况
-        //解析不是按顺序的
-        String data2 = "{\"code\":\"0\",\"message\":\"success\",\"data\":[{\"name\":\"怪盗kidou\"}" +
-                "{\"name\":\"keepon\"}" +
-                "]}";
-        String data3 = "{\"code\":\"0\",\"message\":\"success\",\"data\":[{\"name\":\"怪盗kidou\"}" +
-                "]}";
-
-
-        // incorrectSample(data2);
-
-
-        // correctExample(data3);
+    public void gsonDemoCorrect1(View view) {
+        correctExample();
+    }
+    public void gsonDemoCorrect2(View view) {
         correctExample2();
-
+    }
+    public void gsonDemoInCorrect(View view) {
+        incorrectSample();
+    }
+    public void gsonDemoInCorrect2(View view) {
+        incorrectSample2();
     }
 
-    private void incorrectSample(String data2) {
+
+    private void incorrectSample() {
         //断点调试返回的是com.darren.architect_day01.data.entity.Result<java.util.List<T>>
-        Result<List<Object>> listResult = fromJsonArrayError(data2);
+        Result<List<Object>> listResult = fromJsonArrayError(mData3);
+        Log.e("TAG", "AppMainActivity incorrectSample Result:" +listResult);
         if(listResult!=null&&listResult.data!=null){
             for (Object datum : listResult.data) {
                 if(datum instanceof User){
                     User user = (User) datum;
-                    Log.e("TAG", "MainActivity test4 user:"+user.name);
+                    Log.e("TAG", "AppMainActivity incorrectSample user:"+user.name);
                 }
                 if(datum instanceof List){
-                    Log.e("TAG", "MainActivity test4  is List:");
+                    Log.e("TAG", "AppMainActivity incorrectSample  is List:");
                 }
-                Log.e("TAG", "MainActivity test4 listResult-------------:" +datum+" listResult" +
+                Log.e("TAG", "AppMainActivity for incorrectSample Result-------------:" +datum+" " +
+                        "listResult" +
                         ".data="+listResult.data);
             }
         }
     }
+    private void incorrectSample2() {
+        //断点调试返回的是com.darren.architect_day01.data.entity.Result<java.util.List<T>>
+        SimpleResult<List<Object>> listResult = fromJsonArrayError2(mData4);
+        Log.e("TAG", "AppMainActivity incorrectSample2 SimpleResult:" +listResult);
+        if(listResult!=null&&listResult.data!=null){
+            for (Object datum : listResult.data) {
+                if(datum instanceof User){
+                    User user = (User) datum;
+                    Log.e("TAG", "AppMainActivity incorrectSample2  SimpleResult user:"+user.name);
+                }
+                if(datum instanceof List){
+                    Log.e("TAG", "AppMainActivity incorrectSample2  SimpleResult is List:");
+                }
+                Log.e("TAG",
+                        "AppMainActivity for incorrectSample2 SimpleResult-------------:" +datum+
+                                " listResult" +
+                        ".data="+listResult.data);
+            }
+        }
+    }
+    public void gsonDemoObject(View view) {
+        Result<User> listResult1 = fromJsonObject(mData1, User.class);
+        Log.e("TAG", "AppMainActivity gsonDemoObject Result:" +listResult1);
+        User data = listResult1.data;
+        Log.e("TAG", "AppMainActivity Result gsonDemoObject data:"+data);
 
-    private void correctExample(String data2) {
-        Result<List<User>> listResult1 = fromJsonArray(data2, User.class);
+    }
+    private void correctExample() {
+        Result<List<User>> listResult1 = fromJsonArray(mData3, User.class);
+        Log.e("TAG", "AppMainActivity correctExample Result:" +listResult1);
         for (User datum : listResult1.data) {
             if(datum instanceof User ){
                 User user = (User) datum;
-                Log.e("TAG", "MainActivity listResult1 test4 user:"+user);
+                Log.e("TAG", "AppMainActivity Result correctExample user:"+user);
             }
         }
     }
     private void correctExample2() {
-        String data4 = "{\"data\":[{\"name\":\"keepon\"}" +
-                "]}";
-        SimpleResult<List<User>> listResult1 = fromJsonArray2(data4, User.class);
+        SimpleResult<List<User>> listResult1 = fromJsonArray2(mData4, User.class);
+        Log.e("TAG", "AppMainActivity correctExample2 SimpleResult:" +listResult1);
         for (User datum : listResult1.data) {
             if(datum instanceof User ){
                 User user = (User) datum;
-                Log.e("TAG", "MainActivity listResult1 test4 user:"+user);
+                Log.e("TAG", "AppMainActivity SimpleResult correctExample2 user:"+user);
             }
         }
     }
@@ -151,59 +181,71 @@ public class MainActivity extends AppCompatActivity {
         Type type = new TypeToken<Result<List<T>>>(){}.getType();
         return new Gson().fromJson(json, type);
     }
+    //这个肯定是不行的 T 处理T的TypeAdapter为ObjectTypeAdapter
+    public  <T> SimpleResult<List<T>> fromJsonArrayError2(String json) {
+        Type type = new TypeToken<SimpleResult<List<T>>>(){}.getType();
+        return new Gson().fromJson(json, type);
+    }
 
 
     public  <T> Result<T> fromJsonObject(String json, Class<T> clazz) {
-        Type type = new ParameterizedTypeImpl(Result.class, new Class[]{clazz});
+        Type type = new MyParameterizedTypeImpl(Result.class, new Class[]{clazz});
         return new Gson().fromJson(json, type);
     }
 
     // 处理 data 为 array 的情况
     public  <T> Result<List<T>> fromJsonArray(String json, Class<T> clazz) {
         // 生成List<T> 中的 List<T>
-        Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
+        Type listType = new MyParameterizedTypeImpl(List.class, new Class[]{clazz});
+        Log.e("TAG", "AppMainActivity fromJsonArray listType:"+listType );
         // 根据List<T>生成完整的Result<List<T>>
-        Type type = new ParameterizedTypeImpl(Result.class, new Type[]{listType});
+        Type type = new MyParameterizedTypeImpl(Result.class, new Type[]{listType});
         return new Gson().fromJson(json, type);
     }
     public  <T> SimpleResult<List<T>> fromJsonArray2(String json, Class<T> clazz) {
         // 生成List<T> 中的 List<T>
-        Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
+        Type listType = new MyParameterizedTypeImpl(List.class, new Class[]{clazz});
         // 根据List<T>生成完整的Result<List<T>>
-        Type type = new ParameterizedTypeImpl(SimpleResult.class, new Type[]{listType});
+        Type type = new MyParameterizedTypeImpl(SimpleResult.class, new Type[]{listType});
         return new Gson().fromJson(json, type);
     }
 
-    private void test0() {
+    private void testUser() {
         Gson gson = new Gson();
         String jsonString = "{\"name\":\"怪盗kidou\"}";
         User user = gson.fromJson(jsonString, User.class);
-        Log.e("TAG", "MainActivity test0:" + user.name);
+        Log.e("TAG", "AppMainActivity testUser:" + user.name);
     }
 
-    private void test1() {
+    private void testStringShuzu() {
         Gson gson = new Gson();
         String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
         String[] strings = gson.fromJson(jsonArray, String[].class);
-        Log.e("TAG", "MainActivity test1:" + strings);
+        Log.e("TAG", "AppMainActivity testStringShuzu:" + strings);
         // 不能带泛型
         // List<String> stringList = gson.fromJson(jsonArray, List<String>.class);
-        // Log.e("TAG", "MainActivity test1:" +strings);
+        // Log.e("TAG", "AppMainActivity test1:" +strings);
     }
 
-    private void test2() {
+    private void testListString() {
         Gson gson = new Gson();
         String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
         List<String> stringList = gson.fromJson(jsonArray, new TypeToken<List<String>>() {
         }.getType());
-        Log.e("TAG", "MainActivity test1:" + stringList);
+        Log.e("TAG", "AppMainActivity testListString:" + stringList);
+    }
+    private void testListUser() {
+        Gson gson = new Gson();
+        Result<List<User>> userList = gson.fromJson(mData2, new TypeToken<Result<List<User>>>() {
+        }.getType());
+        Log.e("TAG", "AppMainActivity testListUser:" + userList);
     }
 
-    private void test3() {
+    private void testAritcle() {
         Gson gson = new Gson();
         String jsonString = "{\"url\":\"http://www.baidu.com\"}";
         Article article = gson.fromJson(jsonString, Article.class);
-        Log.e("TAG", "MainActivity test3 test3:" + article.url);
+        Log.e("TAG", "AppMainActivity test3 test3:" + article.url);
     }
 
     private void test9() {
@@ -219,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 mTextView.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "获取数据失败", Toast.LENGTH_LONG).show();
+                        Toast.makeText(AppMainActivity.this, "获取数据失败", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -230,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 BaseRes csProEvaluateRecordRes =
                         gson.fromJson(resultJson, BaseRes.class);
-                Log.e("TAG", "MainActivity onResponse mStatus.code:" +
+                Log.e("TAG", "AppMainActivity onResponse mStatus.code:" +
                         csProEvaluateRecordRes.mStatus.code);
             }
         });
@@ -249,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                 mTextView.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "获取数据失败", Toast.LENGTH_LONG).show();
+                        Toast.makeText(AppMainActivity.this, "获取数据失败", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -297,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, final IOException e) {
                 // 失败
-                Log.e("TAG", "MainActivity onFailure:");
+                Log.e("TAG", "AppMainActivity onFailure:");
             }
 
             @Override
@@ -306,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
                     Headers headers = request.headers();
                     if (headers != null) {
                         String s = headers.toString();
-                        Log.e("TAG", "MainActivity onResponse headers:" + s);
+                        Log.e("TAG", "AppMainActivity onResponse headers:" + s);
                     }
 
                     InputStream is = null;
@@ -329,14 +371,14 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(MainActivity.this, "准备写入", Toast.LENGTH_LONG).show();
+                                Toast.makeText(AppMainActivity.this, "准备写入", Toast.LENGTH_LONG).show();
                             }
                         });
                         byte[] bytes = new byte[4096];
                         //获取下载的文件的大小
                         long fileSize = response.body().contentLength();
                         if (file.exists() && file.length() == fileSize) {
-                            Log.e("TAG", "MainActivity onResponse file.exists():");
+                            Log.e("TAG", "AppMainActivity onResponse file.exists():");
                             isDownloadSuccess = true;
                         } else {
                             if (file.exists()) {
@@ -345,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
                             fos = new FileOutputStream(file);
                             int len = 0;
                             while ((len = is.read(bytes)) != -1) {
-                                Log.d("TAG", "MainActivity onResponse fos.write len:" + len);
+                                Log.d("TAG", "AppMainActivity onResponse fos.write len:" + len);
                                 fos.write(bytes, 0, len);
                             }
                             fos.flush();
@@ -355,10 +397,10 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(MainActivity.this, "写入成功", Toast.LENGTH_LONG).show();
+                                Toast.makeText(AppMainActivity.this, "写入成功", Toast.LENGTH_LONG).show();
                             }
                         });
-                        Log.e("TAG", "MainActivity onResponse:" + isDownloadSuccess);
+                        Log.e("TAG", "AppMainActivity onResponse:" + isDownloadSuccess);
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
@@ -446,6 +488,6 @@ public class MainActivity extends AppCompatActivity {
     public void clearCache(View view) {
         deleteFilesByDirectory(getCacheDir());
         deleteFilesByDirectory(getExternalCacheDir());
-        Toast.makeText(MainActivity.this, "删除缓存成功!", Toast.LENGTH_LONG).show();
+        Toast.makeText(AppMainActivity.this, "删除缓存成功!", Toast.LENGTH_LONG).show();
     }
 }

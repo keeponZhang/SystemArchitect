@@ -64,8 +64,10 @@ public class TypeToken<T> {
    */
   @SuppressWarnings("unchecked")
   protected TypeToken() {
+    Log.e("TAG", "$$$$$$$$$$$$$$$$$$$$$$$$TypeToken 不带参数开始:" );
     this.type = getSuperclassTypeParameter(getClass());
     //真实的类型，这里传的是java.util.List<java.lang.String>，泛型擦除后java.util.List
+    Log.e("TAG", "$$$$$$$$$$$$$$$$$$$$$$$$TypeToken 得到  this.type:"+ this.type );
     this.rawType = (Class<? super T>) $Gson$Types.getRawType(type);
     this.hashCode = type.hashCode();
   }
@@ -75,10 +77,14 @@ public class TypeToken<T> {
    */
   @SuppressWarnings("unchecked")
   TypeToken(Type type) {
+    Log.e("TAG", "~~~~~~~~~~~~~~~~~~~TypeToken 带参数 开始type:" +type);
     this.type = $Gson$Types.canonicalize($Gson$Preconditions.checkNotNull(type));
+    Log.e("TAG赋值",
+            "~~~~~~~~~~~~~~~~~~~TypeToken 带参数下面准备调用 getRawType， [看这里哦]   用type作为 getRawType的参数 " +
+                    "type:"+this.type);
     this.rawType = (Class<? super T>) $Gson$Types.getRawType(this.type);
     this.hashCode = this.type.hashCode();
-    // Log.w("TAG", "TypeToken TypeToken typeOfT rawType: "+rawType+"  type="+type);
+    // Log.w("TAG赋值", "TypeToken 构造函数 TypeToken typeOfT rawType: "+rawType+"  type="+type);
   }
 
   /**
@@ -93,7 +99,14 @@ public class TypeToken<T> {
     }
     //获取泛型（尖括号里面的）java.util.List<java.lang.String>
     ParameterizedType parameterized = (ParameterizedType) superclass;
-    return $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
+    Log.d("TAG", "TypeToken getSuperclassTypeParameter parameterized（TypeToken的泛型类型） " +
+            "parameterized" +
+            ".getActualTypeArguments()[0]" +
+            "="+parameterized.getActualTypeArguments()[0] );
+    Type canonicalize = $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
+    Log.d("TAG赋值", "TypeToken getSuperclassTypeParameter TypeToke 返回type:" +canonicalize
+            );
+    return canonicalize;
   }
 
   /**

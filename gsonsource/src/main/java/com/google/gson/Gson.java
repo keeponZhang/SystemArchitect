@@ -435,12 +435,13 @@ public final class Gson {
    */
   @SuppressWarnings("unchecked")
   public <T> TypeAdapter<T> getAdapter(TypeToken<T> type) {
-    Log.w("TAG", "Gson getAdapter candidate 方法开始--------- type:"+type );
+    Log.w("TAG赋值", "Gson getAdapter  方法开始---------参数 TypeToken.type:"+type.getType()+" " +
+            "TypeToke.rawType="+type.getRawType());
     //typeTokenCache是Map<TypeToken<?>, TypeAdapter<?>> 对应的TypeToken，
     //然后获取到TypeAdapter，Gson初始化时的factories总初始化了很多的TypeAdapter，例如：ObjectTypeAdapter
     TypeAdapter<?> cached = typeTokenCache.get(type == null ? NULL_KEY_SURROGATE : type);
     if (cached != null) {
-      Log.w("TAG", "Gson getAdapter 从cached获取---:"+cached+" type="+type);
+      Log.w("TAG赋值", "Gson getAdapter 从cached获取---:"+cached+" type="+type);
       return (TypeAdapter<T>) cached;
     }
   //代理FutureTypeAdapter，
@@ -455,7 +456,7 @@ public final class Gson {
     // the key and value type parameters always agree
     FutureTypeAdapter<T> ongoingCall = (FutureTypeAdapter<T>) threadCalls.get(type);
     if (ongoingCall != null) {
-      Log.e("TAG", "Gson getAdapter 这里Gson通过ThreadLocal的缓存设计能够避免无限递归的问题:" );
+      Log.e("TAG赋值", "Gson getAdapter 这里Gson通过ThreadLocal的缓存设计能够避免无限递归的问题:" );
       return ongoingCall; //这里Gson通过ThreadLocal的缓存设计能够避免无限递归的问题
     }
 
@@ -471,11 +472,12 @@ public final class Gson {
           //typeTokenCache对应的Map<TypeToken<?>, TypeAdapter<?>>
           typeTokenCache.put(type, candidate);
           //factory是没有泛型的
-          Log.e("TAG",
-                  "Gson getAdapter return typeOfT type:"+type+"  TypeAdapter candidate="+candidate.getClass().getGenericSuperclass()+"  " +
+          Log.e("TAG赋值",
+                  "Gson getAdapter  方法结束------- return typeOfT type:"+type+"  TypeAdapter " +
+                          "要返回的candidate="+candidate.getClass().getGenericSuperclass()+"  " +
                           " " +
                           "   " +
-                          "factory="+factory.getClass().getName()+"  factory ="+(factory.equals(TypeAdapters.INTEGER_FACTORY)));
+                          "factory="+factory.getClass().getName());
           return candidate;
         }
       }
@@ -952,7 +954,9 @@ public final class Gson {
     try {
       reader.peek();
       isEmpty = false;
+      Log.e("TAG", "Gson fromJson 调用TypeToken.get(typeOfT）:" );
       TypeToken<T> typeToken = (TypeToken<T>) TypeToken.get(typeOfT);
+      Log.e("TAG", "Gson fromJson 获得到了 typeToken:"+typeToken );
       TypeAdapter<T> typeAdapter = getAdapter(typeToken);
       T object = typeAdapter.read(reader);
       Log.e("TAG",

@@ -102,6 +102,8 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
 
     Log.e("TAG", "ReflectiveTypeAdapterFactory create typeOfT candidate 创建啦 用于自定义model的构造器:"+type);
     ObjectConstructor<T> constructor = constructorConstructor.get(type);
+    Log.w("TAG", "ReflectiveTypeAdapterFactory create 准备创建ReflectiveTypeAdapterFactory的adapter" +
+            "(首先通过getBoundFields创建adapter的构造函数参数):" );
     Adapter<T> tAdapter = new Adapter<>(constructor, getBoundFields(gson, type, raw));
     Log.e("TAG", "ReflectiveTypeAdapterFactory create tAdapter 创建成功返回:"+tAdapter );
     return tAdapter;
@@ -121,14 +123,14 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     //自定义model里面会匹配类如StringAdapter作为BoundField的变量
     final boolean jsonAdapterPresent = mapped != null;
     String s = !isInit ? " ！！！！！！！！！！！！！！！！！！" : "????????????????????";
-    Log.e("TAG",
+    Log.e("TAG赋值",
             s +"ReflectiveTypeAdapterFactory " +
-                    "candidate " +
+                    "(比如User.name也会走到这里哦，用StringAdapter) " +
                     "createBoundField 开始根据fieldType(这里的fieldType其实就是最外层的)adapter获取啦 " +
                     fieldType);
     isInit = true;
     if (mapped == null) mapped = context.getAdapter(fieldType);
-    Log.w("TAG",
+    Log.w("TAG赋值",
             "ReflectiveTypeAdapterFactory candidate createBoundField 根据fieldType创建返回了adapter" +
                     "(这里的adapter在BoundField里面的read方法调用) " +
                     "TypeToken " +
@@ -148,12 +150,19 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       }
       @Override void read(JsonReader reader, Object value)
           throws IOException, IllegalAccessException {
+        Log.e("TAG赋值",
+                "ReflectiveTypeAdapterFactory BoundField  开始 typeAdapterread:"+typeAdapter+" " +
+                        "value" );
         Object fieldValue = typeAdapter.read(reader);
-        Log.e("TAG",
-                "ReflectiveTypeAdapterFactory 赋值 read typeAdapter:"+typeAdapter +" field="+field.getName()+" fieldValue="+fieldValue);
+        Log.w("TAG赋值",
+                "ReflectiveTypeAdapterFactory BoundField read 结束 typeAdapterread typeAdapter:"+typeAdapter +
+                        " " +
+                        "field" +
+                        "="+field.getName()+" fieldValue="+fieldValue);
         if (fieldValue != null || !isPrimitive) {
           field.set(value, fieldValue);
         }
+        Log.e("TAG", "ReflectiveTypeAdapterFactory BoundField read 赋值成功 field:"+field );
       }
       @Override public boolean writeField(Object value) throws IOException, IllegalAccessException {
         if (!serialized) return false;
@@ -164,7 +173,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
   }
 
   private Map<String, BoundField> getBoundFields(Gson context, TypeToken<?> type, Class<?> raw) {
-    Log.w("TAG", "ReflectiveTypeAdapterFactory 调用getBoundFields方法:" );
+    Log.w("TAG", "ReflectiveTypeAdapterFactory 调用<<getBoundFields>>方法:" );
     Map<String, BoundField> result = new LinkedHashMap<String, BoundField>();
     if (raw.isInterface()) {
       return result;
@@ -201,15 +210,19 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
         ///incorrect 返回List<T>
         // incorrect 返回的是List<com.darren.architect_day01.data.entity.User>
         Log.w("TAG", "ReflectiveTypeAdapterFactory getBoundFields candidate 调用reslove方法后 " +
-                "获取到的fieldType="+fieldType+"  准备调用createBoundField");
+                "获取到的fieldType（其实是返回里面的一层Bean）="+fieldType+"  准备调用getFieldNames");
         //这里根据属性去拿到多少个fieldNames
         List<String> fieldNames = getFieldNames(field);
+        Log.e("TAG", "ReflectiveTypeAdapterFactory getBoundFields getFieldNames " +
+                "这里根据属性去拿到多少个fieldNames,准备for循环fieldNames:" );
         BoundField previous = null;
         for (int i = 0, size = fieldNames.size(); i < size; ++i) {
           String name = fieldNames.get(i);
           if (i != 0) serialize = false; // only serialize the default name
           Log.e("TAG",
-                  "ReflectiveTypeAdapterFactory getBoundFields 准备调用createBoundField  name: "+name );
+                  "ReflectiveTypeAdapterFactory getBoundFields " +
+                          "准备调用<<createBoundField>>（里面也会创建adapter）  " +
+                          "name: "+name );
           BoundField boundField = createBoundField(context, field, name,
               TypeToken.get(fieldType), serialize, deserialize);
           BoundField replaced = result.put(name, boundField);
@@ -257,8 +270,9 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
       }
 
       T instance = constructor.construct();
-      Log.w("TAG赋值",
-              "Adapter  ReflectiveTypeAdapterFactory read 通过constructor创建了实例 ,实例instance为 :"+instance
+      Log.d("TAG赋值",
+              "Adapter  ReflectiveTypeAdapterFactory 内部类Adapter read方法 通过constructor创建了实例 ," +
+                      "实例instance为 :"+instance
               );
 
       try {
@@ -266,14 +280,18 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
         while (in.hasNext()) {
           String name = in.nextName();
           Log.e("TAG赋值",
-                  "ReflectiveTypeAdapterFactory Adapter read  准备要把实例instance "+instance+" 赋值给name" +
-                          "=" +name);
+                  "ReflectiveTypeAdapterFactory 内部类Adapter read方法  准备要调用BoundField的read方法 " +
+                          "目的把实例instance "+instance+" 赋值给name" +
+                          "=" +name+" (此时还没赋值）");
           BoundField field = boundFields.get(name);
           if (field == null || !field.deserialized) {
             in.skipValue();
           } else {
             field.read(in, instance);
           }
+          //最外层是最后赋值的，Result是最后赋值的
+          Log.w("TAG",
+                  "ReflectiveTypeAdapterFactory 内部类Adapter read方法  Model赋值成功 instance:"+instance );
         }
       } catch (IllegalStateException e) {
         throw new JsonSyntaxException(e);

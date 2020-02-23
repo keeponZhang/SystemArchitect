@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
     //省略其它
-    @SerializedName(value = "name1")
+    @SerializedName(value = "name")
     public String name;
 
     @Override

@@ -16,7 +16,7 @@
         <activity android:name=".simple3.MainActivity">
 
         </activity>
-        <activity android:name=".simple1.MainActivity">
+        <activity android:name=".simple1.AppMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

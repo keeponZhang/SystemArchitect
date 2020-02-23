@@ -52,6 +52,36 @@
         android:textAllCaps="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="gsonDemoObject"
+        android:onClick="gsonDemoObject"/>
+    <Button
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gsonDemoCorrect1"
+        android:onClick="gsonDemoCorrect1"/>
+    <Button
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gsonDemoCorrect2"
+        android:onClick="gsonDemoCorrect2"/>
+    <Button
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gsonDemoInCorrect"
+        android:onClick="gsonDemoInCorrect"/>
+    <Button
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gsonDemoInCorrect2"
+        android:onClick="gsonDemoInCorrect2"/>
+    <Button
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="testBitmap"
         android:onClick="testBitmap"/>
     <TextView
