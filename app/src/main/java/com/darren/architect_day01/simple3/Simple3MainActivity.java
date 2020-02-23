@@ -9,11 +9,11 @@ import com.darren.architect_day01.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class Simple3MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.app_activity_main);
 
         /********************访问网络开始*******************/
         Map<String, Object> params = new HashMap<>();

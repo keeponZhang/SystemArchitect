@@ -14,17 +14,30 @@ import com.darren.architect_day01.BaseApplication;
 import com.darren.architect_day01.MyParameterizedTypeImpl;
 import com.darren.architect_day01.R;
 import com.darren.architect_day01.data.entity.Article;
+import com.darren.architect_day01.data.entity.ModifierSample;
 import com.darren.architect_day01.data.entity.Result;
 import com.darren.architect_day01.data.entity.SimpleResult;
+import com.darren.architect_day01.data.entity.SinceUntilSample;
 import com.darren.architect_day01.data.entity.User;
 import com.darren.architect_day01.data.repsonse.BaseRes;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
@@ -39,10 +52,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static android.content.ContentValues.TAG;
 
 public class AppMainActivity extends AppCompatActivity {
 
+    private static final String TAG = "AppMainActivity";
     String testUrl = "";
     private TextView mTextView;
     OkHttpClient mOkHttpClient;
@@ -55,7 +68,7 @@ public class AppMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.app_activity_main);
         mTextView = (TextView) findViewById(R.id.tv);
         mIv = (ImageView) findViewById(R.id.iv);
         mOkHttpClient = new OkHttpClient.Builder()
@@ -490,4 +503,126 @@ public class AppMainActivity extends AppCompatActivity {
         deleteFilesByDirectory(getExternalCacheDir());
         Toast.makeText(AppMainActivity.this, "删除缓存成功!", Toast.LENGTH_LONG).show();
     }
+
+    public void jsonReader(View view) throws IOException {
+        String json = "{\"name\":\"怪盗aa\",\"age\":\"24\"}";
+        User user = new User();
+        JsonReader reader = new JsonReader(new StringReader(json));
+        reader.beginObject(); // throws IOException
+        while (reader.hasNext()) {
+            String s = reader.nextName();
+            switch (s) {
+                case "name":
+                    user.name = reader.nextString();
+                    break;
+                case "age":
+                    user.age = reader.nextInt(); //自动转换
+                    break;
+                case "email":
+                    user.email = reader.nextString();
+                    break;
+                default:
+                    break;
+            }
+        }
+        reader.endObject(); // throws IOException
+        Log.e(TAG, "AppMainActivity jsonReader:"+user.name );
+    }
+
+    public void jsonStream(View view) throws IOException {
+        // Gson gson = new Gson();
+        // User user = new User("怪盗kidou",24,"ikidou@example.com");
+        // gson.toJson(user,System.out); // 写到控制台
+
+        JsonWriter writer = new JsonWriter(new OutputStreamWriter(System.out));
+        writer.beginObject() // throws IOException
+                .name("name").value("怪盗kidou")
+                .name("age").value(24)
+                .name("email").nullValue() //演示null
+                .endObject(); // throws IOException
+        writer.flush(); // throws IOException
+    }
+
+    public void gsonBuilder(View view) {
+        // Gson gson = new Gson();
+        // //可以看出，email字段是没有在json中出现的
+        // User user = new User("怪盗kidou",24);
+        // System.out.println(gson.toJson(user)); //{"name":"怪盗kidou","age":24}
+
+
+        // Gson gson = new GsonBuilder()
+        //         .serializeNulls()
+        //         .create();
+        // User user = new User("怪盗kidou", 24);
+        // System.out.println(gson.toJson(user)); //{"name":"怪盗kidou","age":24,"email":null}
+
+       // String  category=  "{ \"id\":1, \"name\": \"电脑\", \"children\": [{ \"id\": 100, \"name\": \"笔记本\" }, {\"id\": 101, \"name\": \"台式机\" }]}";
+       //  Gson gson = new GsonBuilder()
+       //          .excludeFieldsWithoutExposeAnnotation()
+       //          .create();
+       //  gson.toJson(category);
+
+
+        // int version = 5;
+        // SinceUntilSample sinceUntilSample = new SinceUntilSample();
+        // sinceUntilSample.since = "since";
+        // sinceUntilSample.until = "until";
+        // Gson gson = new GsonBuilder().setVersion(version).create();
+        // System.out.println(gson.toJson(sinceUntilSample));
+        //当version <4时，结果：{"until":"until"}
+    //当version >=4 && version <5时，结果：{"since":"since","until":"until"}
+    //当version >=5时，结果：{"since":"since"}
+
+
+        //下面的程序排除了privateField 、 finalField 和staticField 三个字段。
+        ModifierSample modifierSample = new ModifierSample();
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithModifiers(Modifier.FINAL, Modifier.STATIC, Modifier.PRIVATE)
+                .create();
+        System.out.println(gson.toJson(modifierSample));
+// 结果：{"publicField":"public","protectedField":"protected","defaultField":"default"}
+
+
+
+        Gson gson2 = new GsonBuilder()
+                .addSerializationExclusionStrategy(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        // 这里作判断，决定要不要排除该字段,return true为排除
+                        if ("finalField".equals(f.getName())) return true; //按字段名排除
+                        Expose expose = f.getAnnotation(Expose.class);
+                        if (expose != null && expose.deserialize() == false) return true; //按注解排除
+                        return false;
+                    }
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        // 直接排除某个类 ，return true为排除
+                        return (clazz == int.class || clazz == Integer.class);
+                    }
+                })
+                .create();
+
+
+        // FieldNamingPolicy	结果（仅输出emailAddress字段）
+        // IDENTITY	{"emailAddress":"ikidou@example.com"}
+        // LOWER_CASE_WITH_DASHES	{"email-address":"ikidou@example.com"}
+        // LOWER_CASE_WITH_UNDERSCORES	{"email_address":"ikidou@example.com"}
+        // UPPER_CAMEL_CASE	{"EmailAddress":"ikidou@example.com"}
+        // UPPER_CAMEL_CASE_WITH_SPACES	{"Email Address":"ikidou@example.com"}
+
+
+
+        // @SerializedName注解拥有最高优先级，在加有@SerializedName注解的字段上FieldNamingStrategy不生效！
+        Gson gson3 = new GsonBuilder()
+                .setFieldNamingStrategy(new FieldNamingStrategy() {
+                    @Override
+                    public String translateName(Field f) {
+                        //实现自己的规则
+                        return null;
+                    }
+                })
+                .create();
+    }
 }
+
+

@@ -1,19 +1,18 @@
-package com.darren.architect_day01.simple5;
+package com.darren.architect_day01.simple4;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import com.darren.architect_day01.R;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class Simple4MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.app_activity_main);
 
         /********************访问网络开始*******************/
         Map<String, Object> params = new HashMap<>();
@@ -38,8 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 },true);*/
-        HttpUtils.with(this).cache(true).httpRequest(new XUtilsRequest()).get()
-                .param("iid", 6152551759L).param("aid", 7).request(
+        HttpUtils.with(this).cache(true).get().param("iid", 6152551759L).param("aid", 7).request(
                 new HttpCallBack<DiscoverListResult>() {
                     @Override
                     public void onSuccess(DiscoverListResult result) {
@@ -63,9 +61,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-	public void getAppXixiUpdate(View view) {
-	}
 
-    public void getAppMarketUpdate(View view) {
-    }
 }

@@ -856,6 +856,7 @@ public final class Gson {
     if (json == null) {
       return null;
     }
+    //如果第一个参数是String类型，那么Gson会创建一个StringReader转换成流操作
     StringReader reader = new StringReader(json);
     T target = (T) fromJson(reader, typeOfT);
     return target;
