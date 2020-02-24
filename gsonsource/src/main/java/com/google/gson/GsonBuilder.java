@@ -16,6 +16,8 @@
 
 package com.google.gson;
 
+import android.util.Log;
+
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -503,10 +505,17 @@ public final class GsonBuilder {
     }
     if (typeAdapter instanceof JsonSerializer<?> || typeAdapter instanceof JsonDeserializer<?>) {
       TypeToken<?> typeToken = TypeToken.get(type);
-      factories.add(TreeTypeAdapter.newFactoryWithMatchRawType(typeToken, typeAdapter));
+      TypeAdapterFactory typeAdapterFactory =
+              TreeTypeAdapter.newFactoryWithMatchRawType(typeToken, typeAdapter);
+      Log.e("TAG",
+              "GsonBuilder  JsonSerializer registerTypeAdapter typeAdapterFactory:"+typeAdapterFactory );
+      factories.add(typeAdapterFactory);
     }
     if (typeAdapter instanceof TypeAdapter<?>) {
-      factories.add(TypeAdapters.newFactory(TypeToken.get(type), (TypeAdapter)typeAdapter));
+      TypeAdapterFactory typeAdapterFactory =
+              TypeAdapters.newFactory(TypeToken.get(type), (TypeAdapter) typeAdapter);
+      Log.e("TAG", "GsonBuilder registerTypeAdapter TypeAdapter typeAdapterFactory:" +typeAdapterFactory);
+      factories.add(typeAdapterFactory);
     }
     return this;
   }

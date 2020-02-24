@@ -862,7 +862,7 @@ public final class TypeAdapters {
       @SuppressWarnings("unchecked") // we use a runtime check to make sure the 'T's equal
       @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
         Class<? super T> rawType = typeToken.getRawType();
-        Log.e("TAG",
+        Log.e("TAG 方法结束",
                 "TypeAdapters newFactory candidate create typeToken:"+typeToken+"      rawType" +
                         "(最外层Bean)" +
                         "="+rawType.getName()+"    unboxed(基本类型)="+unboxed);

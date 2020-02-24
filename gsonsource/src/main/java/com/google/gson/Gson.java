@@ -464,7 +464,8 @@ public final class Gson {
       FutureTypeAdapter<T> call = new FutureTypeAdapter<T>();
       threadCalls.put(type, call);
       //Gson初始化的factories
-      for (TypeAdapterFactory factory : factories) {
+      for (int i = 0; i < factories.size(); i++) {
+        TypeAdapterFactory factory = factories.get(i);
         //https://www.jianshu.com/p/aef252db9869
         TypeAdapter<T> candidate = factory.create(this, type);//这里可能发生无限递归的情况
         if (candidate != null) {
@@ -475,9 +476,9 @@ public final class Gson {
           Log.e("TAG赋值",
                   "Gson getAdapter  方法结束------- return typeOfT type:"+type+"  TypeAdapter " +
                           "要返回的candidate="+candidate.getClass().getGenericSuperclass()+"  " +
-                          " " +
-                          "   " +
-                          "factory="+factory.getClass().getName());
+                          "  candidate" +candidate
+                           +
+                          "factory="+factory.getClass().getName()+" i==");
           return candidate;
         }
       }

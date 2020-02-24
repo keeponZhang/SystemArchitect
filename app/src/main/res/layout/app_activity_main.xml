@@ -109,7 +109,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="gsonBuilder"
-            android:text="GsonBuilder"
+            android:text="gsonBuilder"
+            android:textAllCaps="false" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="typeAdapter"
+            android:text="typeAdapter"
+            android:textAllCaps="false" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="typeAdapterFactory"
+            android:text="typeAdapterFactory"
             android:textAllCaps="false" />
         <Button
             android:layout_width="wrap_content"
