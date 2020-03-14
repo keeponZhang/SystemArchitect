@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvToForeground"
+        android:gravity="center"
+        android:text="前台服务样例"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E2E2"/>
+
+    <TextView
+        android:id="@+id/tvToBroadCast0"
+        android:gravity="center"
+        android:text="直接发送"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+    <TextView
+        android:id="@+id/tvToBroadCast"
+        android:gravity="center"
+        android:text="静态广播样例"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E2E2"/>
+    <TextView
+        android:id="@+id/tvToDialog"
+        android:gravity="center"
+        android:text="非全屏Activity"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E2E2"/>
+    <TextView
+        android:id="@+id/tvToServiceToActivity"
+        android:gravity="center"
+        android:text="服务跳转Activity"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E2E2"/>
+    <TextView
+        android:id="@+id/tvToBackgroundStartService"
+        android:gravity="center"
+        android:text="后台startService"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E2E2"/>
+
+    <TextView
+        android:id="@+id/tvToNotSDKPage"
+        android:gravity="center"
+        android:text="非SDK接口"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+    <TextView
+        android:id="@+id/tvToNotSDKPage2"
+        android:gravity="center"
+        android:text="非SDK接口2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E2E2"/>
+
+
+</LinearLayout>
