@@ -148,6 +148,7 @@ public class FileProviderActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             // 没有权限，申请权限。
+            //之所以不能在这处理，因为第一次申请权限返回false，拒绝一次（多次但是没有不再提示）返回true，不再提示返回true
             boolean shouldShowRequestPermissionRationale = ActivityCompat
                     .shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA);
             Log.e("TAG", "FileProviderActivity checkCameraPermission " +

@@ -50,6 +50,12 @@
             android:onClick="clearCache"
             android:text="clear cache"
             android:textAllCaps="false" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="jumpOtherApp"
+            android:text="jumpOtherApp"
+            android:textAllCaps="false" />
 
         <Button
             android:layout_width="wrap_content"

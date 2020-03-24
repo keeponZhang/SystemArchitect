@@ -1,7 +1,10 @@
 package com.darren.architect_day01.simple1;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -837,6 +840,21 @@ public class AppMainActivity extends AppCompatActivity {
                     }
                 })
                 .create();
+    }
+
+    public void jumpOtherApp(View view) {
+        try {
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName("com.zhang.jetpack", "com.zhang.jetpack" +
+                    ".AppMainActivity"));
+            // intent.setData(Uri.parse("www.keepon.com"));
+            intent.setData(Uri.parse("http://www.keepon.com"));
+            // intent.setAction()
+            startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e("TAG", "AppMainActivity jumpOtherApp falied:" );
+        }
     }
 }
 
