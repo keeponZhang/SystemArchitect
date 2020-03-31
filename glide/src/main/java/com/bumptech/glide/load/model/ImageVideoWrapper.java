@@ -8,6 +8,7 @@ import java.io.InputStream;
  * A simple wrapper that wraps an {@link InputStream} and/or an {@link ParcelFileDescriptor}.
  */
 public class ImageVideoWrapper {
+    //这个Stream是网络返回来的图片流stream
     private final InputStream streamData;
     private final ParcelFileDescriptor fileDescriptor;
 

@@ -17,6 +17,7 @@ import java.io.InputStream;
  *
  * @param <A> The model type.
  */
+//A:String
 public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrapper> {
     private static final String TAG = "IVML";
 
@@ -28,6 +29,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
         if (streamLoader == null && fileDescriptorLoader == null) {
             throw new NullPointerException("At least one of streamLoader and fileDescriptorLoader must be non null");
         }
+        // streamLoader:StreamStringLoader
         this.streamLoader = streamLoader;
         this.fileDescriptorLoader = fileDescriptorLoader;
     }
@@ -61,6 +63,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
         //streamFetcher:HttpUrlFetcher
         public ImageVideoFetcher(DataFetcher<InputStream> streamFetcher,
                 DataFetcher<ParcelFileDescriptor> fileDescriptorFetcher) {
+            // streamFetcher：HttpUrlFetcher
             this.streamFetcher = streamFetcher;
             this.fileDescriptorFetcher = fileDescriptorFetcher;
         }

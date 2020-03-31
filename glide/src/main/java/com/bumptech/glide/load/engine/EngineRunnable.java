@@ -132,8 +132,8 @@ class EngineRunnable implements Runnable, Prioritized {
     }
 
     private Resource<?> decodeFromSource() throws Exception {
-        //调用了DecodeJob的decodeFromSource()方法
-        //再回到decode()方法
+        //这里又调用了DecodeJob的decodeFromSource()方法。刚才已经说了，DecodeJob的任务十分繁重，我们继续跟进看一看吧
+        //所以EngineRunable只是起了个子线程的作用，真正的还是DecodeJob
         return decodeJob.decodeFromSource();
     }
 

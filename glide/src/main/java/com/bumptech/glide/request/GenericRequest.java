@@ -32,6 +32,8 @@ import java.util.Queue;
  * @param <R> The type of the resource that will be transcoded from the loaded resource.
  */
 //load()方法中调用的所有API，其实都是在这里组装到Request对象当中的
+// A, T, Z, R
+//A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
 public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallback,
         ResourceCallback {
     private static final String TAG = "GenericRequest";
@@ -279,6 +281,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         }
 
         if (!isComplete() && !isFailed() && canNotifyStatusChanged()) {
+            //这是placeHolder的原理
             target.onLoadStarted(getPlaceholderDrawable());
         }
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -443,8 +446,11 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
 
         //loadProvider:FixedLoadProvider
         //modelLoader:ImageVideoModelLoader
+        //A:String T:ImageVideoWrapper
         ModelLoader<A, T> modelLoader = loadProvider.getModelLoader();
-        //dataFetcher:ImageVideoFetcher
+        //dataFetcher:ImageVideoFetcher，后面再调到它的loadData方法（这个很重要********），然后去调用了HttpUrlFetcher
+        // （真正去请求网络的地方）
+        // .loadData()
         final DataFetcher<T> dataFetcher = modelLoader.getResourceFetcher(model, width, height);
 
         if (dataFetcher == null) {
@@ -452,13 +458,14 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
             return;
         }
         //transcoder:GifBitmapWrapperDrawableTranscoder
+        //Z:GifBitmapWrapper R:GlideDrawable
         ResourceTranscoder<Z, R> transcoder = loadProvider.getTranscoder();
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logV("finished setup for calling load in " + LogTime.getElapsedMillis(startTime));
         }
         loadedFromMemoryCache = true;
 
-        //
+        //这个是重点
         loadStatus = engine.load(signature, width, height, dataFetcher, loadProvider, transformation, transcoder,
                 priority, isMemoryCacheable, diskCacheStrategy, this);
         loadedFromMemoryCache = resource != null;

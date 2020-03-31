@@ -141,6 +141,7 @@ public class Engine implements EngineJobListener,
      */
     //fetcher:ImageVideoFetcher  loadProvider:FixedLoadProvider
     //transcoder:GifBitmapWrapperDrawableTranscoder
+    // T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
     public <T, Z, R> LoadStatus load(Key signature, int width, int height, DataFetcher<T> fetcher,
             DataLoadProvider<T, Z> loadProvider, Transformation<Z> transformation, ResourceTranscoder<Z, R> transcoder,
             Priority priority, boolean isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb) {
@@ -183,6 +184,7 @@ public class Engine implements EngineJobListener,
             }
             return new LoadStatus(cb, current);
         }
+        //主要从这里看起
 //        构建了一个EngineJob，它的主要作用就是用来开启线程的,engineJob里面有线程池
         EngineJob engineJob = engineJobFactory.build(key, isMemoryCacheable);
         //DecodeJob对象，从名字上来看，它好像是用来对图片进行解码的
@@ -194,6 +196,8 @@ public class Engine implements EngineJobListener,
         jobs.put(key, engineJob);
         //cb:GenericRequest
         engineJob.addCallback(cb);
+        //EngineJob的start()方法来运行EngineRunnable对象,这实际上就是让EngineRunnable的run()方法在子线程当中执行了
+        //接着看EngineRunnable的run方法
         engineJob.start(runnable);
 
         if (Log.isLoggable(TAG, Log.VERBOSE)) {

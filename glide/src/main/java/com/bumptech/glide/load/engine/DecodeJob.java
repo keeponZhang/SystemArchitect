@@ -27,6 +27,7 @@ import java.io.OutputStream;
  * @param <T> The type of resource that will be decoded.
  * @param <Z> The type of resource that will be transcoded from the decoded and transformed resource.
  */
+// A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
 class DecodeJob<A, T, Z> {
     private static final String TAG = "DecodeJob";
     private static final FileOpener DEFAULT_FILE_OPENER = new FileOpener();
@@ -47,7 +48,7 @@ class DecodeJob<A, T, Z> {
     private final FileOpener fileOpener;
 
     private volatile boolean isCancelled;
-
+    // A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     public DecodeJob(EngineKey resultKey, int width, int height, DataFetcher<A> fetcher,
             DataLoadProvider<A, T> loadProvider, Transformation<T> transformation, ResourceTranscoder<T, Z> transcoder,
             DiskCacheProvider diskCacheProvider, DiskCacheStrategy diskCacheStrategy, Priority priority) {
@@ -132,6 +133,7 @@ class DecodeJob<A, T, Z> {
      *
      * @throws Exception
      */
+    // A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     public Resource<Z> decodeFromSource() throws Exception {
 //        调用decodeSource()方法来获得一个Resource对象
         //decodeSource()顾名思义是用来解析原图片的
@@ -148,7 +150,8 @@ class DecodeJob<A, T, Z> {
         isCancelled = true;
         fetcher.cancel();
     }
-
+    //A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
+    //decoded：class com.bumptech.glide.load.resource.gifbitmap.GifBitmapWrapperResource
     private Resource<Z> transformEncodeAndTranscode(Resource<T> decoded) {
         long startTime = LogTime.getLogTime();
         //原图一般的话要进行缩放，在该方法处理
@@ -161,6 +164,8 @@ class DecodeJob<A, T, Z> {
 
         startTime = LogTime.getLogTime();
 //        又是调用了transcode()方法
+        //Z：GlideBitmapDrawable
+        //result:class com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawableResource
         Resource<Z> result = transcode(transformed);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Transcoded transformed from source", startTime);
@@ -180,7 +185,7 @@ class DecodeJob<A, T, Z> {
             logWithTimeAndKey("Wrote transformed from source to cache", startTime);
         }
     }
-
+    // A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     private Resource<T> decodeSource() throws Exception {
         Resource<T> decoded = null;
         try {
@@ -201,6 +206,7 @@ class DecodeJob<A, T, Z> {
         return decoded;
     }
 
+    //A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     private Resource<T> decodeFromSourceData(A data) throws IOException {
         final Resource<T> decoded;
         if (diskCacheStrategy.cacheSource()) {

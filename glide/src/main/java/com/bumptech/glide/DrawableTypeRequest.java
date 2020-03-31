@@ -33,11 +33,15 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
     private final ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader;
     private final RequestManager.OptionsApplier optionsApplier;
 
+    //streamModelLoader:class com.bumptech.glide.load.model.stream.StreamStringLoader
+    //resourceClass:class com.bumptech.glide.load.resource.gifbitmap.GifBitmapWrapper
+    //transcodedClass:class com.bumptech.glide.load.resource.drawable.GlideDrawable
     private static <A, Z, R> FixedLoadProvider<A, ImageVideoWrapper, Z, R> buildProvider(Glide glide,
             ModelLoader<A, InputStream> streamModelLoader,
             ModelLoader<A, ParcelFileDescriptor> fileDescriptorModelLoader, Class<Z> resourceClass,
             Class<R> transcodedClass,
             ResourceTranscoder<Z, R> transcoder) {
+        //A:String  Z:GifBitmapWrapper R:GlideDrawable
         if (streamModelLoader == null && fileDescriptorModelLoader == null) {
             return null;
         }
@@ -48,13 +52,17 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
         }
         //调用了glide.buildDataProvider()方法来构建一个DataLoadProvider，它是用于对图片进行编解码的，
 	    //由于DataLoadProvider是一个接口，这里实际会构建出一个ImageVideoGifDrawableLoadProvider对象
+        //Z:GifBitmapWrapper
         DataLoadProvider<ImageVideoWrapper, Z> dataLoadProvider = glide.buildDataProvider(ImageVideoWrapper.class,
                 resourceClass);
         //new了一个ImageVideoModelLoader的实例，并把之前loadGeneric()方法中构建的两个ModelLoader封装到了ImageVideoModelLoader当中。
+        //A:String
         ImageVideoModelLoader<A> modelLoader = new ImageVideoModelLoader<A>(streamModelLoader,
                 fileDescriptorModelLoader);
 
-        //new出一个FixedLoadProvider，并把刚才构建的出来的GifBitmapWrapperDrawableTranscoder、ImageVideoModelLoader、ImageVideoGifDrawableLoadProvider都封装进去，这个也就是onSizeReady()方法中的loadProvider了。
+        //new出一个FixedLoadProvider，并把刚才构建的出来的ImageVideoModelLoader
+        // 、GifBitmapWrapperDrawableTranscoder、ImageVideoGifDrawableLoadProvider
+        // 都封装进去，这个也就是onSizeReady()方法中的loadProvider了。
         return new FixedLoadProvider<A, ImageVideoWrapper, Z, R>(modelLoader, transcoder, dataLoadProvider);
     }
 	//该构造函数很重要

@@ -625,8 +625,11 @@ public class RequestManager implements LifecycleListener {
     private <T> DrawableTypeRequest<T> loadGeneric(Class<T> modelClass) {
         //获得ModelLoader对象
 //        由于我们刚才传入的参数是String.class，因此最终得到的是StreamStringLoader对象
-        //glideUrl  class com.bumptech.glide.load.model.stream.HttpUrlGlideUrlLoader
+        //T String.calss
+        //T:glideUrl  class com.bumptech.glide.load.model.stream.HttpUrlGlideUrlLoader
         ModelLoader<T, InputStream> streamModelLoader = Glide.buildStreamModelLoader(modelClass, context);
+        //fileDescriptorModelLoader:com.bumptech.glide.load.model.file_descriptor.FileDescriptorStringLoader
+        // .FileDescriptorStringLoader
         ModelLoader<T, ParcelFileDescriptor> fileDescriptorModelLoader =
                 Glide.buildFileDescriptorModelLoader(modelClass, context);
         if (modelClass != null && streamModelLoader == null && fileDescriptorModelLoader == null) {

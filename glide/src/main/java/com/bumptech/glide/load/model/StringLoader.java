@@ -34,7 +34,7 @@ public class StringLoader<T> implements ModelLoader<String, T> {
                 uri = toFileUri(model);
             }
         }
-
+        //uriLoader:class com.bumptech.glide.load.model.stream.StreamUriLoader
         return uriLoader.getResourceFetcher(uri, width, height);
     }
 
