@@ -1,4 +1,4 @@
-package com.darren.architect_day33.simple1;
+package com.darren.architect_day33.simple1.bean;
 
 /**
  * Created by hcDarren on 2017/12/16.

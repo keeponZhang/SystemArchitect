@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.darren.architect_day33.R;
 import com.darren.architect_day33.simple1.bean.Result;
-
+import com.darren.architect_day33.simple1.bean.UserInfo;
 
 import retrofit2.Call;
 import retrofit2.Callback;

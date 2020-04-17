@@ -2,6 +2,7 @@
 //        ':day10', ':day11', ':day12', ':day13', ':Architect_Day14', ':Architect_Day15', ':Architect_Day16', ':Architect_Day19'
 include ':Architect_Day_Retrofit_33', ':eventbussource', ':eventbusdemo', ':copymoudlue', ':DiggingTranslucentStatusBar'
 include ':shipei'
+include ':RetrofitSource'
 include ':Architect_Day31_shouxie_rxjava'
 include ':Architect_Day34_shouxie_retrofit'
 //include ':Architect_Day26_shouxie_okhttp'
