@@ -40,6 +40,7 @@ final class CallObservable<T> extends Observable<Response<T>> {
 
     boolean terminated = false;
     try {
+      //这里是真正请求的，subscribe触发
       Response<T> response = call.execute();
       if (!call.isCanceled()) {
         observer.onNext(response);

@@ -63,6 +63,7 @@ public interface Converter<F, T> {
      * values.
      */
     //(2)利用参数构建Request，它依赖于@Body/@Part/@PartMap.
+    //对请求做转换
     public Converter<?, RequestBody> requestBodyConverter(Type type,
         Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
       return null;

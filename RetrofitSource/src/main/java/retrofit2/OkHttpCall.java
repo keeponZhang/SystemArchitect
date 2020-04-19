@@ -112,6 +112,7 @@ import okio.Okio;
         //
         Response<T> response;
         try {
+          //把okHttp的Response转成retrofit的Response
           response = parseResponse(rawResponse);
         } catch (Throwable e) {
           callFailure(e);
