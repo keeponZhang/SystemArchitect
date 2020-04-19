@@ -52,6 +52,7 @@ final class RxJava2CallAdapter implements CallAdapter<Object> {
     return responseType;
   }
 
+  //这个是将call adapt 成Observable
   @Override public <R> Object adapt(Call<R> call) {
     Observable<Response<R>> responseObservable = new CallObservable<>(call);
 

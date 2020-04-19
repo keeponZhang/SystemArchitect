@@ -22,6 +22,8 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Streaming;
 
+//这个类有好几个方法呢，responseBodyConverter需要特别注意
+//所以默认的只能解析Call<ResponseBody>
 final class BuiltInConverters extends Converter.Factory {
   @Override
   //responseBodyConverter方法所传入的type，其实是CallAdapter#responseType的类型，这也是它们相关联的地方。
@@ -91,6 +93,7 @@ final class BuiltInConverters extends Converter.Factory {
 
   static final class StreamingResponseBodyConverter
       implements Converter<ResponseBody, ResponseBody> {
+    //其实就是一个单例
     static final StreamingResponseBodyConverter INSTANCE = new StreamingResponseBodyConverter();
 
     @Override public ResponseBody convert(ResponseBody value) throws IOException {

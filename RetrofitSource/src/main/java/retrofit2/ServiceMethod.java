@@ -56,6 +56,7 @@ import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
 
 /** Adapts an invocation of an interface method into an HTTP call. */
+//其实这个T也只是reponseBody，真的的类型是reponseType
 final class ServiceMethod<T> {
   // Upper and lower characters, digits, underscores, and hyphens, starting with a character.
   static final String PARAM = "[a-zA-Z][a-zA-Z0-9_-]*";
@@ -239,6 +240,7 @@ final class ServiceMethod<T> {
       Annotation[] annotations = method.getAnnotations();
       try {
         //把返回类型和注解传给Retrofit.
+        //选择适合的callAdapter
         return retrofit.callAdapter(returnType, annotations);
       } catch (RuntimeException e) { // Wide exception range because factories are user code.
         throw methodError(e, "Unable to create call adapter for %s", returnType);
@@ -712,6 +714,7 @@ final class ServiceMethod<T> {
       }
     }
 
+    //类的泛型参数在这里了决定，这里很重要
     private Converter<ResponseBody, T> createResponseConverter() {
       Annotation[] annotations = method.getAnnotations();
       try {

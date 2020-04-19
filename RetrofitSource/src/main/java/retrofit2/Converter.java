@@ -36,6 +36,7 @@ import retrofit2.http.QueryMap;
  * Factory a factory} which is {@linkplain Retrofit.Builder#addConverterFactory(Factory) installed}
  * into the {@link Retrofit} instance.
  */
+//工厂返回convert对象，convert类实现convert方法
 public interface Converter<F, T> {
   //  //和它的类名类似，只有一个接口，就是进行一个类型的转换。
   T convert(F value) throws IOException;

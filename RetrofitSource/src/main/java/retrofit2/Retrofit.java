@@ -130,6 +130,7 @@ public final class Retrofit {
     if (validateEagerly) {
       eagerlyValidateMethods(service);
     }
+    //这个T是表示ApiService
     return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[] { service },
         new InvocationHandler() {
           private final Platform platform = Platform.get();
@@ -137,9 +138,11 @@ public final class Retrofit {
           @Override public Object invoke(Object proxy, Method method, Object... args)
               throws Throwable {
             // If the method is a method from Object then defer to normal invocation.
+            //如果方法是Object方法，直接调用
             if (method.getDeclaringClass() == Object.class) {
               return method.invoke(this, args);
             }
+            //保证兼容性，默认方法
             if (platform.isDefaultMethod(method)) {
               return platform.invokeDefaultMethod(method, service, proxy, args);
             }
@@ -154,8 +157,12 @@ public final class Retrofit {
 //            };
 //            return serviceMethod.callAdapter.adapt(okHttpCall2);
             //OkHttpCall<T>泛型参数是ServiceMethod的泛型参数决定的
+            //这里OkHttp没有传入泛型
             OkHttpCall okHttpCall = new OkHttpCall<>(serviceMethod, args);
 //            3.其实默认就是调用ExecutorCallAdapterFactory里面adapter的adpat方法，从而调用ExecutorCallbackCall.adapt方法.
+            //默认是不转换的
+            //Call<ResponseBody>adapt成Call<List<Repo>>
+            //返回的是OkHttpCall或者转换后的Observable
             return serviceMethod.callAdapter.adapt(okHttpCall);
           }
         });

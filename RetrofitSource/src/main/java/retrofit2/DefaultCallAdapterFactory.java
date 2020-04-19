@@ -28,10 +28,12 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
 
   @Override
   public CallAdapter<?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+    //这里把不是Call开头的直接返回null了
     if (getRawType(returnType) != Call.class) {
       return null;
     }
 
+    //所以默认的是取的Call<T>,里面的T
     final Type responseType = Utils.getCallResponseType(returnType);
     return new CallAdapter<Call<?>>() {
       @Override public Type responseType() {

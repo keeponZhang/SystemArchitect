@@ -109,6 +109,7 @@ import okio.Okio;
     call.enqueue(new okhttp3.Callback() {
       @Override public void onResponse(okhttp3.Call call, okhttp3.Response rawResponse)
           throws IOException {
+        //
         Response<T> response;
         try {
           response = parseResponse(rawResponse);
@@ -218,7 +219,7 @@ import okio.Okio;
 
     ExceptionCatchingRequestBody catchingBody = new ExceptionCatchingRequestBody(rawBody);
     try {
-      //构建Body.
+      //构建Body.此时这个T是Object,因为这里直接new OkHttpCall的，不是有个具体的实现类继承OkHttpCall，并覆写泛型方法
       T body = serviceMethod.toResponse(catchingBody);
       return Response.success(body, rawResponse);
     } catch (RuntimeException e) {

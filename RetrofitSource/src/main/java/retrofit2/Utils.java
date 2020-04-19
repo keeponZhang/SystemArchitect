@@ -316,6 +316,7 @@ final class Utils {
     }
   }
 
+  //取泛型里面的第一个，例如Call<List<Repo>>，取的是List<Repo>
   static Type getParameterUpperBound(int index, ParameterizedType type) {
     Type[] types = type.getActualTypeArguments();
     if (index < 0 || index >= types.length) {
