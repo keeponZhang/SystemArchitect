@@ -34,6 +34,18 @@ public class RealInterceptorChain implements Interceptor.Chain {
     //第一个次chain.proceed(request)，调用的是第一个interceptor.intercept,其他类似
     @Override
     public Response proceed(Request request) throws IOException {
+
+
+//         List<Interceptor> interceptors = new ArrayList<>();
+//         interceptors.add(new BridgeInterceptor());
+//         interceptors.add(new CacheInterceptor());
+//         interceptors.add(new CallServerInterceptor());
+
+        //假如只有三个Interceptor，首先调用的是BridgeInterceptor的intercept
+        // 方法，传入创建的拦截器链（包含所有的拦截器和索引（下个拦截器调用chain的process方法时会用到该索引））
+        //最终返回的response是CallServerInterceptor返回的reponse经过CacheInterceptor再经过BridgeInterceptor
+        // 处理的response
+
 	    Log.e(TAG, "proceed: "+ mIndex + " mRequest.url=="+mRequest.url()+" request.url=="+request.url());
         RealInterceptorChain next = new RealInterceptorChain(interceptors,
                 mIndex + 1, request);

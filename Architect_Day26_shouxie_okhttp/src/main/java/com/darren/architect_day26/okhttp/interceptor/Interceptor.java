@@ -10,6 +10,8 @@ import java.io.IOException;
  */
 
 public interface Interceptor {
+    //拦截器，可以通过chain 对象得到request和reponse
+    //这里为什么返回Response，因为需要的最终是Response
     Response intercept(Chain chain) throws IOException;
     interface Chain {
         Request request();

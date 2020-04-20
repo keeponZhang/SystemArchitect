@@ -65,6 +65,8 @@ public class RealCall implements Call{
                 interceptors.add(new CacheInterceptor());
 //                interceptors.addAll(this.client.networkInterceptors());
                 interceptors.add(new CallServerInterceptor());
+                //最开始的RealInterceptorChain拥有一开始的interceptors和orignalRequest
+                //RealInterceptorChain的核心是拥有所有的interceptors和当前要执行的interceptor索引
                 Interceptor.Chain chain = new RealInterceptorChain
                         (interceptors,0,orignalRequest);
                 Response response = chain.proceed(request);
