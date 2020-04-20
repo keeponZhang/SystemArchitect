@@ -34,8 +34,10 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
     }
 
     //所以默认的是取的Call<T>,里面的T
+
     final Type responseType = Utils.getCallResponseType(returnType);
     return new CallAdapter<Call<?>>() {
+      //默认返回的responseType是一样的，responseType在responseConverter有用
       @Override public Type responseType() {
         return responseType;
       }

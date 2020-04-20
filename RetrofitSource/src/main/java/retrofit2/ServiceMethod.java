@@ -147,7 +147,9 @@ final class ServiceMethod<T> {
     MediaType contentType;
     Set<String> relativeUrlParamNames;
     ParameterHandler<?>[] parameterHandlers;
+    //这是是对应请求的Converter
     Converter<ResponseBody, T> responseConverter;
+    //这是是对应请求的callAdapter，一般来说是Call,RxJava2CallAdapter是Obserable,这个是在动态代理方法里实现的
     CallAdapter<?> callAdapter;
 
     public Builder(Retrofit retrofit, Method method) {
@@ -169,6 +171,7 @@ final class ServiceMethod<T> {
             + "' is not a valid response body type. Did you mean ResponseBody?");
       }
       //3.初始化Converter<ResponseBody, T>，调用了retrofit.responseBodyConverter（默认是调用BuiltInConverters的responseBodyConverter）
+      //最终会在OkHttpCall调用serviceMethod.toResponse(catchingBody)，实际是调用Converter.covert方法
       responseConverter = createResponseConverter();
       //4.处理方法的注解,
       for (Annotation annotation : methodAnnotations) {

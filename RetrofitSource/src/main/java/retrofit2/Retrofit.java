@@ -343,8 +343,10 @@ public final class Retrofit {
     checkNotNull(type, "type == null");
     checkNotNull(annotations, "annotations == null");
 
+    //这里是converterFactory，通用的一般也就两种GsonConverterFactory和BuiltInConverters
     int start = converterFactories.indexOf(skipPast) + 1;
     for (int i = start, count = converterFactories.size(); i < count; i++) {
+      //会遍历所有的converterFactories，调用responseBodyConverter方法，取得最合适的ResponseBody的Converter
       Converter<ResponseBody, ?> converter =
           converterFactories.get(i).responseBodyConverter(type, annotations, this);
       if (converter != null) {

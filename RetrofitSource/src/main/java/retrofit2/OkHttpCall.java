@@ -137,6 +137,7 @@ import okio.Okio;
         }
       }
 
+      //BuiltInConverters
       private void callSuccess(Response<T> response) {
         try {
           callback.onResponse(OkHttpCall.this, response);
@@ -221,6 +222,7 @@ import okio.Okio;
     ExceptionCatchingRequestBody catchingBody = new ExceptionCatchingRequestBody(rawBody);
     try {
       //构建Body.此时这个T是Object,因为这里直接new OkHttpCall的，不是有个具体的实现类继承OkHttpCall，并覆写泛型方法
+      //这里是重点，调用responseConverter，默认的是BuiltInConverters
       T body = serviceMethod.toResponse(catchingBody);
       return Response.success(body, rawResponse);
     } catch (RuntimeException e) {
