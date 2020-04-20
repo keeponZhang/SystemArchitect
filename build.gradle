@@ -46,7 +46,7 @@ ext {
     buildToolsVersion = "26.0.2"
     minSdkVersion = 18
     targetSdkVersion = 24
-    SUPPORT_LIBRARY_VERSION = '26.0.0'
+    SUPPORT_LIBRARY_VERSION = '26.0.1'
     OKHTTP_LIBRARY_VERSION = '3.9.1'
     GSON_LIBRARY_VERSIOIN='2.8.0'
     CONSTRAINT_LAYOUT='1.1.0'
