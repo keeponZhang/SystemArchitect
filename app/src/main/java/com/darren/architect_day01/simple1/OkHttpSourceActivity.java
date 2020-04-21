@@ -14,50 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.darren.architect_day01.BaseApplication;
-import com.darren.architect_day01.MyParameterizedTypeImpl;
 import com.darren.architect_day01.R;
-import com.darren.architect_day01.adapter.MyIntegerTypeAdapter;
-import com.darren.architect_day01.adapter.UserTypeAdapter;
-import com.darren.architect_day01.data.entity.Article;
-import com.darren.architect_day01.data.entity.ModifierSample;
-import com.darren.architect_day01.data.entity.Result;
-import com.darren.architect_day01.data.entity.SimpleResult;
-import com.darren.architect_day01.data.entity.User;
 import com.darren.architect_day01.data.repsonse.BaseRes;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.annotations.Expose;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -108,8 +73,10 @@ public class OkHttpSourceActivity extends AppCompatActivity {
                 new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
         //在构造 OkHttpClient 时，通过 .cache 配置。
         mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
+                //使用缓存必须增加FirstClientInterceptor
                 .addInterceptor(new FirstClientInterceptor())
-                // .addNetworkInterceptor(new LastInternetInterceptor())
+                .addInterceptor(new MyCacheInterceptor())
+                .addNetworkInterceptor(new LastInternetInterceptor())
                 .build();
     }
 
@@ -134,7 +101,7 @@ public class OkHttpSourceActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 final String resultJson = response.body().string();
-                Log.e("TAG", resultJson);
+                Log.d("TAG", resultJson);
                 mTextView.post(new Runnable() {
                     @Override
                     public void run() {

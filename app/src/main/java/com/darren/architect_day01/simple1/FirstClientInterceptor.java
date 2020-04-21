@@ -23,10 +23,10 @@ public class FirstClientInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        Log.e("TAG", "FirstClientInterceptor intercept request:");
+        Log.w("TAG", "FirstClientInterceptor intercept request:");
         try {
-            if (!NetworkUtils.isOnline()) {//没网强制从缓存读取
-                Log.e("TAG", "FirstClientInterceptor intercept:");
+            if (!NetworkUtils.isOnline()) {//没网强制从缓存读取，这里设置了过期能使用，相当于MyCacheInterceptor的设置是无用的
+                Log.e("TAG", "FirstClientInterceptor 没网强制从缓存读取 intercept:");
                 request = request.newBuilder()
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();
@@ -38,7 +38,7 @@ public class FirstClientInterceptor implements Interceptor {
         }
 
         Response response = chain.proceed(request);
-        Log.e("TAG", "FirstClientInterceptor intercept response:");
+        Log.w("TAG", "FirstClientInterceptor intercept response:");
         return response;
     }
 }

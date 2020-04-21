@@ -92,15 +92,17 @@ public final class CacheInterceptor implements Interceptor {
     // If we don't need the network, we're done.
     if (networkRequest == null) {
       // 如果缓存策略里面的 networkRequest 是空，那么就 返回 缓存好的 Response（说明缓存命中）
-      return cacheResponse.newBuilder()
-          .cacheResponse(stripBody(cacheResponse))
-          .build();
+      Response response = cacheResponse.newBuilder()
+              .cacheResponse(stripBody(cacheResponse))
+              .build();
+      Log.e("TAG", "CacheInterceptor intercept 缓存命中:");
+      return response;
     }
 
     Response networkResponse = null;
     try {
       //8.继续调用链的下一个步骤，按常理来说，走到这里就会真正地发起网络请求了。
-      Log.e("TAG", "CacheInterceptor intercept chain.proceed(networkRequest):");
+      Log.d("TAG", "我是原始的CacheInterceptor intercept chain.proceed(networkRequest),继续调用chain.proceed(networkRequest):");
       networkResponse = chain.proceed(networkRequest);
     } finally {
       // If we're crashing on I/O or otherwise, don't leak the cache body.

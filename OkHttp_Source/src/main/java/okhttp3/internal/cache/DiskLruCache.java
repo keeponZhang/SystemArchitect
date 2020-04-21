@@ -590,7 +590,7 @@ public final class DiskLruCache implements Closeable, Flushable {
       journalWriter.writeByte('\n');
     }
     journalWriter.flush();
-    Log.e("TAG", "DiskLruCache completeEdit size:"+size);
+    Log.d("TAG", "DiskLruCache completeEdit size:"+size);
     if (size > maxSize || journalRebuildRequired()) {
       executor.execute(cleanupRunnable);
     }

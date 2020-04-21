@@ -23,26 +23,23 @@ public class LastInternetInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        Log.e("TAG", "LastInternetInterceptor intercept request:");
+        Log.w("TAG",  this.getClass().getSimpleName()+" intercept request:");
         Response response = chain.proceed(request);
-        Response responseLatest;
+        Response responseLatest = response;
 
+        //这些是在response后处理
         if (NetworkUtils.isOnline()) {
             int maxAge = 5;
-            Log.e(TAG, "intercept: maxAge  " + NetworkUtils.isOnline());
+            Log.e("TAG", this.getClass().getSimpleName()+"intercept: maxAge  " + NetworkUtils.isOnline());
             responseLatest = setCacheTime(response, maxAge);
-            responseLatest = response;
-        } else {
-            int maxStale = 40; // 没网失效6小时
-            Log.e(TAG, "intercept: maxStale " + NetworkUtils.isOnline());
-            responseLatest = setNoNetWorkCacheTime(response, maxStale);
+            // responseLatest = response;
         }
-        Log.e("TAG", "LastInternetInterceptor intercept Response:");
+        Log.w("TAG", this.getClass().getSimpleName()+" intercept Response:");
 
         return responseLatest;
     }
 
-    private static Response setCacheTime(Response response, int maxAge) {
+    protected  Response setCacheTime(Response response, int maxAge) {
         return response.newBuilder()
                 .removeHeader("Pragma")
                 .removeHeader("Cache-Control")
@@ -52,7 +49,7 @@ public class LastInternetInterceptor implements Interceptor {
                 .build();
     }
 
-    private static Response setNoNetWorkCacheTime(Response response, int maxStale) {
+    protected   Response setNoNetWorkCacheTime(Response response, int maxStale) {
         return response.newBuilder()
                 .removeHeader("Pragma")
                 .removeHeader("Cache-Control")
