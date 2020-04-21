@@ -106,6 +106,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
     return streamAllocation;
   }
 
+  //只有IOException是往上抛的
   @Override public Response intercept(Chain chain) throws IOException {
     Request request = chain.request();
     //这是第一个拦截器
@@ -199,7 +200,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
             + " didn't close its backing stream. Bad interceptor?");
       }
 
-      // 请求就变为了重试的请求 Request
+      // 请求就变为了重试的请求 Request，会继续调用realChain.proceed
       request = followUp;
       Log.e("TAG", "==========RetryAndFollowUpInterceptor intercept followUp=======:");
       priorResponse = response;

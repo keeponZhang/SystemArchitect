@@ -26,6 +26,7 @@ public final class CacheControl {
    */
   public static final CacheControl FORCE_CACHE = new Builder()
       .onlyIfCached()
+          //过期了MAX_VALUE 秒，仍让可以用，放宽了缓存
       .maxStale(Integer.MAX_VALUE, TimeUnit.SECONDS)
       .build();
 
@@ -354,6 +355,7 @@ public final class CacheControl {
      * Unsatisfiable Request} response will be returned.
      */
     public Builder onlyIfCached() {
+      //表示只接受缓存中的响应，如果缓存不存在，那么返回一个状态码为504的响应。
       this.onlyIfCached = true;
       return this;
     }

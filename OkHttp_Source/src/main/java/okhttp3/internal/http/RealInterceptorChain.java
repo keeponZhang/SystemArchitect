@@ -153,6 +153,7 @@ public final class RealInterceptorChain implements Interceptor.Chain {
     Response response = interceptor.intercept(next);
 
     // Confirm that the next interceptor made its required call to chain.proceed().
+    //如果最后一个interceptor调用了chain.process方法，会抛异常
     if (httpCodec != null && index + 1 < interceptors.size() && next.calls != 1) {
       throw new IllegalStateException("network interceptor " + interceptor
           + " must call proceed() exactly once");

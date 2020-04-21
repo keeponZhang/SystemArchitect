@@ -54,6 +54,7 @@ public interface CallAdapter<T> {
    * </code></pre>
    */
   //(2)将Call<R>转换为T.（T 是Call<泛型>）
+  //把OkHttpCall<Object>转换成为自己希望的类型
   <R> T adapt(Call<R> call);
 
   /**

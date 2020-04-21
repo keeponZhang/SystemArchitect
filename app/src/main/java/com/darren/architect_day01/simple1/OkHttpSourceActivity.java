@@ -84,8 +84,7 @@ public class OkHttpSourceActivity extends AppCompatActivity {
         setContentView(R.layout.app_activity_okhttpsouce);
         mTextView = (TextView) findViewById(R.id.tv);
         mIv = (ImageView) findViewById(R.id.iv);
-        mOkHttpClient = new OkHttpClient.Builder()
-                .build();
+        init();
 
     }
 
@@ -95,20 +94,24 @@ public class OkHttpSourceActivity extends AppCompatActivity {
         // if(bitmap!=null){
         //     bitmap.recycle();
         // }
+
     }
 
     public void init(View view) {
+        init();
+    }
+
+    private void init() {
         int cacheSize = 5 * 1024 * 1024;
         //分别对应缓存的目录，以及缓存的大小。
         Cache mCache =
                 new Cache(BaseApplication.mApplicationContext.getExternalCacheDir(), cacheSize);
         //在构造 OkHttpClient 时，通过 .cache 配置。
         mOkHttpClient = new OkHttpClient.Builder().cache(mCache)
-                .addNetworkInterceptor(new FirstClientInterceptor())
-                .addInterceptor(new LastInternetInterceptor())
+                .addInterceptor(new FirstClientInterceptor())
+                // .addNetworkInterceptor(new LastInternetInterceptor())
                 .build();
     }
-
 
     public void getAppXixiUpdate(View view) {
         testUrl = "http://eapi.ciwong.com/repos/launcher/android/update";

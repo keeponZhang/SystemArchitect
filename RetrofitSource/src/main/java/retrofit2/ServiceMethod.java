@@ -94,6 +94,7 @@ final class ServiceMethod<T> {
 
   /** Builds an HTTP request from method arguments. */
   Request toRequest(Object... args) throws IOException {
+    //RequestBuilder是retrofit的， okHttp的是Request.Builder().
     RequestBuilder requestBuilder = new RequestBuilder(httpMethod, baseUrl, relativeUrl, headers,
         contentType, hasBody, isFormEncoded, isMultipart);
 

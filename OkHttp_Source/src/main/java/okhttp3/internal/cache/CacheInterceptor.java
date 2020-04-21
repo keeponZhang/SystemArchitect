@@ -88,6 +88,7 @@ public final class CacheInterceptor implements Interceptor {
           .build();
     }
 
+    //走到这里，说明cacheResponse肯定不为空
     // If we don't need the network, we're done.
     if (networkRequest == null) {
       // 如果缓存策略里面的 networkRequest 是空，那么就 返回 缓存好的 Response（说明缓存命中）
@@ -113,6 +114,7 @@ public final class CacheInterceptor implements Interceptor {
     if (cacheResponse != null) {
       if (networkResponse.code() == HTTP_NOT_MODIFIED) {
         // //10.1 假如是 304，那么服务器数据没有变化，根据缓存构造出返回的结果给调用者。
+        //cacheResponse.newBuilder()这个首先用cacheResponse初始化Builder参数
         Response response = cacheResponse.newBuilder()
                 //结合两者的头部字段。
             .headers(combine(cacheResponse.headers(), networkResponse.headers()))

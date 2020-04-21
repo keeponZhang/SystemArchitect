@@ -52,6 +52,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public final class CacheStrategy {
   /** The request to send on the network, or null if this call doesn't use the network. */
   public final @Nullable
+  //不为空，说明接下来会做网络请求
   Request networkRequest;
 
   /** The cached response to return or validate; or null if this call doesn't use a cache. */
@@ -242,23 +243,27 @@ public final class CacheStrategy {
         freshMillis = Math.min(freshMillis, SECONDS.toMillis(requestCaching.maxAgeSeconds()));
       }
       long minFreshMillis = 0;
-      //8.请求所允许的最小年龄。
+      //8.请求所允许的最小年龄,收缩缓存
       if (requestCaching.minFreshSeconds() != -1) {
         minFreshMillis = SECONDS.toMillis(requestCaching.minFreshSeconds());
       }
       //maxStale表示缓存过去了多久还可以用 ,request的FORCE_CACHE表示缓存过去了Integer.max秒后还可以用
-      //9.最大的 Stale() 时间。
+      //9.最大的 Stale() 时间，放松缓存
       long maxStaleMillis = 0;
       if (!responseCaching.mustRevalidate() && requestCaching.maxStaleSeconds() != -1) {
         maxStaleMillis = SECONDS.toMillis(requestCaching.maxStaleSeconds());
       }
       //10.根据几个时间点确定是否返回缓存，并且去掉网络请求，如果客户端需要强行去掉网络请求，那么就是修改这个条件。
+      //改成这样好理解
+      //ageMillis  < freshMillis + maxStaleMillis -minFreshMillis
       if (!responseCaching.noCache() && ageMillis + minFreshMillis < freshMillis + maxStaleMillis) {
         Response.Builder builder = cacheResponse.newBuilder();
+        //这个表示缓存已经不建议使用了，但是又有maxStaleMillis，表示过期缓存也可以使用
         if (ageMillis + minFreshMillis >= freshMillis) {
           builder.addHeader("Warning", "110 HttpURLConnection \"Response is stale\"");
         }
         long oneDayMillis = 24 * 60 * 60 * 1000L;
+        //启发式
         if (ageMillis > oneDayMillis && isFreshnessLifetimeHeuristic()) {
           builder.addHeader("Warning", "113 HttpURLConnection \"Heuristic expiration\"");
         }
@@ -272,7 +277,7 @@ public final class CacheStrategy {
 
       // Find a condition to add to the request. If the condition is satisfied, the response body
       // will not be transmitted.
-      //填入条件请求的字段。
+      //到这里说明缓存过期了，需要填入条件请求的字段。
       String conditionName;
       String conditionValue;
       if (etag != null) {
@@ -281,7 +286,7 @@ public final class CacheStrategy {
       } else if (lastModified != null) {
         conditionName = "If-Modified-Since";
         conditionValue = lastModifiedString;
-      } else if (servedDate != null) {
+      } else if (servedDate != null) {  //没有lastModified 退而求其次用servedDate的时间
         conditionName = "If-Modified-Since";
         conditionValue = servedDateString;
       } else {

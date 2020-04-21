@@ -26,6 +26,7 @@ public class FirstClientInterceptor implements Interceptor {
         Log.e("TAG", "FirstClientInterceptor intercept request:");
         try {
             if (!NetworkUtils.isOnline()) {//没网强制从缓存读取
+                Log.e("TAG", "FirstClientInterceptor intercept:");
                 request = request.newBuilder()
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();

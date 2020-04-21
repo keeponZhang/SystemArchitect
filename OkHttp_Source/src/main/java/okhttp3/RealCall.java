@@ -80,6 +80,7 @@ final class RealCall implements Call {
       //通过 OkHttpClient 的调度器执行请求。(//Dispatcher.executed 仅仅是将 Call 加入到队列当中，而并没有真正执行。)
       client.dispatcher().executed(this);
       //getResponseWithInterceptorChain() 责任链模式。
+      //失败啥的抛IOException
       Response result = getResponseWithInterceptorChain();
       if (result == null) throw new IOException("Canceled");
       return result;
@@ -89,7 +90,8 @@ final class RealCall implements Call {
       throw e;
     } finally {
       //通过调度器结束该任务。
-      client.dispatcher().finished(this);
+      client.dispatcher().
+              finished(this);
     }
   }
 
@@ -215,7 +217,7 @@ final class RealCall implements Call {
     Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
         originalRequest, this, eventListener, client.connectTimeoutMillis(),
         client.readTimeoutMillis(), client.writeTimeoutMillis());
-    //执行调用链的 proceed 方法。
+    //执行调用链的 proceed 方法。（）
     return chain.proceed(originalRequest);
   }
 }
