@@ -13,10 +13,12 @@
         android:supportsRtl="true"
         android:name=".BaseApplication"
         android:theme="@style/AppTheme">
-        <activity android:name=".simple3.Simple3MainActivity">
+        <activity android:name=".simple3.HttpUtilWithCustomCallBackActivity">
 
         </activity>
-        <activity android:name=".simple1.AppMainActivity">
+        <activity android:name=".simple1.GsonActivity">
+        </activity>
+        <activity android:name=".simple1.OkHttpSourceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

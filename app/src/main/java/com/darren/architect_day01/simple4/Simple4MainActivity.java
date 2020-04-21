@@ -12,7 +12,7 @@ public class Simple4MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.app_activity_main);
+        setContentView(R.layout.app_activity_gson);
 
         /********************访问网络开始*******************/
         Map<String, Object> params = new HashMap<>();

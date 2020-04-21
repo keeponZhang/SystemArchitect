@@ -15,11 +15,11 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class Sample2MainActivity extends AppCompatActivity {
+public class HttpUtilWithCallBackActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.app_activity_main);
+        setContentView(R.layout.app_activity_gson);
 
         /********************访问网络开始*******************/
         Map<String, Object> params = new HashMap<>();
