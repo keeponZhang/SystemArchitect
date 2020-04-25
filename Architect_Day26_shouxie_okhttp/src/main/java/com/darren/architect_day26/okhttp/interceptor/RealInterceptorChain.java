@@ -32,6 +32,7 @@ public class RealInterceptorChain implements Interceptor.Chain {
     //最后一个Interceptor不会调用chain.proceed(request)，其他必须调用
     //chain.proceed(request)的调用次数与Interceptor个数一样，第一次在RealCall中发起调用
     //第一个次chain.proceed(request)，调用的是第一个interceptor.intercept,其他类似
+    //request表示已经做了前置工作的request
     @Override
     public Response proceed(Request request) throws IOException {
 
