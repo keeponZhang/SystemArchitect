@@ -15,6 +15,7 @@ public interface ResourceTranscoder<Z, R> {
      *
      * @param toTranscode The resource to transcode.
      */
+    //将某个类型转换给另一个类型的Resource
     Resource<R> transcode(Resource<Z> toTranscode);
 
     String getId();

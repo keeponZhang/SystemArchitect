@@ -46,5 +46,6 @@ public interface ModelLoader<T, Y> {
      * @return A {@link DataFetcher} that can obtain the data the resource can be decoded from if the resource is not
      * cached, or null if no valid {@link DataFetcher} could be constructed.
      */
+    //Model
     DataFetcher<Y> getResourceFetcher(T model, int width, int height);
 }

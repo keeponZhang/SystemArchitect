@@ -139,7 +139,8 @@ public class Engine implements EngineJobListener,
      * @param <Z> The type of the resource that will be decoded.
      * @param <R> The type of the resource that will be transcoded from the decoded resource.
      */
-    //fetcher:ImageVideoFetcher  loadProvider:FixedLoadProvider
+    //fetcher:ImageVideoFetcher
+    // loadProvider:FixedLoadProvider
     //transcoder:GifBitmapWrapperDrawableTranscoder
     // T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
     public <T, Z, R> LoadStatus load(Key signature, int width, int height, DataFetcher<T> fetcher,
