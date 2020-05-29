@@ -65,7 +65,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
         // 都封装进去，这个也就是onSizeReady()方法中的loadProvider了。
         return new FixedLoadProvider<A, ImageVideoWrapper, Z, R>(modelLoader, transcoder, dataLoadProvider);
     }
-	//该构造函数很重要
+	//该构造函数很重要，ModelType：String
     DrawableTypeRequest(Class<ModelType> modelClass, ModelLoader<ModelType, InputStream> streamModelLoader,
             ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader, Context context, Glide glide,
             RequestTracker requestTracker, Lifecycle lifecycle, RequestManager.OptionsApplier optionsApplier) {

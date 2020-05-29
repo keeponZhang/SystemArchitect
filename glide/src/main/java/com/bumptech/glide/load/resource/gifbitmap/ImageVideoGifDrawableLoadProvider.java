@@ -25,9 +25,11 @@ public class ImageVideoGifDrawableLoadProvider implements DataLoadProvider<Image
     private final ResourceEncoder<GifBitmapWrapper> encoder;
     private final Encoder<ImageVideoWrapper> sourceEncoder;
 
+    //一般loadprovider是确定的，这里是不确定的，所以传入两个
     public ImageVideoGifDrawableLoadProvider(DataLoadProvider<ImageVideoWrapper, Bitmap> bitmapProvider,
             DataLoadProvider<InputStream, GifDrawable> gifProvider, BitmapPool bitmapPool) {
 
+        //bitmapProvider:ImageVideoDataLoadProvider
         final GifBitmapWrapperResourceDecoder decoder = new GifBitmapWrapperResourceDecoder(
                 bitmapProvider.getSourceDecoder(),
                 gifProvider.getSourceDecoder(),

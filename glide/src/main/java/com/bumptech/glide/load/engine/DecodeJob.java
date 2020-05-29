@@ -190,7 +190,7 @@ class DecodeJob<A, T, Z> {
         Resource<T> decoded = null;
         try {
             long startTime = LogTime.getLogTime();
-//            调用ImageVideoFetcher的loadData()方法
+            // fetcher:ImageVideoFetcher    调用ImageVideoFetcher的loadData()方法
             //得到了一个ImageVideoWrapper对象
             final A data = fetcher.loadData(priority);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -217,6 +217,7 @@ class DecodeJob<A, T, Z> {
             //loadProvider:FixedLoadProvider
             // loadProvider.getSourceDecoder():GifBitmapWrapperResourceDecoder
             //data:ImageVideoWrapper
+            //这里需要主要的是loadProvider的方法，这调用的是getSourceDecoder，把ImageVideoWrapper里面的stream解码成drawable
             decoded = loadProvider.getSourceDecoder().decode(data, width, height);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 logWithTimeAndKey("Decoded from source", startTime);

@@ -36,6 +36,7 @@ public class StreamBitmapDecoder implements ResourceDecoder<InputStream, Bitmap>
     }
 
     public StreamBitmapDecoder(BitmapPool bitmapPool, DecodeFormat decodeFormat) {
+        //Glide构造函数内生成
         this(Downsampler.AT_LEAST, bitmapPool, decodeFormat);
     }
 
@@ -50,7 +51,7 @@ public class StreamBitmapDecoder implements ResourceDecoder<InputStream, Bitmap>
 //        调用了Downsampler的decode()方法，返回的是bitmap对象
         Bitmap bitmap = downsampler.decode(source, bitmapPool, width, height, decodeFormat);
         //又调用了BitmapResource.obtain()方法，将Bitmap对象包装成了Resource<Bitmap>对象
-        //StreamBitmapDecoder会将值返回到ImageVideoBitmapDecoder当中
+        //StreamBitmapDecoder会将值返回到ImageVideoBitmapDecoder当中decode方法
         return BitmapResource.obtain(bitmap, bitmapPool);
     }
 

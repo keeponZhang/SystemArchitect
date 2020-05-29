@@ -12,12 +12,16 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
-		<meta-data
-			android:name="com.keepon.module.MyGlideModule"
-			android:value="GlideModule"/>
+<!--		<meta-data-->
+<!--			android:name="com.keepon.module.MyGlideModule"-->
+<!--			android:value="GlideModule"/>-->
 
 		<activity android:name="com.keepon.GlideActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
 
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
 		</activity>
 		<activity android:name="com.keepon.GlideTargetActivity">
 		</activity>
@@ -27,11 +31,7 @@
 		<activity android:name="com.keepon.GlideAnimateActivity">
 		</activity>
 		<activity android:name="com.keepon.ProgressActivity">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
 
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
 		</activity>
 	</application>
 

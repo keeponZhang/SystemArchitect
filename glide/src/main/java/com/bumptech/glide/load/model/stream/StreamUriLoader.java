@@ -29,6 +29,8 @@ public class StreamUriLoader extends UriLoader<InputStream> implements StreamMod
 
         @Override
         public ModelLoader<Uri, InputStream> build(Context context, GenericLoaderFactory factories) {
+            // register(GlideUrl.class, InputStream.class, new HttpUrlGlideUrlLoader.Factory());
+            //这里看到StreamUriLoader里面真正的是HttpUrlGlideUrlLoader
             return new StreamUriLoader(context, factories.buildModelLoader(GlideUrl.class, InputStream.class));
         }
 

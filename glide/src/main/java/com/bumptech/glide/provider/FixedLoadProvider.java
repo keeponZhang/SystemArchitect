@@ -25,7 +25,7 @@ public class FixedLoadProvider<A, T, Z, R> implements LoadProvider<A, T, Z, R>  
     private final ResourceTranscoder<Z, R> transcoder;
     private final DataLoadProvider<T, Z> dataLoadProvider;
 
-    // A, T, Z, R
+    // A, T（ImageVideoWrapper（String时，这个是写死的））, Z, R
     //A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
     //ImageVideoModelLoader、 GifBitmapWrapperDrawableTranscoder、ImageVideoGifDrawableLoadProvider
     public FixedLoadProvider(ModelLoader<A, T> modelLoader, ResourceTranscoder<Z, R> transcoder,

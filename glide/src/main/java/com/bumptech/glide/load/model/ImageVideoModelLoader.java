@@ -24,6 +24,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
     private final ModelLoader<A, InputStream> streamLoader;
     private final ModelLoader<A, ParcelFileDescriptor> fileDescriptorLoader;
 
+    //可以说是代理
     public ImageVideoModelLoader(ModelLoader<A, InputStream> streamLoader,
             ModelLoader<A, ParcelFileDescriptor> fileDescriptorLoader) {
         if (streamLoader == null && fileDescriptorLoader == null) {
@@ -75,7 +76,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
             InputStream is = null;
             if (streamFetcher != null) {
                 try {
-                    //又去调用了HttpUrlFetcher.loadData()方法
+                    //又去调用了HttpUrlFetcher.loadData()方法，这里返回了网络流
                     is = streamFetcher.loadData(priority);
                 } catch (Exception e) {
                     if (Log.isLoggable(TAG, Log.VERBOSE)) {

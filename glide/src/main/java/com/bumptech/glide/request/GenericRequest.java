@@ -92,7 +92,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
     private Engine.LoadStatus loadStatus;
     private long startTime;
     private Status status;
-
+    // A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
     public static <A, T, Z, R> GenericRequest<A, T, Z, R> obtain(
             LoadProvider<A, T, Z, R> loadProvider,
             A model,
@@ -440,17 +440,17 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
             return;
         }
         status = Status.RUNNING;
+        Log.e("TAG", "GenericRequest onSizeReady width:"+width+" height="+height);
 
         width = Math.round(sizeMultiplier * width);
         height = Math.round(sizeMultiplier * height);
 
         //loadProvider:FixedLoadProvider
-        //modelLoader:ImageVideoModelLoader
+        //modelLoader:ImageVideoModelLoader（StreamStringLoader再封装了一层）
         //A:String T:ImageVideoWrapper
         ModelLoader<A, T> modelLoader = loadProvider.getModelLoader();
-        //dataFetcher:ImageVideoFetcher，后面再调到它的loadData方法（这个很重要********），然后去调用了HttpUrlFetcher
-        // （真正去请求网络的地方）
-        // .loadData()
+        //dataFetcher:ImageVideoFetcher，后面再调到它的loadData方法（这个很重要********），
+        // 然后去调用了HttpUrlFetcher.loadData()（真正去请求网络的地方）
         final DataFetcher<T> dataFetcher = modelLoader.getResourceFetcher(model, width, height);
 
         if (dataFetcher == null) {

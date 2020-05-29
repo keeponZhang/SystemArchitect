@@ -24,6 +24,7 @@ public class StreamBitmapDataLoadProvider implements DataLoadProvider<InputStrea
     private final StreamEncoder sourceEncoder;
     private final FileToStreamDecoder<Bitmap> cacheDecoder;
 
+    //Glide构造函数会调用生成实例
     public StreamBitmapDataLoadProvider(BitmapPool bitmapPool, DecodeFormat decodeFormat) {
         sourceEncoder = new StreamEncoder();
         decoder = new StreamBitmapDecoder(bitmapPool, decodeFormat);

@@ -231,6 +231,7 @@ public class Glide {
                 new GifDrawableLoadProvider(context, bitmapPool);
         dataLoadProviderRegistry.register(InputStream.class, GifDrawable.class, gifDrawableLoadProvider);
 
+        //这个有ImageVideoDataLoadProvider的区别是，一个是Bitmap，一个是GifBitmapWrapper
         dataLoadProviderRegistry.register(ImageVideoWrapper.class, GifBitmapWrapper.class,
                 new ImageVideoGifDrawableLoadProvider(imageVideoDataLoadProvider, gifDrawableLoadProvider, bitmapPool));
 
@@ -293,6 +294,7 @@ public class Glide {
     }
 
     <Z, R> ResourceTranscoder<Z, R> buildTranscoder(Class<Z> decodedClass, Class<R> transcodedClass) {
+        // Z:GifBitmapWrapper R:GlideDrawable
         return transcoderRegistry.get(decodedClass, transcodedClass);
     }
 

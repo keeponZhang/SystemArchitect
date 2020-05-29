@@ -425,6 +425,7 @@ public class DrawableRequestBuilder<ModelType>
 
     @Override
     public DrawableRequestBuilder<ModelType> load(ModelType model) {
+        //此时ModelType是String类型
         super.load(model);
         return this;
     }

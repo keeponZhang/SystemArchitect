@@ -24,6 +24,7 @@ public class StreamUrlLoader extends UrlLoader<InputStream> {
     public static class Factory implements ModelLoaderFactory<URL, InputStream> {
         @Override
         public ModelLoader<URL, InputStream> build(Context context, GenericLoaderFactory factories) {
+            // register(GlideUrl.class, InputStream.class, new HttpUrlGlideUrlLoader.Factory());
             return new StreamUrlLoader(factories.buildModelLoader(GlideUrl.class, InputStream.class));
         }
 

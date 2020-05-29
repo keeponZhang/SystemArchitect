@@ -1,9 +1,18 @@
 package com.bumptech.glide.load.model;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 
 import com.bumptech.glide.load.data.DataFetcher;
+import com.bumptech.glide.load.model.file_descriptor.FileDescriptorStringLoader;
+import com.bumptech.glide.load.model.file_descriptor.FileDescriptorUriLoader;
+import com.bumptech.glide.load.model.stream.StreamStringLoader;
+import com.bumptech.glide.load.model.stream.StreamUriLoader;
+import com.bumptech.glide.load.model.stream.StreamUrlLoader;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +81,12 @@ public class GenericLoaderFactory {
             ModelLoaderFactory<T, Y> factory) {
         cachedModelLoaders.clear();
 
+        // register(String.class, ParcelFileDescriptor.class, new FileDescriptorStringLoader.Factory());
+        // register(String.class, InputStream.class, new StreamStringLoader.Factory());
+        // register(Uri.class, ParcelFileDescriptor.class, new FileDescriptorUriLoader.Factory());
+        // register(Uri.class, InputStream.class, new StreamUriLoader.Factory());
+        // register(URL.class, InputStream.class, new StreamUrlLoader.Factory());
+        //modelClassToResourceFactories 可以是modle，modelClassToResourceFactories的key是resourceClass
         Map<Class/*Y*/, ModelLoaderFactory/*T, Y*/> resourceToFactories = modelClassToResourceFactories.get(modelClass);
         if (resourceToFactories == null) {
             resourceToFactories = new HashMap<Class/*Y*/, ModelLoaderFactory/*T, Y*/>();

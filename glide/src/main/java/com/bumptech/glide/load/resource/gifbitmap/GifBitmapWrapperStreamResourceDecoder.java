@@ -1,5 +1,7 @@
 package com.bumptech.glide.load.resource.gifbitmap;
 
+import android.util.Log;
+
 import com.bumptech.glide.load.ResourceDecoder;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.load.model.ImageVideoWrapper;
@@ -12,6 +14,7 @@ import java.io.InputStream;
  * {@link GifBitmapWrapper} from {@link InputStream} data.
  */
 public class GifBitmapWrapperStreamResourceDecoder implements ResourceDecoder<InputStream, GifBitmapWrapper> {
+    // GifBitmapWrapperResourceDecoder
     private final ResourceDecoder<ImageVideoWrapper, GifBitmapWrapper> gifBitmapDecoder;
 
     public GifBitmapWrapperStreamResourceDecoder(
@@ -21,6 +24,9 @@ public class GifBitmapWrapperStreamResourceDecoder implements ResourceDecoder<In
 
     @Override
     public Resource<GifBitmapWrapper> decode(InputStream source, int width, int height) throws IOException {
+        //gifBitmapDecoder:GifBitmapWrapperResourceDecoder<ImageVideoWrapper, GifBitmapWrapper>,
+        // 所以这里需要转一下（用到缓存时才会用到）
+        Log.e("TAG", "GifBitmapWrapperStreamResourceDecoder decode:");
         return gifBitmapDecoder.decode(new ImageVideoWrapper(source, null), width, height);
     }
 

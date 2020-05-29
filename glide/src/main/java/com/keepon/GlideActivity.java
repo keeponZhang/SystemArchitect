@@ -34,9 +34,9 @@ public class GlideActivity extends AppCompatActivity {
 	public void loadUrl(View view) {
 		RelativeLayout.LayoutParams layoutParams =
 				(RelativeLayout.LayoutParams) mImageView.getLayoutParams();
-		layoutParams.width = DisplayUtils.dip2px(100);
-		layoutParams.height = DisplayUtils.dip2px(100);
-		mImageView.setLayoutParams(layoutParams);
+		// layoutParams.width = DisplayUtils.dip2px(100);
+		// layoutParams.height = DisplayUtils.dip2px(100);
+		// mImageView.setLayoutParams(layoutParams);
 		Glide.with(GlideActivity.this)//传入关联的Context，如果是Activity/Fragment，那么它会根据组件当前的状态来控制请求。
         .load("http://ep.dzb.ciwong.com/rep/new/4055.jpg") //需要加载的图片，大多数情况下就是网络图片的链接。
 		.into(mImageView); //用来展现图片的ImageView.

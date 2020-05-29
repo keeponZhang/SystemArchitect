@@ -57,6 +57,7 @@ class EngineRunnable implements Runnable, Prioritized {
         try {
 //            调用了一个decode()方法，并且这个方法返回了一个Resource对象
             //resource:Resource<GlideDrawable>对象
+            // (通过GifBitmapWrapperDrawableTranscoder对GifBitmapWrapper转码得来的)
             resource = decode();
         } catch (Exception e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {

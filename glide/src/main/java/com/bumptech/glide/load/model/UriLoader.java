@@ -17,6 +17,8 @@ public abstract class UriLoader<T> implements ModelLoader<Uri, T> {
     private final Context context;
     private final ModelLoader<GlideUrl, T> urlLoader;
 
+    //这里写的是GlideUrl，InputStream
+    // urlLoader： com.bumptech.glide.load.model.stream.HttpUrlGlideUrlLoader
     public UriLoader(Context context, ModelLoader<GlideUrl, T> urlLoader) {
         this.context = context;
         this.urlLoader = urlLoader;

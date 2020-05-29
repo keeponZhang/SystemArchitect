@@ -25,7 +25,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
     // 2048 is rather arbitrary, for most well formatted image types we only need 32 bytes.
     // Visible for testing.
     static final int MARK_LIMIT_BYTES = 2048;
-
+    //ImageVideoBitmapDecoder
     private final ResourceDecoder<ImageVideoWrapper, Bitmap> bitmapDecoder;
     private final ResourceDecoder<InputStream, GifDrawable> gifDecoder;
     private final BitmapPool bitmapPool;
@@ -42,6 +42,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
     GifBitmapWrapperResourceDecoder(ResourceDecoder<ImageVideoWrapper, Bitmap> bitmapDecoder,
             ResourceDecoder<InputStream, GifDrawable> gifDecoder, BitmapPool bitmapPool, ImageTypeParser parser,
             BufferedStreamFactory streamFactory) {
+        //这个类比较特殊，会有两个decoder，一般一般加载，你不知道是静态图还是gif
         this.bitmapDecoder = bitmapDecoder;
         this.gifDecoder = gifDecoder;
         this.bitmapPool = bitmapPool;
@@ -124,7 +125,8 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
 
     private GifBitmapWrapper decodeBitmapWrapper(ImageVideoWrapper toDecode, int width, int height) throws IOException {
         GifBitmapWrapper result = null;
-//        bitmapDecoder: ImageVideoBitmapDecoder
+//        bitmapDecoder: ImageVideoBitmapDecoder(这个是FixedLoadProvider的一个参数)
+        //解码自然要用解码器，这里已经确定了是静态图了，所有了bitmapDecoder，解码成 Resource<Bitmap>
         Resource<Bitmap> bitmapResource = bitmapDecoder.decode(toDecode, width, height);
         //又将Resource<Bitmap>封装到了一个GifBitmapWrapper对象当中。这个GifBitmapWrapper顾名思义，就是既能封装GIF，又能封装Bitmap，
         // 从而保证了不管是什么类型的图片Glide都能从容应对。

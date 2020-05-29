@@ -37,6 +37,7 @@ class EngineJob implements EngineRunnable.EngineRunnableManager {
     private boolean isCancelled;
     // Either resource or exception (particularly exception) may be returned to us null, so use booleans to track if
     // we've received them instead of relying on them to be non-null. See issue #180.
+    //Resource<GlideDrawable>
     private Resource<?> resource;
     private boolean hasResource;
     private Exception exception;

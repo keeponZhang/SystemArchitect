@@ -189,6 +189,7 @@ public class Engine implements EngineJobListener,
         EngineJob engineJob = engineJobFactory.build(key, isMemoryCacheable);
         //DecodeJob对象，从名字上来看，它好像是用来对图片进行解码的
         //  transformation做变换用的，如CenterCrop
+        // T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
         DecodeJob<T, Z, R> decodeJob = new DecodeJob<T, Z, R>(key, width, height, fetcher, loadProvider, transformation,
                 transcoder, diskCacheProvider, diskCacheStrategy, priority);
 //        创建了一个EngineRunnable对象

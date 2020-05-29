@@ -39,6 +39,7 @@ public class ImageVideoBitmapDecoder implements ResourceDecoder<ImageVideoWrappe
             try {
                 //调用streamDecoder.decode()方法进行解码
                 //streamDecoder:StreamBitmapDecoder ,返回 Resource<Bitmap>对象
+                //(真正做事的是streamDecoder)
                 result = streamDecoder.decode(is, width, height);
             } catch (IOException e) {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
