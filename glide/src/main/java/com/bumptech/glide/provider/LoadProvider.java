@@ -13,6 +13,7 @@ import com.bumptech.glide.load.resource.transcode.ResourceTranscoder;
  * @param <Z> The type of resource that will be decoded.
  * @param <R> The type of resource that the decoded resource will be transcoded to.
  */
+//有两个特别的方法
 public interface LoadProvider<A, T, Z, R> extends DataLoadProvider<T, Z> {
 
     /**
@@ -24,5 +25,6 @@ public interface LoadProvider<A, T, Z, R> extends DataLoadProvider<T, Z> {
      * Returns the {@link ResourceTranscoder} to convert from the decoded
      * and transformed resource into the transcoded resource.
      */
+    //父类是编码，解码，这个是转码
     ResourceTranscoder<Z, R> getTranscoder();
 }

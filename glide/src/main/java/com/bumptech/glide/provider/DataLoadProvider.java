@@ -13,6 +13,9 @@ import java.io.File;
  * @param <T> The type of data the resource will be decoded from.
  * @param <Z> The type of resource that will be decoded.
  */
+//负责编解码，Data是从数据源中获取到的数据,Resource是我们解码后的资源,解码是data到resource的过程，
+// 而编码和前面的不一样，是将data和resource持久化到本地的过程
+    //实现类当中有今天要讲的LoadProvider
 public interface DataLoadProvider<T, Z> {
 
     /**

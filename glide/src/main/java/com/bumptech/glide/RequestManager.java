@@ -42,6 +42,7 @@ import java.util.UUID;
  */
 public class RequestManager implements LifecycleListener {
     private final Context context;
+    //LifeCycle(ActivityFragmentLifecycle)里会维护一个listener列表
     private final Lifecycle lifecycle;
     private final RequestManagerTreeNode treeNode;
     private final RequestTracker requestTracker;
@@ -76,6 +77,7 @@ public class RequestManager implements LifecycleListener {
                 }
             });
         } else {
+            //生命周期变化后，该RequestManger能收到回到
             lifecycle.addListener(this);
         }
         lifecycle.addListener(connectivityMonitor);
@@ -628,7 +630,7 @@ public class RequestManager implements LifecycleListener {
 //        由于我们刚才传入的参数是String.class，因此最终得到的是StreamStringLoader对象
         ModelLoader<T, InputStream> streamModelLoader = Glide.buildStreamModelLoader(modelClass, context);
         //fileDescriptorModelLoader:com.bumptech.glide.load.model.file_descriptor.FileDescriptorStringLoader
-        // .FileDescriptorStringLoader
+        //FileDescriptorStringLoader
         ModelLoader<T, ParcelFileDescriptor> fileDescriptorModelLoader =
                 Glide.buildFileDescriptorModelLoader(modelClass, context);
         if (modelClass != null && streamModelLoader == null && fileDescriptorModelLoader == null) {
@@ -636,7 +638,7 @@ public class RequestManager implements LifecycleListener {
                     + " which there is a registered ModelLoader, if you are using a custom model, you must first call"
                     + " Glide#register with a ModelLoaderFactory for your custom model class");
         }
-        //new了一个DrawableTypeRequest对象
+        //new了一个DrawableTypeRequest对象,这里传入了requestTracker,lifecycle,可以在activity销毁的时候取消请求
         return optionsApplier.apply(
                 new DrawableTypeRequest<T>(modelClass, streamModelLoader, fileDescriptorModelLoader, context,
                         glide, requestTracker, lifecycle, optionsApplier));

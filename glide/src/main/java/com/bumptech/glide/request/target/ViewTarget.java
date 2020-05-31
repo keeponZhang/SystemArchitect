@@ -217,6 +217,7 @@ public abstract class ViewTarget<T extends View, Z> extends BaseTarget<Z> {
                 }
                 if (layoutListener == null) {
                     final ViewTreeObserver observer = view.getViewTreeObserver();
+                    //表示还没有测量完毕，宽高未可知
                     layoutListener = new SizeDeterminerLayoutListener(this);
                     observer.addOnPreDrawListener(layoutListener);
                 }

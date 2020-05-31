@@ -57,6 +57,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
                 resourceClass);
         //new了一个ImageVideoModelLoader的实例，并把之前loadGeneric()方法中构建的两个ModelLoader封装到了ImageVideoModelLoader当中。
         //A:String
+        //这个是这两个modelLoader包装类
         ImageVideoModelLoader<A> modelLoader = new ImageVideoModelLoader<A>(streamModelLoader,
                 fileDescriptorModelLoader);
 

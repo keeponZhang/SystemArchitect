@@ -49,6 +49,7 @@ public class RequestManagerFragment extends Fragment {
         this.requestManager = requestManager;
     }
 
+    //注意，这个lifecycle会传入RequestManager当成员变量
     ActivityFragmentLifecycle getLifecycle() {
         return lifecycle;
     }

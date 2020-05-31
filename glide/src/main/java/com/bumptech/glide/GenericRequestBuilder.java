@@ -649,9 +649,11 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             throw new IllegalArgumentException("You must first set a model (try #load())");
         }
 
+        //这里是为了拿到复用的imageview绑定的request
         Request previous = target.getRequest();
 
         if (previous != null) {
+            //先把target绑定的的旧的request删除
             previous.clear();
             requestTracker.removeRequest(previous);
             previous.recycle();
@@ -660,9 +662,11 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
         // 它是Glide中非常关键的一个组件。)
         //之后就会把这里构建出来的Target对象传入到GenericRequest当中
         Request request = buildRequest(target);
+        //这里相当于setTag,防止图片错位
         target.setRequest(request);
+        //每个target都会加入lifecycle，当onStop方法调用的，target的LifecycleListener（其实就target）会收到回到
         lifecycle.addListener(target);
-        //RequestTracker执行这个Request
+        //RequestTracker执行这个Request，requestTracker里面可以控制是否暂停取消请求
         requestTracker.runRequest(request);
 
         return target;

@@ -20,6 +20,7 @@ import java.io.File;
  */
 // A, T, Z, R
 //A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
+    //功能非常多，可以获取到图片，可以进行编码，解码，转码
 public class FixedLoadProvider<A, T, Z, R> implements LoadProvider<A, T, Z, R>  {
     private final ModelLoader<A, T> modelLoader;
     private final ResourceTranscoder<Z, R> transcoder;

@@ -118,6 +118,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
             int overrideHeight,
             DiskCacheStrategy diskCacheStrategy) {
         @SuppressWarnings("unchecked")
+                //首先从线程池中获取一个，看是否有可复用的
         GenericRequest<A, T, Z, R> request = (GenericRequest<A, T, Z, R>) REQUEST_POOL.poll();
         if (request == null) {
             //new了一个GenericRequest对象
@@ -448,9 +449,11 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         //loadProvider:FixedLoadProvider
         //modelLoader:ImageVideoModelLoader（StreamStringLoader再封装了一层）
         //A:String T:ImageVideoWrapper
+        //modelLoader负责从数据源中获取原始数据，一般是inputStream
         ModelLoader<A, T> modelLoader = loadProvider.getModelLoader();
         //dataFetcher:ImageVideoFetcher，后面再调到它的loadData方法（这个很重要********），
         // 然后去调用了HttpUrlFetcher.loadData()（真正去请求网络的地方）
+        //将原始数据转换为直接用的不同形式的图片数据，dataFetcher是modelloader里面的
         final DataFetcher<T> dataFetcher = modelLoader.getResourceFetcher(model, width, height);
 
         if (dataFetcher == null) {
@@ -459,6 +462,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         }
         //transcoder:GifBitmapWrapperDrawableTranscoder
         //Z:GifBitmapWrapper R:GlideDrawable
+        //进行原始数据解码的一个对象，负责将获取到的原始数据，io流解码成bitmap，解码后的资源称之为resource
         ResourceTranscoder<Z, R> transcoder = loadProvider.getTranscoder();
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logV("finished setup for calling load in " + LogTime.getElapsedMillis(startTime));
