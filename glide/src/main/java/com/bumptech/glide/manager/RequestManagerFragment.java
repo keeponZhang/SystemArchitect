@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
+import android.util.Log;
 
 import com.bumptech.glide.RequestManager;
 
@@ -24,10 +25,16 @@ import java.util.Set;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class RequestManagerFragment extends Fragment {
     private final ActivityFragmentLifecycle lifecycle;
+    // RequestManagerTreeNode用来获取绑定该RequestManagerFragment的Fragment的所有子Fragment所绑定的
+    //         RequestManagerFragment所绑定的RequestManager
     private final RequestManagerTreeNode requestManagerTreeNode = new FragmentRequestManagerTreeNode();
     private RequestManager requestManager;
+    //rootRequestManagerFragment的childRequestManagerFragments才是数据
     private final HashSet<RequestManagerFragment> childRequestManagerFragments
         = new HashSet<RequestManagerFragment>();
+    // 简而言之，Glide会为Activity创建一个RequestManagerFragment做为rootFragment，并保存该Activity底下所有Fragment（如果有的话）
+    // 所创建的RequestManagerFragment。
+    // 我们知道任何一个RequestManagerFragment可以通过rootRequestManagerFragment拿到这6个RMF，继而拿到其所对应的RequestManager
     private RequestManagerFragment rootRequestManagerFragment;
 
     public RequestManagerFragment() {
@@ -87,8 +94,10 @@ public class RequestManagerFragment extends Fragment {
             return Collections.emptySet();
         } else {
             HashSet<RequestManagerFragment> descendants = new HashSet<RequestManagerFragment>();
+            //遍历取出rootFragment中的RMF，并获取到其parentFragment，找出后裔。
             for (RequestManagerFragment fragment
                     : rootRequestManagerFragment.getDescendantRequestManagerFragments()) {
+                Log.e("TAG", "RequestManagerFragment getDescendantRequestManagerFragments:");
                 if (isDescendant(fragment.getParentFragment())) {
                     descendants.add(fragment);
                 }
@@ -102,6 +111,7 @@ public class RequestManagerFragment extends Fragment {
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private boolean isDescendant(Fragment fragment) {
+        //这个root是重点，当遍历到F11 RMF时，参数传递过来的是F11，root 则为F1，F11再拿到parent，也是F1，返回true，F12 RMF类似也返回true；
         Fragment root = this.getParentFragment();
         while (fragment.getParentFragment() != null) {
             if (fragment.getParentFragment() == root) {
@@ -116,7 +126,9 @@ public class RequestManagerFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         rootRequestManagerFragment = RequestManagerRetriever.get()
+                //这里拿的是Activity()的FragmentManager
                 .getRequestManagerFragment(getActivity().getFragmentManager());
+        //这个RequestManagerFragment有可能是自身
         if (rootRequestManagerFragment != this) {
             rootRequestManagerFragment.addChildRequestManagerFragment(this);
         }
@@ -170,6 +182,7 @@ public class RequestManagerFragment extends Fragment {
     private class FragmentRequestManagerTreeNode implements RequestManagerTreeNode {
         @Override
         public Set<RequestManager> getDescendants() {
+            //这里是发起点
             Set<RequestManagerFragment> descendantFragments = getDescendantRequestManagerFragments();
             HashSet<RequestManager> descendants =
                 new HashSet<RequestManager>(descendantFragments.size());

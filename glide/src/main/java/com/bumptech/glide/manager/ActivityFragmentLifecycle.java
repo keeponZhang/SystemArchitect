@@ -31,6 +31,7 @@ class ActivityFragmentLifecycle implements Lifecycle {
      *     multiple times.
      * </p>
      */
+    //这个方法应该注意
     @Override
     public void addListener(LifecycleListener listener) {
         lifecycleListeners.add(listener);

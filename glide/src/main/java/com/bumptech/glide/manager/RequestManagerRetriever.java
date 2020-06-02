@@ -153,6 +153,10 @@ public class RequestManagerRetriever implements Handler.Callback {
     RequestManagerFragment getRequestManagerFragment(final android.app.FragmentManager fm) {
         RequestManagerFragment current = (RequestManagerFragment) fm.findFragmentByTag(FRAGMENT_TAG);
         if (current == null) {
+            //Glide.with(this).load(url_1).into(mImageView_1);
+            // Glide.with(this).load(url_2).into(mImageView_2);
+            //使用pendingRequestManagerFragments是为了避免重复创建RequestManagerFragment，因为实绑定fragment的操作最终是通过主线程的handler发送消息处理的
+            //https://www.jianshu.com/p/14dbc0c609ec 具体分析可看
             current = pendingRequestManagerFragments.get(fm);
             if (current == null) {
                 current = new RequestManagerFragment();
@@ -169,6 +173,7 @@ public class RequestManagerRetriever implements Handler.Callback {
         RequestManagerFragment current = getRequestManagerFragment(fm);
         RequestManager requestManager = current.getRequestManager();
         if (requestManager == null) {
+            //requestManagerTreeNode作为构造函数参数传入
             requestManager = new RequestManager(context, current.getLifecycle(), current.getRequestManagerTreeNode());
             current.setRequestManager(requestManager);
         }
