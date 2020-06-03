@@ -61,6 +61,7 @@ public class RequestManager implements LifecycleListener {
         this.lifecycle = lifecycle;
         this.treeNode = treeNode;
         this.requestTracker = requestTracker;
+        //有一个glide的成员变量，glide也是一个单例
         this.glide = Glide.get(context);
         this.optionsApplier = new OptionsApplier();
 
