@@ -11,6 +11,7 @@ public interface MemoryCache {
      * An interface that will be called whenever a bitmap is removed from the cache.
      */
     interface ResourceRemovedListener {
+        //注意，方法调用和方法重写是有区别的
         void onResourceRemoved(Resource<?> removed);
     }
 

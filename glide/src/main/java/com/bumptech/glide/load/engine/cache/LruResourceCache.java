@@ -29,6 +29,7 @@ public class LruResourceCache extends LruCache<Key, Resource<?>> implements Memo
     @Override
     protected void onItemEvicted(Key key, Resource<?> item) {
         if (listener != null) {
+            //LruCache移除回调出去
             listener.onResourceRemoved(item);
         }
     }

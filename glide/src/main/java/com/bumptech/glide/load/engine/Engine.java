@@ -96,6 +96,7 @@ public class Engine implements EngineJobListener,
         }
         this.resourceRecycler = resourceRecycler;
 
+        //这个lisener也要注意
         cache.setResourceRemovedListener(this);
     }
 
@@ -302,6 +303,7 @@ public class Engine implements EngineJobListener,
     @Override
     public void onResourceRemoved(final Resource<?> resource) {
         Util.assertMainThread();
+        //这里还有resourceRecycler
         resourceRecycler.recycle(resource);
     }
 
