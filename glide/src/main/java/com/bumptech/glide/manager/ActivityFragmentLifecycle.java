@@ -10,6 +10,7 @@ import java.util.WeakHashMap;
  * A {@link Lifecycle} implementation for tracking and notifying listeners of
  * {@link android.app.Fragment} and {@link android.app.Activity} lifecycle events.
  */
+//生命周期管理类
 class ActivityFragmentLifecycle implements Lifecycle {
     private final Set<LifecycleListener> lifecycleListeners =
             Collections.newSetFromMap(new WeakHashMap<LifecycleListener, Boolean>());
@@ -31,7 +32,7 @@ class ActivityFragmentLifecycle implements Lifecycle {
      *     multiple times.
      * </p>
      */
-    //这个方法应该注意
+    //这个方法应该注意，这是Lifecycle接口的方法
     @Override
     public void addListener(LifecycleListener listener) {
         lifecycleListeners.add(listener);

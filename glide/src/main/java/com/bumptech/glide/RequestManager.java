@@ -45,6 +45,7 @@ public class RequestManager implements LifecycleListener {
     //LifeCycle(ActivityFragmentLifecycle)里会维护一个listener列表
     private final Lifecycle lifecycle;
     private final RequestManagerTreeNode treeNode;
+    //每个RequestManager有一个RequestTracker
     private final RequestTracker requestTracker;
     private final Glide glide;
     private final OptionsApplier optionsApplier;
@@ -177,6 +178,7 @@ public class RequestManager implements LifecycleListener {
      * @see #isPaused()
      * @see #pauseRequests()
      */
+    //resumeRequests 有一个是在onStart调用的
     public void resumeRequests() {
         Util.assertMainThread();
         requestTracker.resumeRequests();

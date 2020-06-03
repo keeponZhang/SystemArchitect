@@ -24,6 +24,7 @@ import java.util.Map;
  * A collection of static methods for creating new {@link com.bumptech.glide.RequestManager}s or retrieving existing
  * ones from activities and fragment.
  */
+//RequestManagerRetriever是一个单例
 public class RequestManagerRetriever implements Handler.Callback {
     private static final String TAG = "RMRetriever";
     static final String FRAGMENT_TAG = "com.bumptech.glide.manager";
@@ -202,6 +203,8 @@ public class RequestManagerRetriever implements Handler.Callback {
         SupportRequestManagerFragment current = getSupportRequestManagerFragment(fm);
         RequestManager requestManager = current.getRequestManager();
         if (requestManager == null) {
+            //RequestManager的lifeCycle是从fragment里拿的，而生命周期是从SupportRequestManagerFragment中回调出来的
+            //所以application就没有没法收到生命周期回调，因为lifeCycle是自己new出来的
             requestManager = new RequestManager(context, current.getLifecycle(), current.getRequestManagerTreeNode());
             current.setRequestManager(requestManager);
         }

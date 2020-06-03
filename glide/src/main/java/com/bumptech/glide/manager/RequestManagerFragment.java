@@ -94,7 +94,8 @@ public class RequestManagerFragment extends Fragment {
             return Collections.emptySet();
         } else {
             HashSet<RequestManagerFragment> descendants = new HashSet<RequestManagerFragment>();
-            //遍历取出rootFragment中的RMF，并获取到其parentFragment，找出后裔。
+            //遍历取出rootFragment中的RMF，并获取到其parentFragment，找出后裔,
+            // rootRequestManagerFragment.getDescendantRequestManagerFragments()==childRequestManagerFragments
             for (RequestManagerFragment fragment
                     : rootRequestManagerFragment.getDescendantRequestManagerFragments()) {
                 Log.e("TAG", "RequestManagerFragment getDescendantRequestManagerFragments:");
@@ -146,6 +147,7 @@ public class RequestManagerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        //会遍历lifeCycle里面的listener，然后调用
         lifecycle.onStart();
     }
 
