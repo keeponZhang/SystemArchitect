@@ -92,6 +92,7 @@ class EngineRunnable implements Runnable, Prioritized {
     private void onLoadFailed(Exception e) {
         if (isDecodingFromCache()) {
             stage = Stage.SOURCE;
+            //这里才有开启真正去请求的runnable
             manager.submitForSource(this);
         } else {
             manager.onException(e);
@@ -100,6 +101,7 @@ class EngineRunnable implements Runnable, Prioritized {
 
     private Resource<?> decode() throws Exception {
         //从缓存当中去decode图片的话就会执行decodeFromCache()
+        Log.e("TAG", "EngineRunnable decode:"+isDecodingFromCache());
         if (isDecodingFromCache()) {
             //调用decodeFromCache()方法从硬盘缓存当中读取图片
             return decodeFromCache();
@@ -107,6 +109,7 @@ class EngineRunnable implements Runnable, Prioritized {
             //否则的话就执行decodeFromSource()
             //再回到run()方法当中
           //在没有缓存的情况下，会调用decodeFromSource()方法来读取原始图片
+            Log.e("TAG", "EngineRunnable decodeFromSource:");
             return decodeFromSource();
         }
     }
