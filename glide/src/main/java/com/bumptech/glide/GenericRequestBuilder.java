@@ -73,6 +73,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
     private GlideAnimationFactory<TranscodeType> animationFactory = NoAnimation.getFactory();
     private int overrideHeight = -1;
     private int overrideWidth = -1;
+    //默认是缓存结果
     private DiskCacheStrategy diskCacheStrategy = DiskCacheStrategy.RESULT;
     private Transformation<ResourceType> transformation = UnitTransformation.get();
     private boolean isTransformationSet;

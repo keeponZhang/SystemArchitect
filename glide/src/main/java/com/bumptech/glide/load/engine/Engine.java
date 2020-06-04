@@ -87,6 +87,7 @@ public class Engine implements EngineJobListener,
         this.jobs = jobs;
 
         if (engineJobFactory == null) {
+            //EngineJobListener
             engineJobFactory = new EngineJobFactory(diskCacheService, sourceService, this);
         }
         this.engineJobFactory = engineJobFactory;
@@ -284,6 +285,7 @@ public class Engine implements EngineJobListener,
 
             if (resource.isCacheable()) {
 //                回调过来的EngineResource被put到了activeResources当中，也就是在这里写入的缓存。
+                //从这里也知道activeResources的优先级是第一位的
                 activeResources.put(key, new ResourceWeakReference(key, resource, getReferenceQueue()));
             }
         }

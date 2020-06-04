@@ -12,6 +12,7 @@ import java.io.OutputStream;
  * A {@link com.bumptech.glide.load.ResourceEncoder} that can encode either an {@link Bitmap} or
  * {@link GifDrawable}.
  */
+//这个也是混合的Encoder
 public class GifBitmapWrapperResourceEncoder implements ResourceEncoder<GifBitmapWrapper> {
     private final ResourceEncoder<Bitmap> bitmapEncoder;
     private final ResourceEncoder<GifDrawable> gifEncoder;

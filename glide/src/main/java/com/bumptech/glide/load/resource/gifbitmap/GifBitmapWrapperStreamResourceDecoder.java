@@ -27,6 +27,7 @@ public class GifBitmapWrapperStreamResourceDecoder implements ResourceDecoder<In
         //gifBitmapDecoder:GifBitmapWrapperResourceDecoder<ImageVideoWrapper, GifBitmapWrapper>,
         // 所以这里需要转一下（用到缓存时才会用到）
         Log.e("TAG", "GifBitmapWrapperStreamResourceDecoder decode:");
+        //这里又一个装饰者，真正干活的是GifBitmapWrapperResourceDecoder
         return gifBitmapDecoder.decode(new ImageVideoWrapper(source, null), width, height);
     }
 

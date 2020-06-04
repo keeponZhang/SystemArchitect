@@ -199,6 +199,7 @@ class DecodeJob<A, T, Z> {
             if (isCancelled) {
                 return null;
             }
+            //如果允许缓存原图，会在该方法内处理
             decoded = decodeFromSourceData(data);
         } finally {
             fetcher.cleanup();
