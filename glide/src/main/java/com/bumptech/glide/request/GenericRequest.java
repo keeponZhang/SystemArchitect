@@ -33,7 +33,7 @@ import java.util.Queue;
  */
 //load()方法中调用的所有API，其实都是在这里组装到Request对象当中的
 // A, T, Z, R
-//A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
+//A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable（Glide所有相关drawable的基类）
 public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallback,
         ResourceCallback {
     private static final String TAG = "GenericRequest";
@@ -277,7 +277,7 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         if (Util.isValidDimensions(overrideWidth, overrideHeight)) {
             onSizeReady(overrideWidth, overrideHeight);
         } else {
-            //否则调用target.getSize()方法，最终也会调到onSizeReady
+            //否则调用target.getSize()方法，注意传入的this，最终也会调到onSizeReady
             target.getSize(this);
         }
 
@@ -447,7 +447,8 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         height = Math.round(sizeMultiplier * height);
 
         //loadProvider:FixedLoadProvider
-        //modelLoader:ImageVideoModelLoader（StreamStringLoader再封装了一层）
+        //modelLoader:ImageVideoModelLoader（StreamStringLoader，FileDescriptorStringLoader再封装了一层，里面持有StreamStringLoader
+        // 和FileDescriptorStringLoader的引用）
         //A:String T:ImageVideoWrapper
         //modelLoader负责从数据源中获取原始数据，一般是inputStream
         ModelLoader<A, T> modelLoader = loadProvider.getModelLoader();

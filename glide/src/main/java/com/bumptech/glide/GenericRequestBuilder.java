@@ -53,6 +53,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
     protected final Class<TranscodeType> transcodeClass;
     protected final RequestTracker requestTracker;
     protected final Lifecycle lifecycle;
+    //这里的loadProvider是ChildLoadProvider，原来的loader包了一层
     private ChildLoadProvider<ModelType, DataType, ResourceType, TranscodeType> loadProvider;
 
     private ModelType model;
@@ -665,7 +666,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
         Request request = buildRequest(target);
         //这里相当于setTag,防止图片错位
         target.setRequest(request);
-        //每个target都会加入lifecycle，当onStop方法调用的，target的LifecycleListener（其实就target）会收到回到
+        //每个target都会加入lifecycle，当onStop方法调用的，target的LifecycleListener（其实就target）会收到回调
         lifecycle.addListener(target);
         //RequestTracker执行这个Request，requestTracker里面可以控制是否暂停取消请求
         requestTracker.runRequest(request);
@@ -856,6 +857,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
         //又去调用了GenericRequest的obtain()方法
 //        构建GenericRequest的时候requestListener这个变量也会被一起传进去
         //transformation 也传进去，是做变换用的，如果调用了centerCrop，就是CenterCrop
+        //其实最重要的还是loadProvider
         return GenericRequest.obtain(
                 loadProvider,
                 model,

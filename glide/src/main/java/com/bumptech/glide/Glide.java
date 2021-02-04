@@ -231,12 +231,13 @@ public class Glide {
                 new GifDrawableLoadProvider(context, bitmapPool);
         dataLoadProviderRegistry.register(InputStream.class, GifDrawable.class, gifDrawableLoadProvider);
 
-        //这个有ImageVideoDataLoadProvider的区别是，一个是Bitmap，一个是GifBitmapWrapper
+        //这个与ImageVideoDataLoadProvider的区别是，一个是Bitmap，一个是GifBitmapWrapper
         dataLoadProviderRegistry.register(ImageVideoWrapper.class, GifBitmapWrapper.class,
                 new ImageVideoGifDrawableLoadProvider(imageVideoDataLoadProvider, gifDrawableLoadProvider, bitmapPool));
 
         dataLoadProviderRegistry.register(InputStream.class, File.class, new StreamFileDataLoadProvider());
 
+        //观察克制，后面factory命名由后面和前面的组合而成
         register(File.class, ParcelFileDescriptor.class, new FileDescriptorFileLoader.Factory());
         register(File.class, InputStream.class, new StreamFileLoader.Factory());
         register(int.class, ParcelFileDescriptor.class, new FileDescriptorResourceLoader.Factory());

@@ -20,6 +20,7 @@ import java.io.File;
     //ImageVideoGifDrawableLoadProvider
 public interface DataLoadProvider<T, Z> {
 
+    //解码为什么会有2中呢，一种是从本地，一种是从网络，本地的是File
     /**
      * Returns the {@link ResourceDecoder} to use to decode the resource from the disk cache.
      */

@@ -7,6 +7,7 @@ import com.bumptech.glide.load.engine.Resource;
  *
  * @param <T> The type of the data contained by the resource.
  */
+//ResourceEncoder,把资源（一定是resource）输出到本地
 public interface ResourceEncoder<T> extends Encoder<Resource<T>> {
     // specializing the generic arguments
 }

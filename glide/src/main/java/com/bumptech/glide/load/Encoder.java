@@ -7,6 +7,7 @@ import java.io.OutputStream;
  *
  * @param <T> The type of the data that will be written.
  */
+//Encoder把数据，资源输出到本地
 public interface Encoder<T> {
 
     /**

@@ -32,6 +32,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
         }
         // streamLoader:StreamStringLoader
         this.streamLoader = streamLoader;
+        //streamLoader： FileDescriptorStringLoader
         this.fileDescriptorLoader = fileDescriptorLoader;
     }
 

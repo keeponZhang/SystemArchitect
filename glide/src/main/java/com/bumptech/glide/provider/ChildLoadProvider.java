@@ -17,6 +17,7 @@ import java.io.File;
  * @param <Z> The type of the resource that will be decoded from the data.
  * @param <R> The type of the resource that will be transcoded from the decoded resource.
  */
+//可以重新设置cacheDecoder，sourceDecoder，encoder，transcoder，sourceEncoder，没有的话调用parent的
 public class ChildLoadProvider<A, T, Z, R> implements LoadProvider<A, T, Z, R>, Cloneable {
     private final LoadProvider<A, T, Z, R> parent;
 

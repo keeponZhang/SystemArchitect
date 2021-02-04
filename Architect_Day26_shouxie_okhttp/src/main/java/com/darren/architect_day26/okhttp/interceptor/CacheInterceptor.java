@@ -18,6 +18,7 @@ public class CacheInterceptor implements Interceptor{
         /*if(true){
             return new Response(new );
         }*/
+        //
         Response proceed = chain.proceed(request);
         return proceed ;
     }

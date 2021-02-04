@@ -24,6 +24,7 @@ public class StreamStringLoader extends StringLoader<InputStream> implements Str
     public static class Factory implements ModelLoaderFactory<String, InputStream> {
         @Override
         public ModelLoader<String, InputStream> build(Context context, GenericLoaderFactory factories) {
+            //真正的loader是
             return new StreamStringLoader(factories.buildModelLoader(Uri.class, InputStream.class));
         }
 

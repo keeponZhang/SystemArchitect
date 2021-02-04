@@ -16,6 +16,9 @@ public interface Interceptor {
     interface Chain {
         Request request();
 
+        //chain的procee方法，会创建另一个链，
+        // 会传所有的拦截器和重要的index（可以区分要拿到具体拿到哪个拦截器),然后会拿当前index的的拦截器，
+        // 调用拦截器的intercept方法，传入刚创建的chain
         Response proceed(Request request) throws IOException;
     }
 }

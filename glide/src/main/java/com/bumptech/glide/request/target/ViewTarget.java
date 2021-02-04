@@ -190,6 +190,7 @@ public abstract class ViewTarget<T extends View, Z> extends BaseTarget<Z> {
                 return;
             }
 
+            //这时候已经知道宽高了
             notifyCbs(currentWidth, currentHeight);
             // Keep a reference to the layout listener and remove it here
             // rather than having the observer remove itself because the observer

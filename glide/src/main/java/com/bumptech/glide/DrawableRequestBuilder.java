@@ -38,7 +38,8 @@ import java.io.File;
  *
  * @param <ModelType> The type of model that will be loaded into the target.
  */
-//包含了Glide绝大多数的API了
+//包含了Glide绝大多数的API了，是一个Builder，父类是GenericRequestBuilder，虽然叫builder，但是不是真正意义上的builder
+// ，要注意的是，真正的request是GenericRequest
 public class DrawableRequestBuilder<ModelType>
         extends GenericRequestBuilder<ModelType, ImageVideoWrapper, GifBitmapWrapper, GlideDrawable>
         implements BitmapOptions, DrawableOptions {
