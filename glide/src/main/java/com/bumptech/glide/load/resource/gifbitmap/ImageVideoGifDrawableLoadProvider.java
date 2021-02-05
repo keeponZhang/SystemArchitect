@@ -19,7 +19,7 @@ import java.io.InputStream;
  * {@link GifDrawable} or an {@link Bitmap} from either an
  * {@link InputStream} or an {@link android.os.ParcelFileDescriptor}.
  */
-//这个相当于混合的loadProvider，不知掉静态图或者动态图时会使用
+//这个相当于混合的loadProvider，不知道静态图或者动态图时会使用
 public class ImageVideoGifDrawableLoadProvider implements DataLoadProvider<ImageVideoWrapper, GifBitmapWrapper> {
     private final ResourceDecoder<File, GifBitmapWrapper> cacheDecoder;
     private final ResourceDecoder<ImageVideoWrapper, GifBitmapWrapper> sourceDecoder;
@@ -33,11 +33,13 @@ public class ImageVideoGifDrawableLoadProvider implements DataLoadProvider<Image
             DataLoadProvider<InputStream, GifDrawable> gifProvider, BitmapPool bitmapPool) {
 
         //bitmapProvider:ImageVideoDataLoadProvider
+        //ImageVideoWrapper到GifBitmapWrapper
         final GifBitmapWrapperResourceDecoder decoder = new GifBitmapWrapperResourceDecoder(
                 bitmapProvider.getSourceDecoder(),
                 gifProvider.getSourceDecoder(),
                 bitmapPool
         );
+        //GifBitmapWrapperStreamResourceDecoder,InputStream到GifBitmapWrapper
         cacheDecoder = new FileToStreamDecoder<GifBitmapWrapper>(new GifBitmapWrapperStreamResourceDecoder(decoder));
         sourceDecoder = decoder;
         encoder = new GifBitmapWrapperResourceEncoder(bitmapProvider.getEncoder(), gifProvider.getEncoder());

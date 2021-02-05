@@ -26,8 +26,10 @@ public class GifBitmapWrapperStreamResourceDecoder implements ResourceDecoder<In
     public Resource<GifBitmapWrapper> decode(InputStream source, int width, int height) throws IOException {
         //gifBitmapDecoder:GifBitmapWrapperResourceDecoder<ImageVideoWrapper, GifBitmapWrapper>,
         // 所以这里需要转一下（用到缓存时才会用到）
-        Log.e("TAG", "GifBitmapWrapperStreamResourceDecoder decode:");
-        //这里又一个装饰者，真正干活的是GifBitmapWrapperResourceDecoder
+        Log.e("TAG", "Decoder GifBitmapWrapperStreamResourceDecoder decode 从InputStream " +
+                "到GifBitmapWrapper   类型gifBitmapDecoder:"+gifBitmapDecoder);
+        //这里又一个装饰者，真正干活的是GifBitmapWrapperResourceDecoder,
+        // GifBitmapWrapperResourceDecoder需要的是从从ImageVideoWrapper到到GifBitmapWrapper，所以需要包装系
         return gifBitmapDecoder.decode(new ImageVideoWrapper(source, null), width, height);
     }
 

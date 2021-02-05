@@ -29,6 +29,7 @@ public class StreamBitmapDataLoadProvider implements DataLoadProvider<InputStrea
         sourceEncoder = new StreamEncoder();
         decoder = new StreamBitmapDecoder(bitmapPool, decodeFormat);
         encoder = new BitmapEncoder();
+        //麻蛋，这里还传进去一个decoder，所以需要看StreamBitmapDecoder
         cacheDecoder = new FileToStreamDecoder<Bitmap>(decoder);
     }
 

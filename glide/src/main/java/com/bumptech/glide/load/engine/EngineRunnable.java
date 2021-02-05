@@ -58,6 +58,7 @@ class EngineRunnable implements Runnable, Prioritized {
 //            调用了一个decode()方法，并且这个方法返回了一个Resource对象
             //resource:Resource<GlideDrawable>对象
             // (通过GifBitmapWrapperDrawableTranscoder对GifBitmapWrapper转码得来的)
+            Log.d("TAG", "EngineRunnable run 运行啦:");
             resource = decode();
         } catch (Exception e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -86,10 +87,12 @@ class EngineRunnable implements Runnable, Prioritized {
 
     private void onLoadComplete(Resource resource) {
         //这个manager就是EngineJob对象，因此这里实际上调用的是EngineJob的onResourceReady()方法
+        Log.e("TAG", "EngineRunnable onLoadComplete resource:"+resource);
         manager.onResourceReady(resource);
     }
 
     private void onLoadFailed(Exception e) {
+        //从本地获取失败一次后才去获取网络
         if (isDecodingFromCache()) {
             stage = Stage.SOURCE;
             //这里才有开启真正去请求的runnable
@@ -101,7 +104,7 @@ class EngineRunnable implements Runnable, Prioritized {
 
     private Resource<?> decode() throws Exception {
         //从缓存当中去decode图片的话就会执行decodeFromCache()
-        Log.e("TAG", "EngineRunnable decode:"+isDecodingFromCache());
+        Log.w("TAG", "注意EngineRunnable decode isDecodingFromCache的值:"+isDecodingFromCache());
         if (isDecodingFromCache()) {
             //调用decodeFromCache()方法从硬盘缓存当中读取图片
             return decodeFromCache();
@@ -109,7 +112,7 @@ class EngineRunnable implements Runnable, Prioritized {
             //否则的话就执行decodeFromSource()
             //再回到run()方法当中
           //在没有缓存的情况下，会调用decodeFromSource()方法来读取原始图片
-            Log.e("TAG", "EngineRunnable decodeFromSource:");
+            Log.e("TAG", "EngineRunnable 木有缓存decodeFromSource:");
             return decodeFromSource();
         }
     }
@@ -120,6 +123,7 @@ class EngineRunnable implements Runnable, Prioritized {
             //先去调用DecodeJob的decodeResultFromCache()方法来获取缓存
             //如果是decodeResultFromCache()方法就直接将数据解码并返回
             result = decodeJob.decodeResultFromCache();
+            Log.e("TAG", "EngineRunnable decodeFromCache result:"+result);
         } catch (Exception e) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "Exception decoding result from cache: " + e);

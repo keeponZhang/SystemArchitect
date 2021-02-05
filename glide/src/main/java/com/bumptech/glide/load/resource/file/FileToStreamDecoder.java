@@ -1,5 +1,7 @@
 package com.bumptech.glide.load.resource.file;
 
+import android.util.Log;
+
 import com.bumptech.glide.load.ResourceDecoder;
 import com.bumptech.glide.load.engine.Resource;
 
@@ -36,7 +38,10 @@ public class FileToStreamDecoder<T> implements ResourceDecoder<File, T> {
         Resource<T> result = null;
         try {
             is = fileOpener.open(source);
+            //GifBitmapWrapperStreamResourceDecoder
+            Log.e("TAG", "Decoder FileToStreamDecoder decode 这里其实走了个代理 从file streamDecoder:"+streamDecoder);
             result = streamDecoder.decode(is, width, height);
+            Log.e("TAG", "DecoderFileToStreamDecoder decode 代理走完了 从file到 result:"+result);
         } finally {
             if (is != null) {
                 try {

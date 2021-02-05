@@ -22,13 +22,16 @@ public class ImageVideoDataLoadProvider implements DataLoadProvider<ImageVideoWr
     private final ResourceDecoder<File, Bitmap> cacheDecoder;
     private final ResourceEncoder<Bitmap> encoder;
     private final ImageVideoWrapperEncoder sourceEncoder;
-
+    // streamBitmapProvider： StreamBitmapDataLoadProvider
+    // fileDescriptorBitmapProvider： FileDescriptorBitmapDataLoadProvider
     public ImageVideoDataLoadProvider(DataLoadProvider<InputStream, Bitmap> streamBitmapProvider,
             DataLoadProvider<ParcelFileDescriptor, Bitmap> fileDescriptorBitmapProvider) {
         encoder = streamBitmapProvider.getEncoder();
         sourceEncoder = new ImageVideoWrapperEncoder(streamBitmapProvider.getSourceEncoder(),
                 fileDescriptorBitmapProvider.getSourceEncoder());
+        //streamBitmapProvider:StreamBitmapDataLoadProvider
         cacheDecoder = streamBitmapProvider.getCacheDecoder();
+        //sourceDecoder要注意
         sourceDecoder = new ImageVideoBitmapDecoder(streamBitmapProvider.getSourceDecoder(),
                 fileDescriptorBitmapProvider.getSourceDecoder());
     }

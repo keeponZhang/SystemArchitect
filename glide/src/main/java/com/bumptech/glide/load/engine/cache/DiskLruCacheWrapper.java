@@ -88,6 +88,7 @@ public class DiskLruCacheWrapper implements DiskCache {
     @Override
     public void put(Key key, Writer writer) {
         String safeKey = safeKeyGenerator.getSafeKey(key);
+        Log.e("TAG", "DiskLruCacheWrapper put safeKey:"+safeKey);
         writeLocker.acquire(key);
         try {
             DiskLruCache.Editor editor = getDiskCache().edit(safeKey);

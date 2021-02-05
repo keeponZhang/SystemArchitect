@@ -21,7 +21,9 @@ import java.io.InputStream;
 public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrapper> {
     private static final String TAG = "IVML";
 
+    //StreamStringLoader
     private final ModelLoader<A, InputStream> streamLoader;
+    //FileDescriptorStringLoader
     private final ModelLoader<A, ParcelFileDescriptor> fileDescriptorLoader;
 
     //可以说是代理
@@ -41,13 +43,14 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
         DataFetcher<InputStream> streamFetcher = null;
         if (streamLoader != null) {
             //streamLoader.getResourceFetcher()方法获取一个DataFetcher
-            //streamLoader:StreamStringLoader
+            //streamLoader:StreamUriLoader
             //streamFetcher:HttpUrlFetcher
             streamFetcher = streamLoader.getResourceFetcher(model, width, height);
         }
         DataFetcher<ParcelFileDescriptor> fileDescriptorFetcher = null;
         if (fileDescriptorLoader != null) {
             fileDescriptorFetcher = fileDescriptorLoader.getResourceFetcher(model, width, height);
+            Log.w("TAG", "ImageVideoModelLoader getResourceFetcher 返回:"+fileDescriptorFetcher);
         }
 
         if (streamFetcher != null || fileDescriptorFetcher != null) {
@@ -78,6 +81,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
             if (streamFetcher != null) {
                 try {
                     //又去调用了HttpUrlFetcher.loadData()方法，这里返回了网络流
+                    Log.e("TAG", "ImageVideoFetcher loadData streamFetcher不为空:");
                     is = streamFetcher.loadData(priority);
                 } catch (Exception e) {
                     if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -90,6 +94,7 @@ public class ImageVideoModelLoader<A> implements ModelLoader<A, ImageVideoWrappe
             }
             ParcelFileDescriptor fileDescriptor = null;
             if (fileDescriptorFetcher != null) {
+                Log.e("TAG", "ImageVideoFetcher loadData fileDescriptorFetcher不为空: ");
                 try {
                     fileDescriptor = fileDescriptorFetcher.loadData(priority);
                 } catch (Exception e) {

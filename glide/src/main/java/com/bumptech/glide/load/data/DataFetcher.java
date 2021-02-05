@@ -10,6 +10,7 @@ import com.bumptech.glide.Priority;
  *
  * @param <T> The type of data to be loaded (InputStream, byte[], File etc).
  */
+//Fetcher表示要返回的类型
 public interface DataFetcher<T> {
 
     /**

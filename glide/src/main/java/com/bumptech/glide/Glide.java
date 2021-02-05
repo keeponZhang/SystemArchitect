@@ -223,10 +223,13 @@ public class Glide {
                 new FileDescriptorBitmapDataLoadProvider(bitmapPool, decodeFormat);
         dataLoadProviderRegistry.register(ParcelFileDescriptor.class, Bitmap.class, fileDescriptorLoadProvider);
 
+        //ImageVideoDataLoadProvider里面持有streamBitmapLoadProvider（StreamBitmapDataLoadProvider
+        // ），fileDescriptorLoadProvider（FileDescriptorBitmapDataLoadProvider）的引用
         ImageVideoDataLoadProvider imageVideoDataLoadProvider =
                 new ImageVideoDataLoadProvider(streamBitmapLoadProvider, fileDescriptorLoadProvider);
         dataLoadProviderRegistry.register(ImageVideoWrapper.class, Bitmap.class, imageVideoDataLoadProvider);
 
+        //GifDrawableLoadProvider实现简单点，decoder，encoder等都是构造函数里面创建的
         GifDrawableLoadProvider gifDrawableLoadProvider =
                 new GifDrawableLoadProvider(context, bitmapPool);
         dataLoadProviderRegistry.register(InputStream.class, GifDrawable.class, gifDrawableLoadProvider);
@@ -238,6 +241,7 @@ public class Glide {
         dataLoadProviderRegistry.register(InputStream.class, File.class, new StreamFileDataLoadProvider());
 
         //观察克制，后面factory命名由后面和前面的组合而成
+        //获取的话，一般后边写死，前面根据传入的class来获得对应的factory
         register(File.class, ParcelFileDescriptor.class, new FileDescriptorFileLoader.Factory());
         register(File.class, InputStream.class, new StreamFileLoader.Factory());
         register(int.class, ParcelFileDescriptor.class, new FileDescriptorResourceLoader.Factory());

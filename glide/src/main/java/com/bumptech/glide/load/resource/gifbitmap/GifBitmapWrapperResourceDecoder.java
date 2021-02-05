@@ -1,6 +1,7 @@
 package com.bumptech.glide.load.resource.gifbitmap;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.bumptech.glide.load.ResourceDecoder;
 import com.bumptech.glide.load.engine.Resource;
@@ -54,6 +55,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
     // @see ResourceDecoder.decode
     @Override
     public Resource<GifBitmapWrapper> decode(ImageVideoWrapper source, int width, int height) throws IOException {
+        Log.w("TAG", "Decoder GifBitmapWrapperResourceDecoder decode 从ImageVideoWrapper 到GifBitmapWrapper:");
         ByteArrayPool pool = ByteArrayPool.get();
         byte[] tempBytes = pool.getBytes();
 
@@ -76,6 +78,8 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
             //调用了decodeStream()方法，准备从服务器返回的流当中读取数据。
             result = decodeStream(source, width, height, bytes);
         } else {
+            Log.e("TAG", "********************GifBitmapWrapperResourceDecoder " +
+                    "decode这里感觉不会调用啊*********************************:");
             result = decodeBitmapWrapper(source, width, height);
         }
         return result;
@@ -91,6 +95,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
         GifBitmapWrapper result = null;
         //如果是GIF图就调用decodeGifWrapper()方法来进行解码
         if (type == ImageHeaderParser.ImageType.GIF) {
+            Log.e("TAG", "GifBitmapWrapperResourceDecoder decodeStream 字节流获取表示是gif:");
             result = decodeGifWrapper(bis, width, height);
         }
         // Decoding the gif may fail even if the type matches.
@@ -113,6 +118,7 @@ public class GifBitmapWrapperResourceDecoder implements ResourceDecoder<ImageVid
             // instead. Returning a Bitmap incurs the cost of allocating the GifDrawable as well as the normal
             // Bitmap allocation, but since we can encode the Bitmap out as a JPEG, future decodes will be
             // efficient.
+            //gif只有一帧的话，也当静态图处理
             if (drawable.getFrameCount() > 1) {
                 result = new GifBitmapWrapper(null /*bitmapResource*/, gifResource);
             } else {

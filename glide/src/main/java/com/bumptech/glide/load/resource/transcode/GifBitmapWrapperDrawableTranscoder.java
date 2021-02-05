@@ -1,6 +1,7 @@
 package com.bumptech.glide.load.resource.transcode;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
@@ -24,6 +25,7 @@ public class GifBitmapWrapperDrawableTranscoder implements ResourceTranscoder<Gi
     @SuppressWarnings("unchecked")
     @Override
     public Resource<GlideDrawable> transcode(Resource<GifBitmapWrapper> toTranscode) {
+        Log.w("TAG", "!!!!!GifBitmapWrapperDrawableTranscoder 转码看这里 此时没有调用asBitmap transcode:");
 //        transcode()方法先从Resource<GifBitmapWrapper>中取出GifBitmapWrapper对象
         GifBitmapWrapper gifBitmap = toTranscode.get();
         // 然后再从GifBitmapWrapper中取出Resource<Bitmap>对象

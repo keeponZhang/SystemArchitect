@@ -47,6 +47,7 @@ public class DrawableRequestBuilder<ModelType>
     DrawableRequestBuilder(Context context, Class<ModelType> modelClass,
             LoadProvider<ModelType, ImageVideoWrapper, GifBitmapWrapper, GlideDrawable> loadProvider, Glide glide,
             RequestTracker requestTracker, Lifecycle lifecycle) {
+        //  //这里的ranscodeClass是GlideDrawable
         super(context, modelClass, loadProvider, GlideDrawable.class, glide, requestTracker, lifecycle);
         // Default to animating.
         crossFade();

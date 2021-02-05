@@ -27,7 +27,8 @@ public class BitmapTypeRequest<ModelType> extends BitmapRequestBuilder<ModelType
     private final Glide glide;
     private final RequestManager.OptionsApplier optionsApplier;
 
-    private static <A, R> FixedLoadProvider<A, ImageVideoWrapper, Bitmap, R> buildProvider(Glide glide,
+    private static <A, R> FixedLoadProvider<A, ImageVideoWrapper, Bitmap, R> buildProvider(
+            Glide glide,
             ModelLoader<A, InputStream> streamModelLoader,
             ModelLoader<A, ParcelFileDescriptor> fileDescriptorModelLoader,
             Class<R> transcodedClass, ResourceTranscoder<Bitmap, R> transcoder) {
@@ -38,19 +39,24 @@ public class BitmapTypeRequest<ModelType> extends BitmapRequestBuilder<ModelType
         if (transcoder == null) {
             transcoder = glide.buildTranscoder(Bitmap.class, transcodedClass);
         }
-        DataLoadProvider<ImageVideoWrapper, Bitmap> loadProvider = glide.buildDataProvider(ImageVideoWrapper.class,
-                Bitmap.class);
+        //loadProvider:imageVideoDataLoadProvider
+        DataLoadProvider<ImageVideoWrapper, Bitmap> loadProvider =
+                glide.buildDataProvider(ImageVideoWrapper.class,
+                        Bitmap.class);
         ImageVideoModelLoader<A> modelLoader = new ImageVideoModelLoader<A>(streamModelLoader,
                 fileDescriptorModelLoader);
 
-        return new FixedLoadProvider<A, ImageVideoWrapper, Bitmap, R>(modelLoader, transcoder, loadProvider);
+        return new FixedLoadProvider<A, ImageVideoWrapper, Bitmap, R>(modelLoader, transcoder,
+                loadProvider);
     }
 
     BitmapTypeRequest(GenericRequestBuilder<ModelType, ?, ?, ?> other,
-            ModelLoader<ModelType, InputStream> streamModelLoader,
-            ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader,
-            RequestManager.OptionsApplier optionsApplier) {
-        super(buildProvider(other.glide, streamModelLoader, fileDescriptorModelLoader, Bitmap.class, null),
+                      ModelLoader<ModelType, InputStream> streamModelLoader,
+                      ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader,
+                      RequestManager.OptionsApplier optionsApplier) {
+        //这里的transcodeClass是Bitmap
+        super(buildProvider(other.glide, streamModelLoader, fileDescriptorModelLoader, Bitmap.class,
+                null),
                 Bitmap.class, other);
         this.streamModelLoader = streamModelLoader;
         this.fileDescriptorModelLoader = fileDescriptorModelLoader;
@@ -61,15 +67,17 @@ public class BitmapTypeRequest<ModelType> extends BitmapRequestBuilder<ModelType
     /**
      * Sets a transcoder to transcode the decoded and transformed {@link Bitmap} into another resource type.
      *
-     * @param transcoder The transoder to use.
+     * @param transcoder     The transoder to use.
      * @param transcodeClass The {@link Class} of the resource the {@link Bitmap} will be transcoded to.
-     * @param <R> The type of the resource the {@link Bitmap} will be transcoded to.
+     * @param <R>            The type of the resource the {@link Bitmap} will be transcoded to.
      * @return This request builder.
      */
-    public <R> BitmapRequestBuilder<ModelType, R> transcode(ResourceTranscoder<Bitmap, R> transcoder,
+    public <R> BitmapRequestBuilder<ModelType, R> transcode(
+            ResourceTranscoder<Bitmap, R> transcoder,
             Class<R> transcodeClass) {
         return optionsApplier.apply(new BitmapRequestBuilder<ModelType, R>(
-                buildProvider(glide, streamModelLoader, fileDescriptorModelLoader, transcodeClass, transcoder),
+                buildProvider(glide, streamModelLoader, fileDescriptorModelLoader, transcodeClass,
+                        transcoder),
                 transcodeClass, this));
     }
 
@@ -77,9 +85,8 @@ public class BitmapTypeRequest<ModelType> extends BitmapRequestBuilder<ModelType
      * Transcodes the decoded and transformed {@link Bitmap} to bytes by compressing it as a JPEG to a byte array.
      * array.
      *
-     * @see #toBytes(Bitmap.CompressFormat, int)
-     *
      * @return This request builder.
+     * @see #toBytes(Bitmap.CompressFormat, int)
      */
     public BitmapRequestBuilder<ModelType, byte[]> toBytes() {
         return transcode(new BitmapBytesTranscoder(), byte[].class);
@@ -89,14 +96,14 @@ public class BitmapTypeRequest<ModelType> extends BitmapRequestBuilder<ModelType
      * Transcodes the decoded and transformed {@link Bitmap} to bytes by compressing it using the
      * given format and quality to a byte array.
      *
+     * @param compressFormat The {@link Bitmap.CompressFormat} to use to compress the {@link Bitmap}.
+     * @param quality        The quality level from 0-100 to use to compress the {@link Bitmap}.
+     * @return This request builder.
      * @see Bitmap#compress(Bitmap.CompressFormat, int, java.io.OutputStream)
      * @see #toBytes()
-     *
-     * @param compressFormat The {@link Bitmap.CompressFormat} to use to compress the {@link Bitmap}.
-     * @param quality The quality level from 0-100 to use to compress the {@link Bitmap}.
-     * @return This request builder.
      */
-    public BitmapRequestBuilder<ModelType, byte[]> toBytes(Bitmap.CompressFormat compressFormat, int quality) {
+    public BitmapRequestBuilder<ModelType, byte[]> toBytes(Bitmap.CompressFormat compressFormat,
+                                                           int quality) {
         return transcode(new BitmapBytesTranscoder(compressFormat, quality), byte[].class);
     }
 }

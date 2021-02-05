@@ -2,6 +2,7 @@ package com.bumptech.glide;
 
 import android.content.Context;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import com.bumptech.glide.load.model.ImageVideoModelLoader;
 import com.bumptech.glide.load.model.ImageVideoWrapper;
@@ -47,6 +48,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
         if (streamModelLoader == null && fileDescriptorModelLoader == null) {
             return null;
         }
+        Log.d("TAG", "DrawableTypeRequest buildProvider fileDescriptorModelLoader:"+fileDescriptorModelLoader);
 //	    调用了glide.buildTranscoder()方法来构建一个ResourceTranscoder，它是用于对图片进行转码的
         //resourceClass:GifBitmapWrapper
         // 由于ResourceTranscoder是一个接口，这里实际会构建出一个GifBitmapWrapperDrawableTranscoder对象。
@@ -56,6 +58,10 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
         //调用了glide.buildDataProvider()方法来构建一个DataLoadProvider，它是用于对图片进行编解码的，
         //由于DataLoadProvider是一个接口，这里实际会构建出一个ImageVideoGifDrawableLoadProvider对象
         //Z:GifBitmapWrapper
+        //看这里，很重要----------------------------------------------------------------------
+        // ---------------------------------------------------------
+        // buildDataProvider一个传dataType（ImageVideoWrapper），ModelLoader返回的，一个传resoureClass
+        // （GifBitmapWrapper）是decodeSource返回的Resource<T>,通过getSourceDecoder返回的SourceDecoder
         DataLoadProvider<ImageVideoWrapper, Z> dataLoadProvider =
                 glide.buildDataProvider(ImageVideoWrapper.class,
                         resourceClass);
@@ -73,6 +79,7 @@ public class DrawableTypeRequest<ModelType> extends DrawableRequestBuilder<Model
     }
 
     //该构造函数很重要，ModelType：String，streamModelLoader:StreamStringLoader,FileDescriptorStringLoader
+    //GenericRequestBuilder是顶层父类，要注意 glide.buildDataProvider里面会调用glide.buildDataProvider
     DrawableTypeRequest(Class<ModelType> modelClass,
                         ModelLoader<ModelType, InputStream> streamModelLoader,
                         ModelLoader<ModelType, ParcelFileDescriptor> fileDescriptorModelLoader,

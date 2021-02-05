@@ -463,14 +463,15 @@ public final class GenericRequest<A, T, Z, R> implements Request, SizeReadyCallb
         }
         //transcoder:GifBitmapWrapperDrawableTranscoder
         //Z:GifBitmapWrapper R:GlideDrawable
-        //进行原始数据解码的一个对象，负责将获取到的原始数据，io流解码成bitmap，解码后的资源称之为resource
+        //进行原始数据转码的一个对象，负责将获取到的原始数据，io流转码成bitmap，解码后的资源称之为resource
         ResourceTranscoder<Z, R> transcoder = loadProvider.getTranscoder();
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logV("finished setup for calling load in " + LogTime.getElapsedMillis(startTime));
         }
         loadedFromMemoryCache = true;
 
-        //这个是重点
+        //这个是重点,这里值得注意的是dataFetcher，loadProvider，transcoder（transcoder，loadProvider
+        // 分开传是因为loadProvider是DataLoadProvider）
         loadStatus = engine.load(signature, width, height, dataFetcher, loadProvider, transformation, transcoder,
                 priority, isMemoryCacheable, diskCacheStrategy, this);
         loadedFromMemoryCache = resource != null;

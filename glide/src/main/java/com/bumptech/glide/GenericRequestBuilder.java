@@ -2,6 +2,7 @@ package com.bumptech.glide;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
@@ -84,6 +85,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
 
     GenericRequestBuilder(LoadProvider<ModelType, DataType, ResourceType, TranscodeType> loadProvider,
             Class<TranscodeType> transcodeClass, GenericRequestBuilder<ModelType, ?, ?, ?> other) {
+        //transcodeClass挺重要的
         this(other.context, other.modelClass, loadProvider, transcodeClass, other.glide, other.requestTracker,
                 other.lifecycle);
         this.model = other.model;
@@ -689,6 +691,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
             throw new IllegalArgumentException("You must pass in a non null View");
         }
 
+        Log.e("TAG", "GenericRequestBuilder into transcodeClass:" + transcodeClass);
         //如果前面已经做了变化centerCrop或者fitCenter，isTransformationSet为true，不走下面
         if (!isTransformationSet && view.getScaleType() != null) {
             switch (view.getScaleType()) {
@@ -801,6 +804,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
         return result;
     }
 
+    //前面的不是真正的request，直到调用了这个方法
     private Request buildRequest(Target<TranscodeType> target) {
         if (priority == null) {
             priority = Priority.NORMAL;
@@ -858,6 +862,7 @@ public class GenericRequestBuilder<ModelType, DataType, ResourceType, TranscodeT
 //        构建GenericRequest的时候requestListener这个变量也会被一起传进去
         //transformation 也传进去，是做变换用的，如果调用了centerCrop，就是CenterCrop
         //其实最重要的还是loadProvider
+        //isCacheable:是否从内存读缓存
         return GenericRequest.obtain(
                 loadProvider,
                 model,

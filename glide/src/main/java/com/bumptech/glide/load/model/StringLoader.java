@@ -26,6 +26,7 @@ import java.net.URL;
  *
  * @param <T> The type of data that will be loaded from the given {@link String}.
  */
+//StringLoader要注意，构造函数会传入uriLoader
 public class StringLoader<T> implements ModelLoader<String, T> {
     private final ModelLoader<Uri, T> uriLoader;
 

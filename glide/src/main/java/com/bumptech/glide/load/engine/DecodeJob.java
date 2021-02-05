@@ -35,12 +35,12 @@ class DecodeJob<A, T, Z> {
     private final EngineKey resultKey;
     private final int width;
     private final int height;
-  //fetcher:ImageVideoFetcher
+    //fetcher:ImageVideoFetcher
     private final DataFetcher<A> fetcher;
-//    loadProvider:FixedLoadProvider
+    //    loadProvider:FixedLoadProvider
     private final DataLoadProvider<A, T> loadProvider;
     private final Transformation<T> transformation;
-   //transcoder:GifBitmapWrapperDrawableTranscoder
+    //transcoder:GifBitmapWrapperDrawableTranscoder
     private final ResourceTranscoder<T, Z> transcoder;
     private final DiskCacheProvider diskCacheProvider;
     private final DiskCacheStrategy diskCacheStrategy;
@@ -48,27 +48,34 @@ class DecodeJob<A, T, Z> {
     private final FileOpener fileOpener;
 
     private volatile boolean isCancelled;
+
     // A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     public DecodeJob(EngineKey resultKey, int width, int height, DataFetcher<A> fetcher,
-            DataLoadProvider<A, T> loadProvider, Transformation<T> transformation, ResourceTranscoder<T, Z> transcoder,
-            DiskCacheProvider diskCacheProvider, DiskCacheStrategy diskCacheStrategy, Priority priority) {
-        this(resultKey, width, height, fetcher, loadProvider, transformation, transcoder, diskCacheProvider,
+                     DataLoadProvider<A, T> loadProvider, Transformation<T> transformation,
+                     ResourceTranscoder<T, Z> transcoder,
+                     DiskCacheProvider diskCacheProvider, DiskCacheStrategy diskCacheStrategy,
+                     Priority priority) {
+        this(resultKey, width, height, fetcher, loadProvider, transformation, transcoder,
+                diskCacheProvider,
                 diskCacheStrategy, priority, DEFAULT_FILE_OPENER);
     }
+
     //fetcher:ImageVideoFetcher  loadProvider:FixedLoadProvider
     //transcoder:GifBitmapWrapperDrawableTranscoder
     // Visible for testing.
     DecodeJob(EngineKey resultKey, int width, int height, DataFetcher<A> fetcher,
-            DataLoadProvider<A, T> loadProvider, Transformation<T> transformation, ResourceTranscoder<T, Z> transcoder,
-            DiskCacheProvider diskCacheProvider, DiskCacheStrategy diskCacheStrategy, Priority priority, FileOpener
-            fileOpener) {
+              DataLoadProvider<A, T> loadProvider, Transformation<T> transformation,
+              ResourceTranscoder<T, Z> transcoder,
+              DiskCacheProvider diskCacheProvider, DiskCacheStrategy diskCacheStrategy,
+              Priority priority, FileOpener
+                      fileOpener) {
         this.resultKey = resultKey;
         this.width = width;
         this.height = height;
         this.fetcher = fetcher;
         this.loadProvider = loadProvider;
-	    //transformation做变换用的，如CenterCrop
-	    this.transformation = transformation;
+        //transformation做变换用的，如CenterCrop
+        this.transformation = transformation;
         this.transcoder = transcoder;
         this.diskCacheProvider = diskCacheProvider;
         this.diskCacheStrategy = diskCacheStrategy;
@@ -89,12 +96,19 @@ class DecodeJob<A, T, Z> {
 
         long startTime = LogTime.getLogTime();
 //        调用了loadFromCache()方法从缓存当中读取数据
+        Log.d("TAG",
+                "DecodeJob decodeResultFromCache 准备调用loadFromCache，传入resultKey:" + resultKey);
         Resource<T> transformed = loadFromCache(resultKey);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Decoded transformed from cache", startTime);
         }
         startTime = LogTime.getLogTime();
+        Log.w("TAG",
+                "DecodeJob decodeResultFromCache（表示缓存拿的也需要转码） 准备调用transcode转码前 transformed:" +
+                        transformed);
         Resource<Z> result = transcode(transformed);
+        Log.w("TAG",
+                "DecodeJob decodeResultFromCache（表示缓存拿的也需要转码） 准备调用transcode转码后 result:" + result);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Transcoded transformed from cache", startTime);
         }
@@ -114,6 +128,9 @@ class DecodeJob<A, T, Z> {
 
         long startTime = LogTime.getLogTime();
         //如果我们是缓存的原始图片，其实并不需要这么多的参数，因为不用对图片做任何的变化
+        Log.e("TAG", "DecodeJob decodeSourceFromCache 准备调用loadFromCache，传入orginalKey:" +
+                resultKey.getOriginalKey());
+        //这里返回的是个T类型的，真正返回的还需要转码下
         Resource<T> decoded = loadFromCache(resultKey.getOriginalKey());
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Decoded source from cache", startTime);
@@ -127,8 +144,8 @@ class DecodeJob<A, T, Z> {
      * obtained or no resource could be decoded.
      *
      * <p>
-     *     Depending on the {@link com.bumptech.glide.load.engine.DiskCacheStrategy} used, source data is either decoded
-     *     directly or first written to the disk cache and then decoded from the disk cache.
+     * Depending on the {@link com.bumptech.glide.load.engine.DiskCacheStrategy} used, source data is either decoded
+     * directly or first written to the disk cache and then decoded from the disk cache.
      * </p>
      *
      * @throws Exception
@@ -150,12 +167,15 @@ class DecodeJob<A, T, Z> {
         isCancelled = true;
         fetcher.cancel();
     }
+
     //A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     //decoded：class com.bumptech.glide.load.resource.gifbitmap.GifBitmapWrapperResource
     private Resource<Z> transformEncodeAndTranscode(Resource<T> decoded) {
         long startTime = LogTime.getLogTime();
         //原图一般的话要进行缩放，在该方法处理
+        Log.w("TAG", "DecodeJob transformEncodeAndTranscode transform前:" + decoded);
         Resource<T> transformed = transform(decoded);
+        Log.w("TAG", "DecodeJob transformEncodeAndTranscode transform后:" + transformed);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Transformed resource from source", startTime);
         }
@@ -166,7 +186,9 @@ class DecodeJob<A, T, Z> {
 //        又是调用了transcode()方法
         //Z：GlideBitmapDrawable
         //result:class com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawableResource
+        Log.d("TAG", "DecodeJob transformEncodeAndTranscode transcode前:" + decoded);
         Resource<Z> result = transcode(transformed);
+        Log.d("TAG", "DecodeJob transformEncodeAndTranscode transcode后:" + transformed);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Transcoded transformed from source", startTime);
         }
@@ -174,17 +196,23 @@ class DecodeJob<A, T, Z> {
     }
 
     private void writeTransformedToCache(Resource<T> transformed) {
+        Log.e("TAG",
+                "DecodeJob writeTransformedToCache 是否可以缓存reuslt:" +
+                        diskCacheStrategy.cacheResult());
         if (transformed == null || !diskCacheStrategy.cacheResult()) {
             return;
         }
         long startTime = LogTime.getLogTime();
+        Log.e("TAG", "DecodeJob writeTransformedToCache 准备缓存调的是getEncoder  :");
         //调用的同样是DiskLruCache实例的put()方法，不过这里用的缓存Key是resultKey。
-        SourceWriter<Resource<T>> writer = new SourceWriter<Resource<T>>(loadProvider.getEncoder(), transformed);
+        SourceWriter<Resource<T>> writer =
+                new SourceWriter<Resource<T>>(loadProvider.getEncoder(), transformed);
         diskCacheProvider.getDiskCache().put(resultKey, writer);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Wrote transformed from source to cache", startTime);
         }
     }
+
     // A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     private Resource<T> decodeSource() throws Exception {
         Resource<T> decoded = null;
@@ -192,6 +220,7 @@ class DecodeJob<A, T, Z> {
             long startTime = LogTime.getLogTime();
             // fetcher:ImageVideoFetcher    调用ImageVideoFetcher的loadData()方法
             //得到了一个ImageVideoWrapper对象
+            //ImageVideoFetcher最终会对HttpUrlFetcher返回的Stream进行包装
             final A data = fetcher.loadData(priority);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 logWithTimeAndKey("Fetched data", startTime);
@@ -210,8 +239,12 @@ class DecodeJob<A, T, Z> {
     //A:ImageVideoWrapper T:GifBitmapWrapper Z:GlideDrawable
     private Resource<T> decodeFromSourceData(A data) throws IOException {
         final Resource<T> decoded;
+        Log.e("TAG",
+                "DecodeJob decodeFromSourceData 是否支持缓存结果diskCacheStrategy.cacheSource():" +
+                        diskCacheStrategy.cacheSource());
         if (diskCacheStrategy.cacheSource()) {
             //先判断是否允许缓存原始图片，如果允许的话又会调用cacheAndDecodeSourceData()方法
+            Log.e("TAG", "！！！！！！！！！！！！！DecodeJob decodeFromSourceData 缓存原始数据嘿嘿嘿:");
             decoded = cacheAndDecodeSourceData(data);
         } else {
             long startTime = LogTime.getLogTime();
@@ -219,6 +252,7 @@ class DecodeJob<A, T, Z> {
             // loadProvider.getSourceDecoder():GifBitmapWrapperResourceDecoder
             //data:ImageVideoWrapper
             //这里需要主要的是loadProvider的方法，这调用的是getSourceDecoder，把ImageVideoWrapper里面的stream解码成drawable
+            //loadProvider最终用的到的是ImageVideoGifDrawableLoadProvider（ImageVideoWrapper，GifBitmapWrapper）
             decoded = loadProvider.getSourceDecoder().decode(data, width, height);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 logWithTimeAndKey("Decoded from source", startTime);
@@ -233,19 +267,24 @@ class DecodeJob<A, T, Z> {
         //同样调用了getDiskCache()方法来获取DiskLruCache实例
 //        接着调用它的put()方法就可以写入硬盘缓存了(原始图片)
         //转换过后的图片缓存是在transformEncodeAndTranscode方法
+        Log.d("TAG", "注意哦DecodeJob cacheAndDecodeSourceData 准备缓存source :" + resultKey.getId());
         diskCacheProvider.getDiskCache().put(resultKey.getOriginalKey(), writer);
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             logWithTimeAndKey("Wrote source to cache", startTime);
         }
 
         startTime = LogTime.getLogTime();
+        Log.e("TAG", "DecodeJob cacheAndDecodeSourceData 准备调用loadFromCache，传入的是orginalKey:" +
+                resultKey.getOriginalKey());
         Resource<T> result = loadFromCache(resultKey.getOriginalKey());
+        Log.w("TAG", "DecodeJob cacheAndDecodeSourceData 奇葩哦，又从内存:");
         if (Log.isLoggable(TAG, Log.VERBOSE) && result != null) {
             logWithTimeAndKey("Decoded source from cache", startTime);
         }
         return result;
     }
 
+    //这个方法要注意，返回的是resource，传入的是key,T:GifBitmapWrapper
     private Resource<T> loadFromCache(Key key) throws IOException {
         //调用getDiskCache()方法获取到的就是Glide自己编写的DiskLruCache工具类的实例，然后调用它的get()方法并把缓存Key传入，就能得到硬盘缓存的文件了
         File cacheFile = diskCacheProvider.getDiskCache().get(key);
@@ -255,8 +294,16 @@ class DecodeJob<A, T, Z> {
 
         Resource<T> result = null;
         try {
-            //如果文件不为空则将它解码成Resource对象后返回即可。
+            //如果文件不为空则将它解码成Resource对象后返回即可。FileToStreamDecoder
+            //从文件到bitmap，相当于网络到bitmap，到时先转成inputStream，再转成bitmap
+            //loadProvider:ImageVideoGifDrawableLoadProvider,最终嗲用到的是StreamBitmapDecoder
+            //loadProvider.getCacheDecoder()->ImageVideoGifDrawableLoadProvider
+            // .getCacheDecoder->FileToStreamDecoder->FileToStreamDecoder
+            // 持有GifBitmapWrapperStreamResourceDecoder
+            // ，最后调用的是持有GifBitmapWrapperStreamResourceDecoder.decode
             result = loadProvider.getCacheDecoder().decode(cacheFile, width, height);
+            Log.w("TAG",
+                    "缓存DecodeJob loadFromCache 调用loadProvider.getCacheDecoder() 解码后result:" + result);
         } finally {
             if (result == null) {
                 diskCacheProvider.getDiskCache().delete(key);
@@ -269,7 +316,7 @@ class DecodeJob<A, T, Z> {
         if (decoded == null) {
             return null;
         }
-		//transformation 做变换用的，如CenterCrop
+        //transformation 做变换用的，如CenterCrop
         Resource<T> transformed = transformation.transform(decoded, width, height);
         if (!decoded.equals(transformed)) {
             decoded.recycle();
@@ -295,6 +342,7 @@ class DecodeJob<A, T, Z> {
         private final Encoder<DataType> encoder;
         private final DataType data;
 
+        //encoder看这里，一个是source的，一个是result的
         public SourceWriter(Encoder<DataType> encoder, DataType data) {
             this.encoder = encoder;
             this.data = data;
@@ -306,6 +354,9 @@ class DecodeJob<A, T, Z> {
             OutputStream os = null;
             try {
                 os = fileOpener.open(file);
+                Log.e("TAG",
+                        "SourceWriter 缓存 write 编码啦写入硬盘-----------------------------------:" +
+                                file.getAbsolutePath());
                 success = encoder.encode(data, os);
             } catch (FileNotFoundException e) {
                 if (Log.isLoggable(TAG, Log.DEBUG)) {

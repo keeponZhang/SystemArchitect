@@ -149,6 +149,7 @@ public class Engine implements EngineJobListener,
             DataLoadProvider<T, Z> loadProvider, Transformation<Z> transformation, ResourceTranscoder<Z, R> transcoder,
             Priority priority, boolean isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb) {
         Util.assertMainThread();
+        Log.d("TAG", "Engine load:");
         long startTime = LogTime.getLogTime();
 //        fetcher.getId()方法获得了一个id字符串，这个字符串也就是我们要加载的图片的唯一标识，比如说如果是一张网络上的图片的话，那么这个id就是这张图片的url地址
         final String id = fetcher.getId();
@@ -195,7 +196,7 @@ public class Engine implements EngineJobListener,
         // T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
         DecodeJob<T, Z, R> decodeJob = new DecodeJob<T, Z, R>(key, width, height, fetcher, loadProvider, transformation,
                 transcoder, diskCacheProvider, diskCacheStrategy, priority);
-//        创建了一个EngineRunnable对象
+//        创建了一个EngineRunnable对象,把engineJob和decodeJob传了进去
         EngineRunnable runnable = new EngineRunnable(engineJob, decodeJob, priority);
         jobs.put(key, engineJob);
         //cb:GenericRequest

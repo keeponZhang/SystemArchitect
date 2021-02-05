@@ -15,7 +15,7 @@ import java.io.InputStream;
  * A {@link ModelLoader} for translating {@link String} models, such as file paths or remote urls, into
  * {@link InputStream} data.
  */
-//这个只是代理对象;后面的接口可以看出StreamStringLoader实现了哪两个泛型
+//这个只是代理对象;后面的接口可以看出StreamStringLoader实现了哪两个泛型(Stream String)
 public class StreamStringLoader extends StringLoader<InputStream> implements StreamModelLoader<String> {
 
     /**
@@ -24,7 +24,7 @@ public class StreamStringLoader extends StringLoader<InputStream> implements Str
     public static class Factory implements ModelLoaderFactory<String, InputStream> {
         @Override
         public ModelLoader<String, InputStream> build(Context context, GenericLoaderFactory factories) {
-            //真正的loader是
+            //真正的loader是StreamUriLoader
             return new StreamStringLoader(factories.buildModelLoader(Uri.class, InputStream.class));
         }
 

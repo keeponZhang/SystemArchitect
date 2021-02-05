@@ -1,5 +1,6 @@
 package com.bumptech.glide.request.target;
 
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -66,6 +67,7 @@ public class GlideDrawableImageViewTarget extends ImageViewTarget<GlideDrawable>
             }
         }
         //将GlideDrawable显示到ImageView上的逻辑
+        Log.e("TAG", "GlideDrawableImageViewTarget onResourceReady:");
         super.onResourceReady(resource, animation);
         this.resource = resource;
         resource.setLoopCount(maxLoopCount);
@@ -82,6 +84,7 @@ public class GlideDrawableImageViewTarget extends ImageViewTarget<GlideDrawable>
      */
     @Override
     protected void setResource(GlideDrawable resource) {
+        Log.e("TAG", "GlideDrawableImageViewTarget setResource:");
         view.setImageDrawable(resource);
     }
 

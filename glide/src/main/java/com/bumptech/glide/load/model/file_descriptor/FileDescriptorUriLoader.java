@@ -25,6 +25,7 @@ public class FileDescriptorUriLoader extends UriLoader<ParcelFileDescriptor> imp
     public static class Factory implements ModelLoaderFactory<Uri, ParcelFileDescriptor> {
         @Override
         public ModelLoader<Uri, ParcelFileDescriptor> build(Context context, GenericLoaderFactory factories) {
+            //这点是有疑问的GlideUrl，ParcelFileDescriptor找不到对应的loader,所以传入空
             return new FileDescriptorUriLoader(context, factories.buildModelLoader(GlideUrl.class,
                     ParcelFileDescriptor.class));
         }

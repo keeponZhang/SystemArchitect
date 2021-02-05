@@ -1,6 +1,7 @@
 package com.bumptech.glide.request.target;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 
 /**
@@ -22,6 +23,7 @@ public class BitmapImageViewTarget extends ImageViewTarget<Bitmap> {
      */
     @Override
     protected void setResource(Bitmap resource) {
+        Log.e("TAG", "BitmapImageViewTarget setResource:");
         view.setImageBitmap(resource);
     }
 }

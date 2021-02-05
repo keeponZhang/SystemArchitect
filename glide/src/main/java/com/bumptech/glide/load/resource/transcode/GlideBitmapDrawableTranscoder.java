@@ -3,6 +3,7 @@ package com.bumptech.glide.load.resource.transcode;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.Resource;
@@ -29,6 +30,7 @@ public class GlideBitmapDrawableTranscoder implements ResourceTranscoder<Bitmap,
 
     @Override
     public Resource<GlideBitmapDrawable> transcode(Resource<Bitmap> toTranscode) {
+        Log.e("TAG", "!!!!!!!GlideBitmapDrawableTranscoder transcode 转码看过来，此时调用了asBitmap:");
 //        这里new出了一个GlideBitmapDrawable对象，并把Bitmap封装到里面。然后对GlideBitmapDrawable再进行一次封装，
         // 返回一个Resource<GlideBitmapDrawable>对象
         GlideBitmapDrawable drawable = new GlideBitmapDrawable(resources, toTranscode.get());

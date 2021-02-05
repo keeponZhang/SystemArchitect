@@ -3,6 +3,7 @@ package com.bumptech.glide.load.engine;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.request.ResourceCallback;
@@ -145,6 +146,7 @@ class EngineJob implements EngineRunnable.EngineRunnableManager {
         } else if (cbs.isEmpty()) {
             throw new IllegalStateException("Received a resource without any callbacks to notify");
         }
+        Log.e("TAG", "EngineJob handleResultOnMainThread resource:"+resource);
 //        构建出了一个包含图片资源的EngineResource对象
         engineResource = engineResourceFactory.build(resource, isCacheable);
         hasResource = true;

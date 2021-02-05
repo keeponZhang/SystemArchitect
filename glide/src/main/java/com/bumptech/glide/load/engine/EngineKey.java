@@ -1,5 +1,7 @@
 package com.bumptech.glide.load.engine;
 
+import android.util.Log;
+
 import com.bumptech.glide.load.Encoder;
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.load.ResourceDecoder;
@@ -14,6 +16,11 @@ import java.security.MessageDigest;
 @SuppressWarnings("rawtypes")
 class EngineKey implements Key {
     private static final String EMPTY_LOG_STRING = "";
+
+    public String getId() {
+        return id;
+    }
+
     private final String id;
     private final int width;
     private final int height;
@@ -44,6 +51,7 @@ class EngineKey implements Key {
     }
 
     public Key getOriginalKey() {
+        Log.e("TAG", "EngineKey getOriginalKey originalKey:"+originalKey);
         if (originalKey == null) {
             //而signature参数绝大多数情况下都是用不到的，因此基本上可以说就是由id（也就是图片url）来决定的Original缓存Key
             originalKey = new OriginalKey(id, signature);

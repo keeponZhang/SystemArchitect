@@ -14,6 +14,7 @@ import com.bumptech.glide.load.model.StringLoader;
  * A {@link ModelLoader} For translating {@link String} models, such as file paths, into {@link ParcelFileDescriptor}
  * data.
  */
+//FileDescriptorString
 public class FileDescriptorStringLoader extends StringLoader<ParcelFileDescriptor>
         implements FileDescriptorModelLoader<String> {
 
@@ -23,6 +24,7 @@ public class FileDescriptorStringLoader extends StringLoader<ParcelFileDescripto
     public static class Factory implements ModelLoaderFactory<String, ParcelFileDescriptor> {
         @Override
         public ModelLoader<String, ParcelFileDescriptor> build(Context context, GenericLoaderFactory factories) {
+            //真正的loader是FileDescriptorUriLoader
             return new FileDescriptorStringLoader(factories.buildModelLoader(Uri.class, ParcelFileDescriptor.class));
         }
 

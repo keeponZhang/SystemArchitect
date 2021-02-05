@@ -25,6 +25,6 @@ public interface LoadProvider<A, T, Z, R> extends DataLoadProvider<T, Z> {
      * Returns the {@link ResourceTranscoder} to convert from the decoded
      * and transformed resource into the transcoded resource.
      */
-    //父类是编码，解码，这个是转码
+    //父类是编码，解码，这个是转码，当显示的数据和缓存的数据不一样的时候可以用
     ResourceTranscoder<Z, R> getTranscoder();
 }

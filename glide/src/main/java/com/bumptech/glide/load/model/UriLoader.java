@@ -13,6 +13,7 @@ import com.bumptech.glide.load.data.DataFetcher;
  *
  * @param <T> The type of data that will be retrieved for {@link Uri}s.
  */
+//UriLoader构造函数中会传入ModelLoader,类型是urlLoader，urlLoader可能为空
 public abstract class UriLoader<T> implements ModelLoader<Uri, T> {
     private final Context context;
     private final ModelLoader<GlideUrl, T> urlLoader;
@@ -37,6 +38,7 @@ public abstract class UriLoader<T> implements ModelLoader<Uri, T> {
                 result = getLocalUriFetcher(context, model);
             }
         } else if (urlLoader != null && ("http".equals(scheme) || "https".equals(scheme))) {
+            //HttpUrlGlideUrlLoader
             result = urlLoader.getResourceFetcher(new GlideUrl(model.toString()), width, height);
         }
 

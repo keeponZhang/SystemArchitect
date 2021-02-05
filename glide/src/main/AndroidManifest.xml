@@ -17,16 +17,16 @@
 <!--			android:value="GlideModule"/>-->
 
 		<activity android:name="com.keepon.GlideActivity">
-
-		</activity>
-		<activity android:name="com.keepon.GlideTargetActivity">
-		</activity>
-		<activity android:name="com.keepon.GlideTransformActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
+		</activity>
+		<activity android:name="com.keepon.GlideTargetActivity">
+		</activity>
+		<activity android:name="com.keepon.GlideTransformActivity">
+
 		</activity>
 		<activity android:name="com.keepon.GlideAnimateActivity">
 		</activity>
