@@ -91,11 +91,13 @@ public class DiskLruCacheWrapper implements DiskCache {
         Log.e("TAG", "DiskLruCacheWrapper put safeKey:"+safeKey);
         writeLocker.acquire(key);
         try {
+            //缓存实现是由key，拿到对应的file
             DiskLruCache.Editor editor = getDiskCache().edit(safeKey);
             // Editor will be null if there are two concurrent puts. In the worst case we will just silently fail.
             if (editor != null) {
                 try {
                     File file = editor.getFile(0);
+                    //这里是重点，write方法会调用encoder.encode方法
                     if (writer.write(file)) {
                         editor.commit();
                     }

@@ -30,6 +30,7 @@ public class ImageVideoBitmapDecoder implements ResourceDecoder<ImageVideoWrappe
 
     @SuppressWarnings("resource")
     // @see ResourceDecoder.decode
+    //ImageVideoWrapper变Bitmap，实现首先是取出ImageVideoWrapper的InputStream
     @Override
     public Resource<Bitmap> decode(ImageVideoWrapper source, int width, int height) throws IOException {
         Resource<Bitmap> result = null;

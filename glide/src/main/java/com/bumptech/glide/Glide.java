@@ -225,6 +225,7 @@ public class Glide {
 
         //ImageVideoDataLoadProvider里面持有streamBitmapLoadProvider（StreamBitmapDataLoadProvider
         // ），fileDescriptorLoadProvider（FileDescriptorBitmapDataLoadProvider）的引用
+        //注意，下面嵌套太多，分析用合格就好
         ImageVideoDataLoadProvider imageVideoDataLoadProvider =
                 new ImageVideoDataLoadProvider(streamBitmapLoadProvider, fileDescriptorLoadProvider);
         dataLoadProviderRegistry.register(ImageVideoWrapper.class, Bitmap.class, imageVideoDataLoadProvider);

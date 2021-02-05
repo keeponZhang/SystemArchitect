@@ -253,6 +253,7 @@ class DecodeJob<A, T, Z> {
             //data:ImageVideoWrapper
             //这里需要主要的是loadProvider的方法，这调用的是getSourceDecoder，把ImageVideoWrapper里面的stream解码成drawable
             //loadProvider最终用的到的是ImageVideoGifDrawableLoadProvider（ImageVideoWrapper，GifBitmapWrapper）
+            //注意：ResourceDecoder的第一个泛型参数作为输入参数，第二个泛型参数作为返回参数
             decoded = loadProvider.getSourceDecoder().decode(data, width, height);
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 logWithTimeAndKey("Decoded from source", startTime);
@@ -343,6 +344,7 @@ class DecodeJob<A, T, Z> {
         private final DataType data;
 
         //encoder看这里，一个是source的，一个是result的
+        //result的是resource<T>
         public SourceWriter(Encoder<DataType> encoder, DataType data) {
             this.encoder = encoder;
             this.data = data;
@@ -353,6 +355,7 @@ class DecodeJob<A, T, Z> {
             boolean success = false;
             OutputStream os = null;
             try {
+                //根据file打开输出流
                 os = fileOpener.open(file);
                 Log.e("TAG",
                         "SourceWriter 缓存 write 编码啦写入硬盘-----------------------------------:" +

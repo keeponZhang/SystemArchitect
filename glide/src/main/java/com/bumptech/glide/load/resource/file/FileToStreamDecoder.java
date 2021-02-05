@@ -22,6 +22,7 @@ public class FileToStreamDecoder<T> implements ResourceDecoder<File, T> {
     private ResourceDecoder<InputStream, T> streamDecoder;
     private final FileOpener fileOpener;
 
+    //接收这个表示下面会先把file先转换成InputStream
     public FileToStreamDecoder(ResourceDecoder<InputStream, T> streamDecoder) {
         this(streamDecoder, DEFAULT_FILE_OPENER);
     }

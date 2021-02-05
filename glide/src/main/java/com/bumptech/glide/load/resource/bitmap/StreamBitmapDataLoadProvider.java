@@ -25,11 +25,12 @@ public class StreamBitmapDataLoadProvider implements DataLoadProvider<InputStrea
     private final FileToStreamDecoder<Bitmap> cacheDecoder;
 
     //Glide构造函数会调用生成实例
+    //嵌套其实挺妙的，StreamBitmapDecoder支持从inputStream到bitmap，cacheDecoder是要从file到Bitmap
     public StreamBitmapDataLoadProvider(BitmapPool bitmapPool, DecodeFormat decodeFormat) {
         sourceEncoder = new StreamEncoder();
         decoder = new StreamBitmapDecoder(bitmapPool, decodeFormat);
         encoder = new BitmapEncoder();
-        //麻蛋，这里还传进去一个decoder，所以需要看StreamBitmapDecoder
+        //麻蛋，这里还传进去一个decoder，所以需要看StreamBitmapDecoder，那把file先转换成Stream就可
         cacheDecoder = new FileToStreamDecoder<Bitmap>(decoder);
     }
 

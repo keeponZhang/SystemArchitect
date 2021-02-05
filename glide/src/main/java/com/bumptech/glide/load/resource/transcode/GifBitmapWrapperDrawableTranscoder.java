@@ -13,7 +13,7 @@ import com.bumptech.glide.load.resource.gifbitmap.GifBitmapWrapper;
  * {@link Bitmap} or an {@link com.bumptech.glide.load.resource.gif.GifDrawable} into an
  * {@link android.graphics.drawable.Drawable}.
  */
-//GifBitmapWrapperDrawableTranscoder的核心作用就是用来转码的
+//GifBitmapWrapperDrawableTranscoder的核心作用就是用来转码的，还有个GlideBitmapDrawableTranscoder
 public class GifBitmapWrapperDrawableTranscoder implements ResourceTranscoder<GifBitmapWrapper, GlideDrawable> {
     private final ResourceTranscoder<Bitmap, GlideBitmapDrawable> bitmapDrawableResourceTranscoder;
 

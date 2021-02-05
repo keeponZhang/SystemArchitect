@@ -18,6 +18,7 @@ import java.io.File;
     //实现类当中有今天要讲的LoadProvider
     // A:String T:ImageVideoWrapper Z:GifBitmapWrapper R:GlideDrawable
     //ImageVideoGifDrawableLoadProvider
+//前面2个是ResourceDecoder，后面2个是Encoder
 public interface DataLoadProvider<T, Z> {
 
     //解码为什么会有2中呢，一种是从本地，一种是从网络，本地的是File

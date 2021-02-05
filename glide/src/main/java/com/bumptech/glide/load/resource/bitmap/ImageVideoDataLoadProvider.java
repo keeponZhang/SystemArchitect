@@ -22,16 +22,20 @@ public class ImageVideoDataLoadProvider implements DataLoadProvider<ImageVideoWr
     private final ResourceDecoder<File, Bitmap> cacheDecoder;
     private final ResourceEncoder<Bitmap> encoder;
     private final ImageVideoWrapperEncoder sourceEncoder;
-    // streamBitmapProvider： StreamBitmapDataLoadProvider
+
+    // streamBitmapProvider： StreamBitmapDataLoadProvider（这里为什传入的是StreamBitmapDataLoadProvider
+    // ，因为ImageVideoWrapper里面有Stream）
     // fileDescriptorBitmapProvider： FileDescriptorBitmapDataLoadProvider
     public ImageVideoDataLoadProvider(DataLoadProvider<InputStream, Bitmap> streamBitmapProvider,
-            DataLoadProvider<ParcelFileDescriptor, Bitmap> fileDescriptorBitmapProvider) {
+                                      DataLoadProvider<ParcelFileDescriptor, Bitmap> fileDescriptorBitmapProvider) {
         encoder = streamBitmapProvider.getEncoder();
         sourceEncoder = new ImageVideoWrapperEncoder(streamBitmapProvider.getSourceEncoder(),
                 fileDescriptorBitmapProvider.getSourceEncoder());
-        //streamBitmapProvider:StreamBitmapDataLoadProvider
+        //streamBitmapProvider:StreamBitmapDataLoadProvider(这里为什么直接获取的是StreamBitmapDataLoadProvider)
         cacheDecoder = streamBitmapProvider.getCacheDecoder();
-        //sourceDecoder要注意
+        //sourceDecoder要注意，这里的泛型跟DataLoadProvider的泛型一样,然后把第一个泛型作为参数，第二个泛型包装成Resource
+        //ImageVideoBitmapDecoder本质是从ImageVideoWrapper的InputStream到Bitmap,
+        // 所以传入streamBitmapProvider，简单的代理复用
         sourceDecoder = new ImageVideoBitmapDecoder(streamBitmapProvider.getSourceDecoder(),
                 fileDescriptorBitmapProvider.getSourceDecoder());
     }
